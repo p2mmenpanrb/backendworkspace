@@ -339,6 +339,195 @@ tr:last-child td{border-bottom:0}
   stroke-width:1.5;
 }
 
+
+/* v1.50 — landing page dashboard refinement */
+.landing-hero{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:18px;
+  margin-bottom:18px;
+}
+.landing-eyebrow{
+  font-size:10px;
+  line-height:1.3;
+  font-weight:700;
+  color:#71717a;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+  margin-bottom:5px;
+}
+.landing-title{
+  margin:0;
+  font-size:24px;
+  line-height:1.25;
+  font-weight:760;
+  color:#18181b;
+  letter-spacing:-.015em;
+}
+.landing-subtitle{
+  margin-top:6px;
+  font-size:12px;
+  line-height:1.55;
+  color:#71717a;
+  max-width:700px;
+}
+.landing-actions{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+.landing-actions .btn{
+  min-height:38px;
+}
+.landing-actions .btn.primary{
+  padding-left:15px;
+  padding-right:15px;
+  box-shadow:0 5px 14px rgba(24,24,27,.08);
+}
+
+.landing-stats{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:12px;
+  margin-bottom:14px;
+}
+.landing-stat{
+  min-width:0;
+  padding:15px 16px;
+  border:1px solid #e7e7e9;
+  border-radius:12px;
+  background:#fff;
+  box-shadow:0 1px 2px rgba(0,0,0,.025);
+}
+.landing-stat-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.landing-stat-icon{
+  width:34px;
+  height:34px;
+  flex:0 0 34px;
+  display:grid;
+  place-items:center;
+  border-radius:9px;
+  border:1px solid #e4e4e7;
+  background:#fafafa;
+  color:#3f3f46;
+  font-size:14px;
+  font-weight:800;
+}
+.landing-stat-label{
+  margin-top:12px;
+  font-size:10.5px;
+  line-height:1.35;
+  font-weight:650;
+  color:#71717a;
+}
+.landing-stat-value{
+  margin-top:4px;
+  font-size:25px;
+  line-height:1.12;
+  font-weight:760;
+  color:#18181b;
+  letter-spacing:-.02em;
+}
+.landing-stat-note{
+  margin-top:5px;
+  min-height:15px;
+  font-size:9.5px;
+  line-height:1.45;
+  color:#a1a1aa;
+}
+
+.landing-quick-row{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
+  gap:14px;
+  padding:12px 14px;
+  margin-bottom:14px;
+  border:1px solid #e7e7e9;
+  border-radius:11px;
+  background:#fff;
+}
+.landing-quick-left{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:0;
+}
+.landing-quick-icon{
+  width:34px;
+  height:34px;
+  flex:0 0 34px;
+  display:grid;
+  place-items:center;
+  border-radius:9px;
+  background:#fafafa;
+  border:1px solid #e4e4e7;
+  font-size:14px;
+}
+.landing-quick-title{
+  font-size:11.5px;
+  line-height:1.4;
+  font-weight:720;
+  color:#18181b;
+}
+.landing-quick-note{
+  margin-top:2px;
+  font-size:9.5px;
+  line-height:1.45;
+  color:#71717a;
+}
+
+#agendaCard,
+#page > .card,
+#page > .workload-distribution-stack .card{
+  box-shadow:0 1px 2px rgba(0,0,0,.02);
+}
+#agendaCard .card-head,
+#page > .card .card-head{
+  padding-top:13px;
+  padding-bottom:13px;
+}
+
+@media(max-width:1100px){
+  .landing-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:760px){
+  .landing-hero{flex-direction:column}
+  .landing-actions{width:100%;justify-content:flex-start}
+  .landing-quick-row{grid-template-columns:1fr}
+}
+@media(max-width:520px){
+  .landing-stats{grid-template-columns:1fr}
+  .landing-actions .btn{flex:1}
+}
+
+
+/* v1.51 — logo above workspace title */
+.brand-wrap{
+  display:flex !important;
+  flex-direction:column !important;
+  align-items:flex-start !important;
+  gap:8px !important;
+}
+.brand-wrap .brand-mark{
+  margin:0 !important;
+}
+.brand-wrap .brand-copy{
+  display:block !important;
+}
+.brand-wrap .brand-copy small{
+  display:block !important;
+  margin-top:3px !important;
+}
+
 </style>
 </head>
 <body>
@@ -385,7 +574,7 @@ tr:last-child td{border-bottom:0}
 
 <script>
 /*
-  Netlify frontend v1.49 — restores Kelola Tugas renderer; persistent page navigation retained.
+  Netlify frontend v1.51 — logo positioned above Workspace Asdep PPP.
   Netlify frontend.
   Recommended production setup:
   - index.html is hosted by Netlify/GitHub
@@ -706,6 +895,18 @@ function topbar(title,subtitle,action=''){
 }
 function stat(label,value,note=''){return `<div class="stat"><div class="stat-label">${esc(label)}</div><div class="stat-value">${esc(value)}</div>${note?`<div class="stat-note">${esc(note)}</div>`:''}</div>`}
 
+function landingStat(icon,label,value,note=''){
+  return `<div class="landing-stat">
+    <div class="landing-stat-top">
+      <div class="landing-stat-icon">${esc(icon)}</div>
+    </div>
+    <div class="landing-stat-label">${esc(label)}</div>
+    <div class="landing-stat-value">${esc(value)}</div>
+    ${note?`<div class="landing-stat-note">${esc(note)}</div>`:''}
+  </div>`;
+}
+
+
 function projectOptions(selected=''){
   const projects=state.bootstrap?.projects||[];
   const active=projects.filter(p=>p.status==='Aktif'), inactive=projects.filter(p=>p.status!=='Aktif');
@@ -853,14 +1054,56 @@ function openWorkloadPopup(key){
 
 function renderWorkload(){
   const m=state.model,w=m.workload||{};
+
   qs('#page').innerHTML=
-    topbar('Ringkasan Pekerjaan','Ringkasan beban kerja, agenda, dan ketersediaan tim.',
-      `<div class="row-actions"><button class="btn" onclick="changeWeek('${esc(w.prevWeek||'')}')">← Minggu</button><button class="btn" onclick="changeWeek('${esc(w.nextWeek||'')}')">Minggu →</button><button class="btn primary" onclick="openTaskForm()">+ Buat Tugas</button></div>`) +
-    `<div class="stats">${stat('Penugasan Minggu Ini',w.totalAssignments||0,w.weekLabel||'')}${stat('PIC Aktif',w.activePics||0,'anggota tim')}${stat('Hari Tersibuk',w.busiestDay||'—',(w.busiestCount||0)+' penugasan')}${stat('Cuti',w.leavePeopleCount||0,(w.leaveConflictCount||0)+' konflik')}</div>`+
-    `<div class="quick-collab"><div><div class="quick-collab-title">Brainstorming Ide dengan Miro</div><div class="quick-collab-note">Papan kolaborasi bersama untuk brainstorming, pemetaan ide, dan diskusi awal pekerjaan tim.</div></div><a class="btn" target="_blank" rel="noopener" href="https://miro.com/app/board/uXjVEfCUF-8=/">Buka Miro ↗</a></div>`+
+    `<div class="landing-hero">
+      <div>
+        <div class="landing-eyebrow">Workspace Asdep PPP</div>
+        <h1 class="landing-title">Ringkasan Pekerjaan</h1>
+        <div class="landing-subtitle">Pantau agenda, beban kerja, ketersediaan tim, dan tindak lanjut pekerjaan dalam satu ruang kerja.</div>
+      </div>
+      <div class="landing-actions">
+        <button class="btn" onclick="changeWeek('${esc(w.prevWeek||'')}')">← Minggu</button>
+        <button class="btn" onclick="changeWeek('${esc(w.nextWeek||'')}')">Minggu →</button>
+        <button class="btn primary" onclick="openTaskForm()">+ Tambah Tugas</button>
+      </div>
+    </div>`+
+    `<div class="landing-stats">
+      ${landingStat('▦','Penugasan Minggu Ini',w.totalAssignments||0,w.weekLabel||'')}
+      ${landingStat('◎','PIC Aktif',w.activePics||0,'anggota tim')}
+      ${landingStat('↗','Hari Tersibuk',w.busiestDay||'—',(w.busiestCount||0)+' penugasan')}
+      ${landingStat('○','Cuti',w.leavePeopleCount||0,(w.leaveConflictCount||0)+' konflik')}
+    </div>`+
+    `<div class="landing-quick-row">
+      <div class="landing-quick-left">
+        <div class="landing-quick-icon">✦</div>
+        <div>
+          <div class="landing-quick-title">Brainstorming Ide dengan Miro</div>
+          <div class="landing-quick-note">Gunakan papan kolaborasi bersama untuk brainstorming, pemetaan ide, dan diskusi awal pekerjaan tim.</div>
+        </div>
+      </div>
+      <a class="btn" target="_blank" rel="noopener" href="https://miro.com/app/board/uXjVEfCUF-8=/">Buka Miro ↗</a>
+    </div>`+
     `<div style="margin-bottom:14px">${renderAgendaSwitcher(m.todayAgenda,m.tomorrowAgenda)}</div>`+
-    `<div class="card"><div class="card-head"><div><div class="card-title">Distribusi Mingguan per Anggota Tim</div><div class="card-note">${esc(w.weekLabel||'')}</div><div class="workload-legend"><span class="workload-legend-item"><span class="workload-legend-sample leave">C</span>Cuti</span><span class="workload-legend-item"><span class="workload-legend-sample pd">PD</span>Perjalanan Dinas</span><span class="workload-legend-item"><span class="workload-legend-sample tlk">TLK</span>Tugas Luar Kantor</span></div></div><button class="btn" onclick="openLeaveForm()">+ Catat Cuti</button></div>${matrixTable(w)}</div>`+
-    `<div class="workload-distribution-stack"><div class="card"><div class="card-head"><div><div class="card-title">Distribusi Beban per Program</div></div></div>${classTable(m.programWorkload)}</div><div class="card"><div class="card-head"><div><div class="card-title">Distribusi Beban per Aktivitas</div></div></div>${classTable(m.substansiWorkload)}</div></div>`+
+    `<div class="card">
+      <div class="card-head">
+        <div>
+          <div class="card-title">Distribusi Mingguan per Anggota Tim</div>
+          <div class="card-note">${esc(w.weekLabel||'')}</div>
+          <div class="workload-legend">
+            <span class="workload-legend-item"><span class="workload-legend-sample leave">C</span>Cuti</span>
+            <span class="workload-legend-item"><span class="workload-legend-sample pd">PD</span>Perjalanan Dinas</span>
+            <span class="workload-legend-item"><span class="workload-legend-sample tlk">TLK</span>Tugas Luar Kantor</span>
+          </div>
+        </div>
+        <button class="btn" onclick="openLeaveForm()">+ Catat Cuti</button>
+      </div>
+      ${matrixTable(w)}
+    </div>`+
+    `<div class="workload-distribution-stack">
+      <div class="card"><div class="card-head"><div><div class="card-title">Distribusi Beban per Program</div></div></div>${classTable(m.programWorkload)}</div>
+      <div class="card"><div class="card-head"><div><div class="card-title">Distribusi Beban per Aktivitas</div></div></div>${classTable(m.substansiWorkload)}</div>
+    </div>`+
     renderLeaveList(m.teamAvailability||[]);
 }
 function changeWeek(week){return loadPage({week})}
