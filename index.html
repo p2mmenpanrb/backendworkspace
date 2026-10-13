@@ -1036,7 +1036,7 @@ tr:last-child td{border-bottom:0}
 
 <script>
 /*
-  Netlify frontend v1.61 — performance pass: request cache, staged Project loading, combined initial load.
+  Netlify frontend v1.62 — fresh Project asset sync + no-store staged reads.
   Netlify frontend.
   Recommended production setup:
   - index.html is hosted by Netlify/GitHub
@@ -1179,12 +1179,18 @@ async function api(action,payload={}){
       params.set(key,String(value));
     });
 
+    // Sheets-backed reads must always be fresh after a write.
+    // A cache-buster also protects against intermediary/proxy caching.
+    params.set('_ts',String(Date.now()));
+
     const res=await fetch(
       API_ENDPOINT+'?'+params.toString(),
       {
         method:'GET',
+        cache:'no-store',
         headers:{
-          'Accept':'application/json'
+          'Accept':'application/json',
+          'Cache-Control':'no-cache'
         }
       }
     );
@@ -2486,7 +2492,7 @@ async function deleteProjectStage(id){
 function openProjectForm(p={}){const x=p||{};openModal(x.id?'Edit Project':'Project Baru',`<div class="form-grid"><div class="field full"><label>Nama Project *</label><input id="prName" value="${esc(x.name||'')}"></div><div class="field"><label>Program Utama *</label><select id="prProgram"><option value="">Pilih</option>${(state.bootstrap?.programs||[]).map(v=>`<option ${x.primaryProgram===v?'selected':''}>${esc(v)}</option>`).join('')}</select><div class="helper">Program Utama hanya klasifikasi Project. Tugas/Dokumen dapat berasal dari Program lain.</div></div><div class="field"><label>Status</label><select id="prStatus">${(state.bootstrap?.projectStatuses||[]).map(v=>`<option ${x.status===v?'selected':''}>${esc(v)}</option>`).join('')}</select></div><div class="field"><label>Tanggal Mulai</label><input type="date" id="prStart" value="${esc(x.startDate||'')}"></div><div class="field"><label>Target Selesai</label><input type="date" id="prTarget" value="${esc(x.targetDate||'')}"></div><div class="field full"><label>PIC</label><div class="pic-selector">${(state.bootstrap?.pics||[]).map(v=>`<label class="pic-option"><input type="checkbox" name="prPic" value="${esc(v)}" ${(x.picList||[]).includes(v)?'checked':''}><span>${esc(v)}</span></label>`).join('')}</div><div class="pic-selector-note">Pilih anggota tim yang menjadi PIC utama Project.</div></div><div class="field full"><label>Deskripsi</label><textarea id="prDesc">${esc(x.description||'')}</textarea></div></div>`,`<button class="btn" onclick="closeModal()">Batal</button><button class="btn primary" onclick="saveProject('${esc(x.id||'')}')">Simpan Project</button>`)}
 async function saveProject(id){try{const r=await api('saveProject',{id,name:qs('#prName').value,primaryProgram:qs('#prProgram').value,status:qs('#prStatus').value,startDate:qs('#prStart').value,targetDate:qs('#prTarget').value,picList:qsa('input[name="prPic"]:checked').map(x=>x.value),description:qs('#prDesc').value});closeModal();state.bootstrap=await api('bootstrap');showToast('Project disimpan.');if(state.projectId||r.id)openProject(r.id);else await loadPage()}catch(e){showToast(e.message,true)}}
 function openProjectSourceForm(projectId){openModal('Tambah Sumber / Link',`<div class="form-grid"><div class="field"><label>Jenis *</label><select id="srcType"><option>Spreadsheet</option><option>Dokumen</option><option>Folder</option><option>Form</option><option>Website</option><option>Dashboard</option><option>Link</option></select></div><div class="field"><label>Nama *</label><input id="srcName"></div><div class="field full"><label>URL *</label><input id="srcUrl" placeholder="https://..."></div><div class="field full"><label>Keterangan</label><textarea id="srcNotes"></textarea></div><div class="field full"><div class="helper">Sumber/link akan tampil di Project dan otomatis dicatat juga pada Inventaris Dokumen menggunakan Program Utama Project dan Jenis sebagai tag.</div></div></div>`,`<button class="btn" onclick="closeModal()">Batal</button><button class="btn primary" onclick="saveProjectSource('${esc(projectId)}')">Tambah</button>`)}
-async function saveProjectSource(projectId){try{await api('saveProjectSource',{projectId,type:qs('#srcType').value,name:qs('#srcName').value,url:qs('#srcUrl').value,notes:qs('#srcNotes').value});closeModal();showToast('Sumber ditambahkan.');await loadPage({projectId})}catch(e){showToast(e.message,true)}}
+async function saveProjectSource(projectId){try{await api('saveProjectSource',{projectId,type:qs('#srcType').value,name:qs('#srcName').value,url:qs('#srcUrl').value,notes:qs('#srcNotes').value});closeModal();showToast('Sumber ditambahkan.');await loadPage({projectId});await loadProjectAssets(projectId)}catch(e){showToast(e.message,true)}}
 async function deleteProjectSource(id){if(!confirm('Hapus sumber ini?'))return;try{await api('deleteProjectSource',{id});showToast('Sumber dihapus.');await loadPage({projectId:state.projectId})}catch(e){showToast(e.message,true)}}
 function activityTodayValue(){
   const d=new Date();
@@ -3517,6 +3523,13 @@ async function submitComplete(id,recap){
     closeModal();
     showToast('Tugas diselesaikan.');
     await loadPage();
+
+    if(
+      state.page==='project' &&
+      state.projectId
+    ){
+      await loadProjectAssets(state.projectId);
+    }
   }catch(e){
     showToast(e.message,true);
   }
