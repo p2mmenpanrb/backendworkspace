@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>Rekap Kerja Asdep PPP</title>
+<title>Workspace Asdep PPP</title>
 <style>
 :root{
   --bg:#f7f7f8;--surface:#fff;--line:#e4e4e7;--text:#18181b;--muted:#71717a;
@@ -259,6 +259,86 @@ tr:last-child td{border-bottom:0}
 .trend-team-cell.heat-4{background:#4f46e5;border-color:#4f46e5;color:#fff}
 @media(max-width:980px){.trend-grid{grid-template-columns:1fr}}
 
+
+/* v1.47 — workload cues, stacked distributions, quick collaboration link */
+.workload-legend{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+  margin-top:5px;
+  font-size:9.5px;
+  color:var(--muted);
+}
+.workload-legend-item{display:inline-flex;align-items:center;gap:5px}
+.workload-legend-sample{
+  min-width:24px;height:22px;padding:0 5px;display:inline-flex;align-items:center;justify-content:center;
+  border:1px solid var(--line);border-radius:6px;font-size:9px;font-weight:800;background:#fff
+}
+.workload-legend-sample.leave{background:#f5f3ff;border-color:#ddd6fe;color:#6d28d9}
+.workload-legend-sample.pd{background:#eff6ff;border-color:#bfdbfe;color:#1d4ed8}
+.workload-legend-sample.tlk{background:#f0fdfa;border-color:#99f6e4;color:#0f766e}
+.load.workload-status-cell{
+  position:relative;min-width:42px;min-height:38px;padding:4px 5px 3px;
+  display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:1px
+}
+.workload-main-value{display:block;line-height:1}
+.workload-mini-flags{min-height:9px;display:flex;gap:2px;align-items:center;justify-content:center}
+.workload-mini-flag{
+  display:inline-flex;align-items:center;justify-content:center;height:11px;padding:0 3px;
+  border-radius:3px;font-size:6.8px;line-height:1;font-weight:800;letter-spacing:.01em
+}
+.workload-mini-flag.pd{background:#dbeafe;color:#1d4ed8}
+.workload-mini-flag.tlk{background:#ccfbf1;color:#0f766e}
+.load.workload-leave{background:#f5f3ff!important;border-color:#ddd6fe!important;color:#6d28d9!important}
+.load.workload-pd{box-shadow:inset 0 -3px 0 #60a5fa}
+.load.workload-tlk{box-shadow:inset 0 -3px 0 #2dd4bf}
+.load.workload-pd.workload-tlk{box-shadow:inset -20px -3px 0 #60a5fa,inset 20px -3px 0 #2dd4bf}
+.workload-conflict-dot{
+  position:absolute;top:-4px;right:-4px;width:9px;height:9px;border-radius:50%;
+  border:2px solid #fff;background:#dc2626
+}
+.workload-popup-status{display:flex;gap:5px;flex-wrap:wrap;margin:0 0 10px}
+
+.workload-distribution-stack{display:grid;gap:14px;margin-bottom:14px}
+
+.quick-collab{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  padding:12px 14px;margin-bottom:14px;background:#fff;border:1px solid var(--line);
+  border-radius:10px
+}
+.quick-collab-title{font-size:12px;font-weight:750}
+.quick-collab-note{font-size:10px;color:var(--muted);margin-top:3px;line-height:1.45}
+@media(max-width:700px){.quick-collab{align-items:flex-start;flex-direction:column}.quick-collab .btn{width:100%}}
+
+
+/* v1.48 — workspace identity */
+.participation-mark{
+  overflow:hidden;
+}
+.participation-mark svg{
+  width:24px;
+  height:24px;
+  display:block;
+  fill:#fff;
+  stroke:#fff;
+  stroke-width:1.35;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.participation-mark svg path{
+  fill:none;
+  opacity:.9;
+}
+.participation-mark svg circle{
+  stroke:none;
+}
+.participation-mark svg .participation-center{
+  fill:#18181b;
+  stroke:#fff;
+  stroke-width:1.5;
+}
+
 </style>
 </head>
 <body>
@@ -269,7 +349,22 @@ tr:last-child td{border-bottom:0}
 
 <div class="app">
   <aside class="sidebar">
-    <div class="brand-wrap"><div class="brand-mark">IW</div><div class="brand-copy">Rekap Kerja Asdep PPP<small>Project, tugas, dokumen, dan tindak lanjut tim</small></div></div>
+    <div class="brand-wrap">
+      <div class="brand-mark participation-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" role="img">
+          <path d="M10.2 11.1 16 7.7l5.8 3.4M10.2 20.9 16 24.3l5.8-3.4M10.2 11.1v9.8M21.8 11.1v9.8" />
+          <circle cx="16" cy="7" r="2.1"/>
+          <circle cx="9.3" cy="11" r="2.1"/>
+          <circle cx="22.7" cy="11" r="2.1"/>
+          <circle cx="9.3" cy="21" r="2.1"/>
+          <circle cx="22.7" cy="21" r="2.1"/>
+          <circle cx="16" cy="25" r="2.1"/>
+          <circle class="participation-center" cx="16" cy="16" r="2.35"/>
+          <path d="M11.2 12.2 14.2 15M20.8 12.2 17.8 15M11.2 19.8 14.2 17M20.8 19.8 17.8 17"/>
+        </svg>
+      </div>
+      <div class="brand-copy">Workspace Asdep PPP<small>Project, tugas, dokumen, dan tindak lanjut tim</small></div>
+    </div>
     <div class="nav" id="nav"></div>
   </aside>
   <main class="main">
@@ -290,7 +385,7 @@ tr:last-child td{border-bottom:0}
 
 <script>
 /*
-  Netlify frontend v1.45 — previous Tren Pekerjaan visual restored; agenda switcher/all-day/loading retained.
+  Netlify frontend v1.48 — persistent page navigation, Workspace Asdep PPP identity, participation symbol.
   Netlify frontend.
   Recommended production setup:
   - index.html is hosted by Netlify/GitHub
@@ -486,27 +581,115 @@ function buildNav(){
   qs('#mobileNav').innerHTML=PAGES.map(([key,label])=>`<button class="${state.page===key?'active':''}" onclick="navigate('${key}')">${label}</button>`).join('');
 }
 
-function navigate(page,replace=false){
-  state.page=page;state.model=null;setError('');
-  state.projectId='';
-  const url=new URL(location.href);url.searchParams.set('page',page);url.searchParams.delete('project');
-  history[replace?'replaceState':'pushState']({},'',url);
-  buildNav();loadPage();
+let __pageRequestSequence=0;
+
+function commitPageUrl(page,projectId,mode='push'){
+  if(mode==='none')return;
+
+  const url=new URL(location.href);
+  url.searchParams.set('page',page);
+
+  if(projectId){
+    url.searchParams.set('project',projectId);
+  }else{
+    url.searchParams.delete('project');
+  }
+
+  history[
+    mode==='replace'
+      ? 'replaceState'
+      : 'pushState'
+  ]({},'',url);
 }
-window.addEventListener('popstate',()=>{const p=new URLSearchParams(location.search);state.page=p.get('page')||'workload';state.projectId=p.get('project')||'';buildNav();loadPage()});
+
+function navigate(page,replace=false){
+  if(!page)return;
+
+  setError('');
+
+  return loadPage({
+    targetPage:page,
+    targetProjectId:'',
+    commitNavigation:true,
+    historyMode:replace?'replace':'push'
+  });
+}
+
+window.addEventListener('popstate',()=>{
+  const p=new URLSearchParams(location.search);
+
+  loadPage({
+    targetPage:p.get('page')||'workload',
+    targetProjectId:p.get('project')||'',
+    commitNavigation:true,
+    historyMode:'none'
+  });
+});
 
 async function loadPage(extra={}){
-  qs('#page').innerHTML='<div class="loading">Memuat data…</div>';
+  const requestId=++__pageRequestSequence;
+
+  const targetPage=
+    extra.targetPage!==undefined
+      ? extra.targetPage
+      : state.page;
+
+  const targetProjectId=
+    extra.targetProjectId!==undefined
+      ? extra.targetProjectId
+      : (
+          extra.projectId!==undefined
+            ? extra.projectId
+            : state.projectId
+        );
+
+  const targetWeek=
+    extra.week!==undefined
+      ? extra.week
+      : state.week;
+
   try{
-    state.model=await api('getPage',{
-      page:state.page,
-      week:extra.week??state.week,
+    const nextModel=await api('getPage',{
+      page:targetPage,
+      week:targetWeek,
       blastId:extra.blastId||'',
-      projectId:extra.projectId??state.projectId
+      projectId:targetProjectId
     });
-    if(state.page==='workload' && state.model.workload)state.week=state.model.workload.weekKey||'';
+
+    // Ignore an older response if the user clicked another module
+    // while this request was still running.
+    if(requestId!==__pageRequestSequence)return;
+
+    state.page=targetPage;
+    state.projectId=targetProjectId;
+    state.model=nextModel;
+
+    if(
+      state.page==='workload' &&
+      state.model.workload
+    ){
+      state.week=
+        state.model.workload.weekKey||targetWeek||'';
+    }
+
+    if(extra.commitNavigation){
+      commitPageUrl(
+        state.page,
+        state.projectId,
+        extra.historyMode||'push'
+      );
+    }
+
+    buildNav();
     renderCurrent();
-  }catch(err){setError(err.message);qs('#page').innerHTML='<div class="empty">Data gagal dimuat.</div>'}
+  }catch(err){
+    if(requestId!==__pageRequestSequence)return;
+
+    // Keep the existing module visible. The user only sees the
+    // top progress bar while loading; an error message is shown
+    // without replacing the current page.
+    setError(err.message);
+  }
 }
 
 function renderCurrent(){
@@ -598,11 +781,54 @@ function switchAgendaDay(day){
   if(tomorrowBtn)tomorrowBtn.classList.toggle('active',mode==='tomorrow');
 }
 
+function workloadDayMeta(day){
+  const tasks=day?.tasks||[];
+  const isLeave=String(day?.loadClass||'').includes('leave');
+  const hasConflict=String(day?.loadClass||'')==='leave-conflict';
+  const hasPD=tasks.some(t=>String(t.substansi||t.activity||'').trim()==='Perjalanan Dinas');
+  const hasTLK=tasks.some(t=>String(t.substansi||t.activity||'').trim()==='Tugas Luar Kantor');
+  return {isLeave,hasConflict,hasPD,hasTLK};
+}
+function workloadStatusLabel(meta,count){
+  const parts=[];
+  if(meta.isLeave)parts.push('Cuti');
+  if(meta.hasPD)parts.push('Perjalanan Dinas');
+  if(meta.hasTLK)parts.push('Tugas Luar Kantor');
+  if(!parts.length)parts.push(count+' tugas');
+  if(meta.hasConflict)parts.push(count+' tugas tetap terjadwal saat cuti');
+  return parts.join(' · ');
+}
 function workloadCell(context,label,day){
   const key='wd_'+Math.random().toString(36).slice(2);
+  const meta=workloadDayMeta(day);
+  const count=Number(day?.count||0);
   window.__workloadDetails=window.__workloadDetails||{};
-  window.__workloadDetails[key]={context,label,dayName:day.dayName||day.label||'',dateKey:day.dateKey||day.key||'',tasks:day.tasks||[]};
-  return `<button type="button" class="load clickable ${esc(day.loadClass||'l0')}" onclick="openWorkloadPopup('${key}')">${esc(day.displayValue??day.count??0)}</button>`;
+  window.__workloadDetails[key]={
+    context,label,dayName:day.dayName||day.label||'',dateKey:day.dateKey||day.key||'',
+    tasks:day.tasks||[],statusMeta:meta
+  };
+
+  const display=meta.isLeave?'C':String(day.displayValue??day.count??0);
+  const classes=[
+    'load','clickable','workload-status-cell',esc(day.loadClass||'l0'),
+    meta.isLeave?'workload-leave':'',
+    meta.hasPD&&!meta.isLeave?'workload-pd':'',
+    meta.hasTLK&&!meta.isLeave?'workload-tlk':''
+  ].filter(Boolean).join(' ');
+
+  const flags=meta.isLeave?'':[
+    meta.hasPD?'<span class="workload-mini-flag pd">PD</span>':'',
+    meta.hasTLK?'<span class="workload-mini-flag tlk">TLK</span>':''
+  ].join('');
+
+  const conflict=meta.hasConflict?'<span class="workload-conflict-dot" title="Masih ada tugas saat cuti"></span>':'';
+
+  return `<button type="button" class="${classes}" title="${esc(workloadStatusLabel(meta,count))}"
+    aria-label="${esc(label+' · '+(day.dayName||day.label||'')+' · '+workloadStatusLabel(meta,count))}"
+    onclick="openWorkloadPopup('${key}')">
+      ${conflict}<span class="workload-main-value">${esc(display)}</span>
+      <span class="workload-mini-flags">${flags}</span>
+    </button>`;
 }
 function matrixTable(work){
   if(!work||!work.rows)return'<div class="empty">Tidak ada data.</div>';
@@ -615,7 +841,14 @@ function classTable(work){
 function openWorkloadPopup(key){
   const d=(window.__workloadDetails||{})[key];if(!d)return;
   const tasks=d.tasks||[];
-  openModal(`${d.context}: ${d.label}`,`<div class="sub" style="margin-bottom:10px">${esc(d.dayName)}${d.dateKey?' · '+esc(fmtDate(d.dateKey)):''}</div>${tasks.length?tasks.map(t=>`<div class="linked-item"><div class="linked-title">${esc(t.title)}</div><div class="sub">${esc(agendaTimeLabel(t))} · ${esc(t.program||'')} · ${esc(t.substansi||'')} · ${esc((t.picList||[]).join(', ')||'—')} · ${esc(t.priority||'')}</div><div class="row-actions" style="margin-top:7px"><button class="mini" onclick="showTaskDetail('${esc(t.id)}')">Detail</button></div></div>`).join(''):'<div class="empty">Tidak ada pekerjaan pada hari ini.</div>'}`,`<button class="btn" onclick="closeModal()">Tutup</button>`);
+  const meta=d.statusMeta||{};
+  const statusBadges=[
+    meta.isLeave?'<span class="pill leave">Cuti</span>':'',
+    meta.hasPD?'<span class="pill progress">Perjalanan Dinas</span>':'',
+    meta.hasTLK?'<span class="pill done">Tugas Luar Kantor</span>':'',
+    meta.hasConflict?'<span class="pill high">Konflik: masih ada tugas saat cuti</span>':''
+  ].filter(Boolean).join('');
+  openModal(`${d.context}: ${d.label}`,`<div class="sub" style="margin-bottom:6px">${esc(d.dayName)}${d.dateKey?' · '+esc(fmtDate(d.dateKey)):''}</div>${statusBadges?`<div class="workload-popup-status">${statusBadges}</div>`:''}${tasks.length?tasks.map(t=>`<div class="linked-item"><div class="linked-title">${esc(t.title)}</div><div class="sub">${esc(agendaTimeLabel(t))} · ${esc(t.program||'')} · ${esc(t.substansi||'')} · ${esc((t.picList||[]).join(', ')||'—')} · ${esc(t.priority||'')}</div><div class="row-actions" style="margin-top:7px"><button class="mini" onclick="showTaskDetail('${esc(t.id)}')">Detail</button></div></div>`).join(''):'<div class="empty">Tidak ada pekerjaan pada hari ini.</div>'}`,`<button class="btn" onclick="closeModal()">Tutup</button>`);
 }
 
 function renderWorkload(){
@@ -624,12 +857,13 @@ function renderWorkload(){
     topbar('Ringkasan Pekerjaan','Ringkasan beban kerja, agenda, dan ketersediaan tim.',
       `<div class="row-actions"><button class="btn" onclick="changeWeek('${esc(w.prevWeek||'')}')">← Minggu</button><button class="btn" onclick="changeWeek('${esc(w.nextWeek||'')}')">Minggu →</button><button class="btn primary" onclick="openTaskForm()">+ Buat Tugas</button></div>`) +
     `<div class="stats">${stat('Penugasan Minggu Ini',w.totalAssignments||0,w.weekLabel||'')}${stat('PIC Aktif',w.activePics||0,'anggota tim')}${stat('Hari Tersibuk',w.busiestDay||'—',(w.busiestCount||0)+' penugasan')}${stat('Cuti',w.leavePeopleCount||0,(w.leaveConflictCount||0)+' konflik')}</div>`+
+    `<div class="quick-collab"><div><div class="quick-collab-title">Brainstorming Ide dengan Miro</div><div class="quick-collab-note">Papan kolaborasi bersama untuk brainstorming, pemetaan ide, dan diskusi awal pekerjaan tim.</div></div><a class="btn" target="_blank" rel="noopener" href="https://miro.com/app/board/uXjVEfCUF-8=/">Buka Miro ↗</a></div>`+
     `<div style="margin-bottom:14px">${renderAgendaSwitcher(m.todayAgenda,m.tomorrowAgenda)}</div>`+
-    `<div class="card"><div class="card-head"><div><div class="card-title">Distribusi Mingguan per Anggota Tim</div><div class="card-note">${esc(w.weekLabel||'')}</div></div><button class="btn" onclick="openLeaveForm()">+ Catat Cuti</button></div>${matrixTable(w)}</div>`+
-    `<div class="grid2"><div class="card"><div class="card-head"><div><div class="card-title">Distribusi Beban per Program</div></div></div>${classTable(m.programWorkload)}</div><div class="card"><div class="card-head"><div><div class="card-title">Distribusi Beban per Aktivitas</div></div></div>${classTable(m.substansiWorkload)}</div></div>`+
+    `<div class="card"><div class="card-head"><div><div class="card-title">Distribusi Mingguan per Anggota Tim</div><div class="card-note">${esc(w.weekLabel||'')}</div><div class="workload-legend"><span class="workload-legend-item"><span class="workload-legend-sample leave">C</span>Cuti</span><span class="workload-legend-item"><span class="workload-legend-sample pd">PD</span>Perjalanan Dinas</span><span class="workload-legend-item"><span class="workload-legend-sample tlk">TLK</span>Tugas Luar Kantor</span></div></div><button class="btn" onclick="openLeaveForm()">+ Catat Cuti</button></div>${matrixTable(w)}</div>`+
+    `<div class="workload-distribution-stack"><div class="card"><div class="card-head"><div><div class="card-title">Distribusi Beban per Program</div></div></div>${classTable(m.programWorkload)}</div><div class="card"><div class="card-head"><div><div class="card-title">Distribusi Beban per Aktivitas</div></div></div>${classTable(m.substansiWorkload)}</div></div>`+
     renderLeaveList(m.teamAvailability||[]);
 }
-function changeWeek(week){state.week=week;loadPage({week})}
+function changeWeek(week){return loadPage({week})}
 function renderLeaveList(items){
   return `<div class="card"><div class="card-head"><div><div class="card-title">Ketersediaan Tim</div><div class="card-note">Cuti pada minggu terpilih.</div></div></div>${items.length?`<div class="table-wrap"><table><thead><tr><th>PIC</th><th>Periode</th><th>Catatan</th><th>Konflik</th><th>Aksi</th></tr></thead><tbody>${items.map(x=>`<tr><td><strong>${esc(x.pic)}</strong></td><td>${esc(x.dateLabel||'')}</td><td>${esc(x.note||'—')}</td><td>${x.conflictDays||0}</td><td><div class="row-actions"><button class="mini" onclick='openLeaveForm(${JSON.stringify(x)})'>Edit</button><button class="mini danger" onclick="deleteLeave('${esc(x.id)}')">Hapus</button></div></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">Tidak ada cuti pada minggu ini.</div>'}</div>`;
 }
@@ -925,8 +1159,22 @@ function filteredProjects(){const q=(qs('#projectSearch')?.value||'').toLowerCas
 function filterProjects(){renderProjectRows(filteredProjects())}
 function resetProjectFilters(){qs('#projectSearch').value='';qs('#projectProgram').value='';qs('#projectStatus').value='';renderProjectRows(window.__projects||[])}
 function renderProjectRows(projects){qs('#projectRows').innerHTML=projects.length?projects.map(p=>`<div class="project-row"><div><div class="project-name">${esc(p.name)}</div><div class="project-desc">${esc(p.description||'')}</div></div><div><span class="pill">${esc(p.primaryProgram)}</span></div><div><span class="pill ${p.status==='Aktif'?'green':p.status==='Selesai'?'blue':'amber'}">${esc(p.status)}</span></div><div class="sub">${esc((p.picList||[]).join(', ')||'—')}</div><div><strong>${p.taskCount||0}</strong><div class="sub">${p.documentCount||0} dokumen</div></div><div><button class="mini" onclick="openProject('${esc(p.id)}')">Buka</button></div></div>`).join(''):'<div class="empty">Belum ada Project.</div>'}
-function openProject(id){state.page='project';state.projectId=id;const u=new URL(location.href);u.searchParams.set('page','project');u.searchParams.set('project',id);history.pushState({},'',u);buildNav();loadPage({projectId:id})}
-function backToProjects(){state.projectId='';const u=new URL(location.href);u.searchParams.set('page','project');u.searchParams.delete('project');history.pushState({},'',u);loadPage({projectId:''})}
+function openProject(id){
+  return loadPage({
+    targetPage:'project',
+    targetProjectId:id,
+    commitNavigation:true,
+    historyMode:'push'
+  });
+}
+function backToProjects(){
+  return loadPage({
+    targetPage:'project',
+    targetProjectId:'',
+    commitNavigation:true,
+    historyMode:'push'
+  });
+}
 function renderProjectDetail(d){
   const p=d.project,tasks=d.tasks||[],docs=d.documents||[],sources=d.sources||[],acts=d.activities||[];
   window.__projectDetail=d;window.__projectActivities=acts;state.projectTimeline={q:'',type:'',limit:20};
@@ -940,25 +1188,62 @@ function renderProjectDetail(d){
   `<div><div class="card"><div class="card-head"><div><div class="card-title">Sumber & Link Tambahan</div><div class="card-note">Referensi ringan di luar Inventaris Dokumen.</div></div><button class="mini" onclick="openProjectSourceForm('${esc(p.id)}')">+ Tambah</button></div>${sources.length?sources.map(s=>`<div class="source-item"><div class="linked-title">${esc(s.name)}</div><div class="sub">${esc(s.type)} · ${esc(s.notes||'')}</div><div class="row-actions" style="margin-top:7px"><a class="mini" target="_blank" rel="noopener" href="${esc(s.url)}">Buka ↗</a><button class="mini danger" onclick="deleteProjectSource('${esc(s.id)}')">Hapus</button></div></div>`).join(''):'<div class="empty">Belum ada sumber tambahan.</div>'}</div><div class="card"><div class="card-head"><div><div class="card-title">Informasi Project</div></div></div><div class="card-body"><div class="sub">Program Utama</div><strong>${esc(p.primaryProgram)}</strong><div class="sub" style="margin-top:10px">PIC</div><strong>${esc((p.picList||[]).join(', ')||'—')}</strong><div class="sub" style="margin-top:10px">Periode</div><strong>${esc(fmtDate(p.startDate))} → ${esc(fmtDate(p.targetDate))}</strong></div></div></div></div>`;
   renderProjectTimeline();
 }
-function navigateFiltered(page,projectId){state.projectId=projectId;state.page=page;const u=new URL(location.href);u.searchParams.set('page',page);u.searchParams.set('project',projectId);history.pushState({},'',u);buildNav();loadPage()}
+function navigateFiltered(page,projectId){
+  return loadPage({
+    targetPage:page,
+    targetProjectId:projectId,
+    commitNavigation:true,
+    historyMode:'push'
+  });
+}
 function filterProjectTimeline(){state.projectTimeline.q=(qs('#timelineSearch')?.value||'').toLowerCase();state.projectTimeline.type=qs('#timelineType')?.value||'';state.projectTimeline.limit=20;renderProjectTimeline()}
-function renderProjectTimeline(){const a=(window.__projectActivities||[]).filter(x=>(!state.projectTimeline.type||x.type===state.projectTimeline.type)&&(!state.projectTimeline.q||(x.title+' '+x.details+' '+x.actor+' '+(x.linksList||[]).join(' ')).toLowerCase().includes(state.projectTimeline.q)));const shown=a.slice(0,state.projectTimeline.limit);qs('#timelineRows').innerHTML=shown.length?shown.map(x=>`<div class="timeline-item"><div class="timeline-top"><div><span class="pill">${esc(projectActivityLabel(x.type))}</span><div class="linked-title" style="margin-top:5px">${esc(x.title)}</div></div><div class="timeline-date">${esc(dateTimeLabel(x.createdAt))}</div></div><div class="timeline-text">${esc(x.details||'')}</div><div class="timeline-meta">${esc(x.origin||'')} · ${esc(x.actor||'Sistem')} · ${esc(x.objectType||'')} ${esc(x.objectId||'')}</div>${(x.linksList||[]).length?`<div class="task-meta">${x.linksList.map(l=>`<span class="pill blue">${esc(l)}</span>`).join('')}</div>`:''}</div>`).join(''):'<div class="empty">Tidak ada riwayat.</div>';qs('#timelineMore').innerHTML=a.length>state.projectTimeline.limit?'<button class="btn" onclick="state.projectTimeline.limit+=20;renderProjectTimeline()">Muat Riwayat Sebelumnya</button>':''}
+function renderProjectTimeline(){const a=(window.__projectActivities||[]).filter(x=>(!state.projectTimeline.type||x.type===state.projectTimeline.type)&&(!state.projectTimeline.q||(x.title+' '+x.details+' '+x.actor+' '+(x.linksList||[]).join(' ')).toLowerCase().includes(state.projectTimeline.q)));const shown=a.slice(0,state.projectTimeline.limit);qs('#timelineRows').innerHTML=shown.length?shown.map(x=>`<div class="timeline-item"><div class="timeline-top"><div><span class="pill">${esc(projectActivityLabel(x.type))}</span><div class="linked-title" style="margin-top:5px">${esc(x.title)}</div></div><div class="timeline-date">${esc(dateTimeLabel(x.createdAt))}</div></div><div class="timeline-text">${esc(x.details||'')}</div><div class="timeline-meta">${esc(x.origin||'')} · ${esc(x.actor||'Sistem')} · ${esc(x.objectType||'')} ${esc(x.objectId||'')}</div>${(x.linksList||[]).length?`<div class="task-meta">${x.linksList.map(l=>/^https?:\/\//i.test(String(l||''))?`<a class="pill blue" target="_blank" rel="noopener" href="${esc(l)}">${/drive\.google\.com/i.test(l)?'Dokumen Drive ↗':'Buka Link ↗'}</a>`:`<span class="pill blue">${esc(l)}</span>`).join('')}</div>`:''}</div>`).join(''):'<div class="empty">Tidak ada riwayat.</div>';qs('#timelineMore').innerHTML=a.length>state.projectTimeline.limit?'<button class="btn" onclick="state.projectTimeline.limit+=20;renderProjectTimeline()">Muat Riwayat Sebelumnya</button>':''}
 function projectActivityLabel(t){return({task:'Tugas',document:'Dokumen',meeting:'Pertemuan',decision:'Keputusan',output:'Output / Milestone',note:'Catatan',source:'Sumber'})[t]||t}
 function openProjectForm(p={}){const x=p||{};openModal(x.id?'Edit Project':'Project Baru',`<div class="form-grid"><div class="field full"><label>Nama Project *</label><input id="prName" value="${esc(x.name||'')}"></div><div class="field"><label>Program Utama *</label><select id="prProgram"><option value="">Pilih</option>${(state.bootstrap?.programs||[]).map(v=>`<option ${x.primaryProgram===v?'selected':''}>${esc(v)}</option>`).join('')}</select><div class="helper">Program Utama hanya klasifikasi Project. Tugas/Dokumen dapat berasal dari Program lain.</div></div><div class="field"><label>Status</label><select id="prStatus">${(state.bootstrap?.projectStatuses||[]).map(v=>`<option ${x.status===v?'selected':''}>${esc(v)}</option>`).join('')}</select></div><div class="field"><label>Tanggal Mulai</label><input type="date" id="prStart" value="${esc(x.startDate||'')}"></div><div class="field"><label>Target Selesai</label><input type="date" id="prTarget" value="${esc(x.targetDate||'')}"></div><div class="field full"><label>PIC</label><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:5px">${(state.bootstrap?.pics||[]).map(v=>`<label style="font-weight:400"><input type="checkbox" name="prPic" value="${esc(v)}" ${(x.picList||[]).includes(v)?'checked':''}> ${esc(v)}</label>`).join('')}</div></div><div class="field full"><label>Deskripsi</label><textarea id="prDesc">${esc(x.description||'')}</textarea></div></div>`,`<button class="btn" onclick="closeModal()">Batal</button><button class="btn primary" onclick="saveProject('${esc(x.id||'')}')">Simpan Project</button>`)}
 async function saveProject(id){try{const r=await api('saveProject',{id,name:qs('#prName').value,primaryProgram:qs('#prProgram').value,status:qs('#prStatus').value,startDate:qs('#prStart').value,targetDate:qs('#prTarget').value,picList:qsa('input[name="prPic"]:checked').map(x=>x.value),description:qs('#prDesc').value});closeModal();state.bootstrap=await api('bootstrap');showToast('Project disimpan.');if(state.projectId||r.id)openProject(r.id);else await loadPage()}catch(e){showToast(e.message,true)}}
 function openProjectSourceForm(projectId){openModal('Tambah Sumber / Link',`<div class="form-grid"><div class="field"><label>Jenis *</label><select id="srcType"><option>Spreadsheet</option><option>Dokumen</option><option>Folder</option><option>Form</option><option>Website</option><option>Dashboard</option><option>Link</option></select></div><div class="field"><label>Nama *</label><input id="srcName"></div><div class="field full"><label>URL *</label><input id="srcUrl" placeholder="https://..."></div><div class="field full"><label>Keterangan</label><textarea id="srcNotes"></textarea></div></div>`,`<button class="btn" onclick="closeModal()">Batal</button><button class="btn primary" onclick="saveProjectSource('${esc(projectId)}')">Tambah</button>`)}
 async function saveProjectSource(projectId){try{await api('saveProjectSource',{projectId,type:qs('#srcType').value,name:qs('#srcName').value,url:qs('#srcUrl').value,notes:qs('#srcNotes').value});closeModal();showToast('Sumber ditambahkan.');await loadPage({projectId})}catch(e){showToast(e.message,true)}}
 async function deleteProjectSource(id){if(!confirm('Hapus sumber ini?'))return;try{await api('deleteProjectSource',{id});showToast('Sumber dihapus.');await loadPage({projectId:state.projectId})}catch(e){showToast(e.message,true)}}
-function openProjectActivityForm(projectId){const d=window.__projectDetail||{};const refs=[...(d.documents||[]),...(d.sources||[])];openModal('Tambah Aktivitas Project',`<div class="form-grid"><div class="field"><label>Jenis *</label><select id="actType"><option value="meeting">Pertemuan</option><option value="decision">Keputusan</option><option value="output">Output / Milestone</option><option value="note">Catatan</option></select></div><div class="field"><label>Dicatat Oleh</label><select id="actActor"><option value="">Pilih</option>${(state.bootstrap?.pics||[]).map(v=>`<option>${esc(v)}</option>`).join('')}</select></div><div class="field full"><label>Judul *</label><input id="actTitle"></div><div class="field full"><label>Catatan / Hasil *</label><textarea id="actDetails"></textarea></div><div class="field full"><label>Tautkan ke Sumber (opsional)</label><select id="actLink"><option value="">Tidak ditautkan</option>${refs.map(x=>`<option>${esc(x.name)}</option>`).join('')}</select></div></div>`,`<button class="btn" onclick="closeModal()">Batal</button><button class="btn primary" onclick="saveProjectActivity('${esc(projectId)}')">Tambah Aktivitas</button>`)}
-async function saveProjectActivity(projectId){try{await api('saveProjectActivity',{projectId,type:qs('#actType').value,actor:qs('#actActor').value,title:qs('#actTitle').value,details:qs('#actDetails').value,link:qs('#actLink').value});closeModal();showToast('Aktivitas ditambahkan.');await loadPage({projectId})}catch(e){showToast(e.message,true)}}
-
-function renderTaskMatrix(){
-  const tasks=state.model.tasks||[];
-  qs('#page').innerHTML=topbar('Kelola Tugas','Kelola seluruh tugas berdasarkan status.',`<button class="btn primary" onclick="openTaskForm()">+ Buat Tugas</button>`)+
-  `<div class="toolbar"><input id="taskSearch" placeholder="Cari tugas..." oninput="filterTaskMatrix()"><select id="taskPic" onchange="filterTaskMatrix()"><option value="">Semua PIC</option>${(state.bootstrap?.pics||[]).map(x=>`<option>${esc(x)}</option>`).join('')}</select><select id="taskProgram" onchange="filterTaskMatrix()"><option value="">Semua Program</option>${(state.bootstrap?.programs||[]).map(x=>`<option>${esc(x)}</option>`).join('')}</select><select id="taskProject" onchange="filterTaskMatrix()"><option value="">Semua Project</option>${(state.bootstrap?.projects||[]).map(x=>`<option value="${esc(x.id)}" ${state.projectId===x.id?'selected':''}>${esc(x.name)}</option>`).join('')}</select><button class="btn" onclick="resetTaskFilters()">Reset</button></div>`+
-  `<div class="task-columns" id="taskColumns"></div>`;
-  renderTaskColumns(tasks);
-  if(state.projectId) filterTaskMatrix();
+function openProjectActivityForm(projectId){
+  openModal('Tambah Aktivitas Project',
+    `<div class="form-grid">
+      <div class="field"><label>Jenis *</label><select id="actType"><option value="meeting">Pertemuan</option><option value="decision">Keputusan</option><option value="output">Output / Milestone</option><option value="note">Catatan</option></select></div>
+      <div class="field"><label>Dicatat Oleh</label><select id="actActor"><option value="">Pilih</option>${(state.bootstrap?.pics||[]).map(v=>`<option>${esc(v)}</option>`).join('')}</select></div>
+      <div class="field full"><label>Judul *</label><input id="actTitle"></div>
+      <div class="field full"><label>Catatan / Hasil *</label><textarea id="actDetails"></textarea></div>
+      <div class="field full"><label>Tautkan Link (opsional)</label><input type="url" id="actUrl" placeholder="https://..."><div class="helper">Gunakan untuk menautkan spreadsheet, dokumen, dashboard, website, atau sumber eksternal.</div></div>
+      <div class="field full"><label>Upload ke Drive (opsional)</label><input type="file" id="actFile"><div class="helper">File akan diunggah ke Google Drive dan otomatis ditambahkan ke Inventaris Dokumen pada Project ini. Maksimum 8 MB.</div></div>
+    </div>`,
+    `<button class="btn" onclick="closeModal()">Batal</button><button class="btn primary" onclick="saveProjectActivity('${esc(projectId)}')">Tambah Aktivitas</button>`);
+}
+async function saveProjectActivity(projectId){
+  try{
+    const file=qs('#actFile')?.files?.[0]||null;
+    let upload=null;
+    if(file){
+      if(file.size>8*1024*1024)throw new Error('Ukuran file melebihi batas 8 MB.');
+      upload={
+        fileName:file.name,
+        mimeType:file.type||'application/octet-stream',
+        sizeBytes:file.size,
+        base64:await fileToBase64(file)
+      };
+    }
+    await api('saveProjectActivity',{
+      projectId,
+      type:qs('#actType').value,
+      actor:qs('#actActor').value,
+      title:qs('#actTitle').value,
+      details:qs('#actDetails').value,
+      linkUrl:(qs('#actUrl')?.value||'').trim(),
+      upload
+    });
+    closeModal();
+    showToast(file?'Aktivitas dan dokumen ditambahkan.':'Aktivitas ditambahkan.');
+    await loadPage({projectId});
+  }catch(e){
+    showToast(e.message,true);
+  }
 }
 function filteredTasks(){
   const tasks=state.model.tasks||[], q=(qs('#taskSearch')?.value||'').toLowerCase(), pic=qs('#taskPic')?.value||'', prog=qs('#taskProgram')?.value||'', project=qs('#taskProject')?.value||'';
