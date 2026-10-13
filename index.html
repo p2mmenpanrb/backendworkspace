@@ -1390,18 +1390,61 @@ tr:last-child td{border-bottom:0}
 .repo-collection-count{margin-top:3px;font-size:8.8px;color:var(--muted)}
 .repo-collection-desc{margin-top:7px;font-size:8.8px;line-height:1.4;color:#52525b}
 .repo-library{margin-top:20px}
-.repo-library-toolbar{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:10px}
-.repo-tabs{display:inline-flex;gap:3px;padding:3px;border:1px solid var(--line);border-radius:9px;background:#f1f1f2}
-.repo-tab{border:0;background:transparent;border-radius:7px;padding:8px 11px;font-size:10px;color:#52525b;font-weight:700;cursor:pointer}
-.repo-tab.active{background:#fff;color:#18181b;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+.repo-library-toolbar{display:flex;justify-content:flex-end;gap:12px;align-items:center;margin-bottom:10px}
 .repo-filters{display:flex;gap:7px;flex-wrap:wrap}
 .repo-filters select{height:34px;border:1px solid var(--line);border-radius:7px;background:#fff;padding:0 9px;font-size:9.5px}
 .repo-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
-.repo-card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px;min-width:0}
+.repo-card{
+  position:relative;
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:14px;
+  min-width:0;
+  overflow:hidden;
+}
+.repo-card.internal{
+  background:linear-gradient(145deg,#f8fbff 0%,#ffffff 72%);
+  border-color:#cfe0ff;
+}
+.repo-card.external{
+  background:linear-gradient(145deg,#fffdf8 0%,#ffffff 72%);
+  border-color:#eadfca;
+}
+.repo-card.internal::before,
+.repo-card.external::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  width:3px;
+}
+.repo-card.internal::before{background:#4f7cff}
+.repo-card.external::before{background:#b88a3b}
 .repo-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.repo-card-badges{display:flex;gap:5px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.repo-source-pill{
+  white-space:nowrap;
+  padding:4px 7px;
+  border-radius:999px;
+  font-size:8px;
+  font-weight:800;
+  letter-spacing:.03em;
+  text-transform:uppercase;
+}
+.repo-source-pill.internal{
+  background:#eaf2ff;
+  border:1px solid #bfd3ff;
+  color:#2454b8;
+}
+.repo-source-pill.external{
+  background:#fff6e6;
+  border:1px solid #ead3aa;
+  color:#8a5a18;
+}
 .repo-type{font-size:8.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-weight:800}
 .repo-title{margin-top:5px;font-size:13px;line-height:1.4;font-weight:830}
-.repo-topic-pill{white-space:nowrap;padding:4px 7px;border-radius:999px;background:#eff6ff;border:1px solid #bfdbfe;color:#1e3a8a;font-size:8.5px}
+.repo-topic-pill{white-space:nowrap;padding:4px 7px;border-radius:999px;background:#fff;border:1px solid var(--line);color:#52525b;font-size:8.5px}
 .repo-hook{margin-top:8px;font-size:10px;line-height:1.5;color:#3f3f46}
 .repo-relevance{margin-top:10px;padding-top:9px;border-top:1px solid #f1f1f2}
 .repo-relevance-label{font-size:8px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
@@ -1468,7 +1511,7 @@ tr:last-child td{border-bottom:0}
 
 <script>
 /*
-  Netlify frontend v1.68 — Repositori Pengetahuan + v1.66 Trend refinement.
+  Netlify frontend v1.69 — Repositori Pengetahuan + v1.66 Trend refinement.
   Netlify frontend.
   Recommended production setup:
   - index.html is hosted by Netlify/GitHub
@@ -1582,7 +1625,6 @@ const state={
   taskListPage:1,
   taskSectionPages:{todo:1,progress:1,done:1,update:1},
   projectTimeline:{q:'',type:'',limit:20},
-  knowledgeTab:'internal',
   knowledgeSearch:'',
   knowledgeTopic:'',
   knowledgeType:'',
@@ -3920,20 +3962,20 @@ function knowledgeTags(item){
     .slice(0,5);
 }
 
-function knowledgeVisibleItems(scope){
+function knowledgeVisibleItems(){
   const q=String(state.knowledgeSearch||'').toLowerCase().trim();
   const topic=state.knowledgeTopic||'';
   const type=state.knowledgeType||'';
 
   return knowledgeItems().filter(item=>{
-    if(String(item.scope||'internal')!==scope)return false;
     if(topic&&String(item.topic||'')!==topic)return false;
     if(type&&String(item.type||'')!==type)return false;
 
     if(q){
       const hay=[
         item.title,item.type,item.topic,item.owner,item.summary,
-        item.relevance,item.tags,item.year,item.language
+        item.relevance,item.tags,item.year,item.language,
+        item.scope==='external'?'referensi eksternal':'produk pengetahuan tim'
       ].join(' ').toLowerCase();
       if(!hay.includes(q))return false;
     }
@@ -3949,9 +3991,10 @@ function renderKnowledge(){
     if(Object.prototype.hasOwnProperty.call(counts,item.topic))counts[item.topic]++;
   });
 
-  const types=state.knowledgeTab==='internal'
-    ?(state.bootstrap?.knowledgeInternalTypes||[])
-    :(state.bootstrap?.knowledgeExternalTypes||[]);
+  const types=[...new Set([
+    ...(state.bootstrap?.knowledgeInternalTypes||[]),
+    ...(state.bootstrap?.knowledgeExternalTypes||[])
+  ])].sort((a,b)=>String(a).localeCompare(String(b),'id'));
 
   qs('#page').innerHTML=topbar(
     'Repositori Pengetahuan',
@@ -3983,10 +4026,6 @@ function renderKnowledge(){
   </section>`+
   `<section class="repo-library" id="knowledgeLibrary">
     <div class="repo-library-toolbar">
-      <div class="repo-tabs">
-        <button class="repo-tab ${state.knowledgeTab==='internal'?'active':''}" onclick="knowledgeSetTab('internal')">Produk Pengetahuan Tim</button>
-        <button class="repo-tab ${state.knowledgeTab==='external'?'active':''}" onclick="knowledgeSetTab('external')">Referensi Eksternal</button>
-      </div>
       <div class="repo-filters">
         <select id="knowledgeTopicFilter" onchange="knowledgeTopicChanged(this.value)">
           <option value="">Semua Topik</option>
@@ -4008,7 +4047,7 @@ function renderKnowledge(){
 function renderKnowledgeGrid(){
   const host=qs('#knowledgeGrid');
   if(!host)return;
-  const rows=knowledgeVisibleItems(state.knowledgeTab);
+  const rows=knowledgeVisibleItems();
 
   if(!rows.length){
     host.innerHTML='<div class="repo-empty">Belum ada item yang sesuai dengan pencarian atau filter.</div>';
@@ -4017,17 +4056,26 @@ function renderKnowledgeGrid(){
 
   host.innerHTML=rows.map(item=>{
     const tags=knowledgeTags(item);
-    const actionLabel=item.scope==='external'?'Baca Sumber ↗':'Baca →';
+    const scope=item.scope==='external'?'external':'internal';
+    const sourceLabel=scope==='external'?'Referensi Eksternal':'Produk Tim';
+    const actionLabel=scope==='external'?'Baca Sumber ↗':'Baca →';
     const metaOwner=item.owner||'—';
-    return `<article class="repo-card">
+
+    return `<article class="repo-card ${scope}">
       <div class="repo-card-head">
         <div style="min-width:0">
           <div class="repo-type">${esc(item.type||'Pengetahuan')} · ${esc(item.year||'')}</div>
           <div class="repo-title">${esc(item.title||'Tanpa judul')}</div>
         </div>
-        <span class="repo-topic-pill">${esc(item.topic||'Lain-lain')}</span>
+
+        <div class="repo-card-badges">
+          <span class="repo-source-pill ${scope}">${sourceLabel}</span>
+          <span class="repo-topic-pill">${esc(item.topic||'Lain-lain')}</span>
+        </div>
       </div>
+
       <div class="repo-hook">${esc(item.summary||'Belum ada ringkasan.')}</div>
+
       <div class="repo-relevance">
         <div class="repo-relevance-label">Relevan untuk</div>
         ${item.relevance?`<div class="repo-relevance-text">${esc(item.relevance)}</div>`:''}
@@ -4035,10 +4083,11 @@ function renderKnowledgeGrid(){
           ${(tags.length?tags:[item.topic||'Lain-lain']).map(tag=>`<span class="repo-tag">${esc(tag)}</span>`).join('')}
         </div>
       </div>
+
       <div class="repo-card-foot">
         <div class="repo-source">${esc(metaOwner)}${item.year?' · '+esc(item.year):''}</div>
         <div style="display:flex;gap:5px;align-items:center">
-          <button class="mini" title="Edit" onclick="openKnowledgeForm('${esc(item.scope||'internal')}','${esc(item.id)}')">✎</button>
+          <button class="mini" title="Edit" onclick="openKnowledgeForm('${scope}','${esc(item.id)}')">✎</button>
           ${item.url?`<a class="mini primary" target="_blank" rel="noopener" href="${esc(item.url)}">${actionLabel}</a>`:''}
         </div>
       </div>
@@ -4067,13 +4116,6 @@ function knowledgeTopicChanged(value){
 function knowledgeTypeChanged(value){
   state.knowledgeType=value||'';
   renderKnowledgeGrid();
-}
-
-function knowledgeSetTab(tab){
-  state.knowledgeTab=tab==='external'?'external':'internal';
-  state.knowledgeType='';
-  renderKnowledge();
-  requestAnimationFrame(()=>knowledgeScrollLibrary());
 }
 
 function knowledgeResetFilters(){
