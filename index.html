@@ -129,6 +129,40 @@ tr:last-child td{border-bottom:0}
   .global-progress-bar{transition:none}
 }
 
+
+/* Agenda day switcher */
+.agenda-switch{
+  display:inline-flex;
+  align-items:center;
+  gap:3px;
+  padding:3px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:#fafafa;
+}
+.agenda-switch button{
+  border:0;
+  background:transparent;
+  border-radius:6px;
+  padding:6px 10px;
+  font-size:10.5px;
+  font-weight:650;
+  color:#71717a;
+}
+.agenda-switch button:hover{
+  background:#f4f4f5;
+  color:#18181b;
+}
+.agenda-switch button.active{
+  background:#fff;
+  color:#18181b;
+  box-shadow:0 1px 2px rgba(0,0,0,.06);
+}
+.agenda-all-day{
+  font-weight:650;
+  color:#4338ca;
+}
+
 </style>
 </head>
 <body>
@@ -160,7 +194,7 @@ tr:last-child td{border-bottom:0}
 
 <script>
 /*
-  Netlify frontend v1.42 — minimalist global loading progress.
+  Netlify frontend v1.44 — single agenda switcher + all-day task label + loading progress.
   Netlify frontend.
   Recommended production setup:
   - index.html is hosted by Netlify/GitHub
@@ -404,14 +438,68 @@ function projectOptions(selected=''){
 function projectLink(id,name){return id?`<button class="project-link" onclick="openProject('${esc(id)}')">${esc(name||'Project')}</button>`:'—'}
 function dateTimeLabel(v){if(!v)return'—';const d=new Date(v);return isNaN(d)?esc(v):d.toLocaleString('id-ID',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})}
 
-function renderAgenda(agenda,title){
+function agendaTimeLabel(item){
+  const clock=String(item?.clockLabel||'').trim();
+  if(clock && clock!=='—' && clock!=='-') return clock;
+  return 'Sepanjang hari';
+}
+
+function renderAgendaRows(agenda){
   const rows=(agenda&&agenda.items)||agenda||[];
-  return `<div class="card"><div class="card-head"><div><div class="card-title">${esc(title)}</div><div class="card-note">${rows.length} agenda</div></div></div>
-  ${rows.length?`<div class="table-wrap"><table><thead><tr><th>Waktu</th><th>Tugas</th><th>PIC</th><th>Detail</th><th>Status</th></tr></thead><tbody>${rows.map((x,i)=>`<tr class="${x.isActive?'agenda-active':(x.isNext?'agenda-next':'')}">
-    <td>${esc(x.clockLabel||x.timeLabel||'—')}</td><td><strong>${esc(x.title)}</strong><div class="sub">${esc(x.program||'')} · ${esc(x.substansi||x.activity||'')}</div></td>
-    <td>${esc((x.picList||[]).join(', ')||x.pic||'—')}</td><td><button class="mini" onclick="showTaskDetail('${esc(x.id)}')">Detail</button></td>
-    <td><span class="pill ${esc(x.statusKey||x.status||'todo')}">${esc(x.statusLabel||x.status||'')}</span></td>
-  </tr>`).join('')}</tbody></table></div>`:'<div class="empty">Tidak ada agenda.</div>'}</div>`;
+  if(!rows.length)return'<div class="empty">Tidak ada agenda.</div>';
+
+  return `<div class="table-wrap"><table><thead><tr><th>Waktu</th><th>Tugas</th><th>PIC</th><th>Detail</th><th>Status</th></tr></thead><tbody>${rows.map((x,i)=>{
+    const time=agendaTimeLabel(x);
+    return `<tr class="${x.isActive?'agenda-active':(x.isNext?'agenda-next':'')}">
+      <td><span class="${time==='Sepanjang hari'?'agenda-all-day':''}">${esc(time)}</span></td>
+      <td><strong>${esc(x.title)}</strong><div class="sub">${esc(x.program||'')} · ${esc(x.substansi||x.activity||'')}</div></td>
+      <td>${esc((x.picList||[]).join(', ')||x.pic||'—')}</td>
+      <td><button class="mini" onclick="showTaskDetail('${esc(x.id)}')">Detail</button></td>
+      <td><span class="pill ${esc(x.statusKey||x.status||'todo')}">${esc(x.statusLabel||x.status||'')}</span></td>
+    </tr>`;
+  }).join('')}</tbody></table></div>`;
+}
+
+function renderAgendaSwitcher(todayAgenda,tomorrowAgenda){
+  const todayRows=(todayAgenda&&todayAgenda.items)||todayAgenda||[];
+  const tomorrowRows=(tomorrowAgenda&&tomorrowAgenda.items)||tomorrowAgenda||[];
+
+  window.__agendaData={
+    today:todayRows,
+    tomorrow:tomorrowRows
+  };
+
+  return `<div class="card" id="agendaCard">
+    <div class="card-head">
+      <div>
+        <div class="card-title" id="agendaCardTitle">Agenda Hari Ini</div>
+        <div class="card-note" id="agendaCardNote">${todayRows.length} agenda</div>
+      </div>
+      <div class="agenda-switch" role="group" aria-label="Pilih agenda">
+        <button type="button" id="agendaTodayBtn" class="active" onclick="switchAgendaDay('today')">Hari Ini</button>
+        <button type="button" id="agendaTomorrowBtn" onclick="switchAgendaDay('tomorrow')">Besok</button>
+      </div>
+    </div>
+    <div id="agendaCardBody">${renderAgendaRows(todayRows)}</div>
+  </div>`;
+}
+
+function switchAgendaDay(day){
+  const mode=day==='tomorrow'?'tomorrow':'today';
+  const rows=(window.__agendaData&&window.__agendaData[mode])||[];
+
+  const title=qs('#agendaCardTitle');
+  const note=qs('#agendaCardNote');
+  const body=qs('#agendaCardBody');
+  const todayBtn=qs('#agendaTodayBtn');
+  const tomorrowBtn=qs('#agendaTomorrowBtn');
+
+  if(title)title.textContent=mode==='today'?'Agenda Hari Ini':'Agenda Besok';
+  if(note)note.textContent=rows.length+' agenda';
+  if(body)body.innerHTML=renderAgendaRows(rows);
+
+  if(todayBtn)todayBtn.classList.toggle('active',mode==='today');
+  if(tomorrowBtn)tomorrowBtn.classList.toggle('active',mode==='tomorrow');
 }
 
 function workloadCell(context,label,day){
@@ -431,7 +519,7 @@ function classTable(work){
 function openWorkloadPopup(key){
   const d=(window.__workloadDetails||{})[key];if(!d)return;
   const tasks=d.tasks||[];
-  openModal(`${d.context}: ${d.label}`,`<div class="sub" style="margin-bottom:10px">${esc(d.dayName)}${d.dateKey?' · '+esc(fmtDate(d.dateKey)):''}</div>${tasks.length?tasks.map(t=>`<div class="linked-item"><div class="linked-title">${esc(t.title)}</div><div class="sub">${esc(t.clockLabel||t.timeLabel||'—')} · ${esc(t.program||'')} · ${esc(t.substansi||'')} · ${esc((t.picList||[]).join(', ')||'—')} · ${esc(t.priority||'')}</div><div class="row-actions" style="margin-top:7px"><button class="mini" onclick="showTaskDetail('${esc(t.id)}')">Detail</button></div></div>`).join(''):'<div class="empty">Tidak ada pekerjaan pada hari ini.</div>'}`,`<button class="btn" onclick="closeModal()">Tutup</button>`);
+  openModal(`${d.context}: ${d.label}`,`<div class="sub" style="margin-bottom:10px">${esc(d.dayName)}${d.dateKey?' · '+esc(fmtDate(d.dateKey)):''}</div>${tasks.length?tasks.map(t=>`<div class="linked-item"><div class="linked-title">${esc(t.title)}</div><div class="sub">${esc(agendaTimeLabel(t))} · ${esc(t.program||'')} · ${esc(t.substansi||'')} · ${esc((t.picList||[]).join(', ')||'—')} · ${esc(t.priority||'')}</div><div class="row-actions" style="margin-top:7px"><button class="mini" onclick="showTaskDetail('${esc(t.id)}')">Detail</button></div></div>`).join(''):'<div class="empty">Tidak ada pekerjaan pada hari ini.</div>'}`,`<button class="btn" onclick="closeModal()">Tutup</button>`);
 }
 
 function renderWorkload(){
@@ -440,7 +528,7 @@ function renderWorkload(){
     topbar('Ringkasan Pekerjaan','Ringkasan beban kerja, agenda, dan ketersediaan tim.',
       `<div class="row-actions"><button class="btn" onclick="changeWeek('${esc(w.prevWeek||'')}')">← Minggu</button><button class="btn" onclick="changeWeek('${esc(w.nextWeek||'')}')">Minggu →</button><button class="btn primary" onclick="openTaskForm()">+ Buat Tugas</button></div>`) +
     `<div class="stats">${stat('Penugasan Minggu Ini',w.totalAssignments||0,w.weekLabel||'')}${stat('PIC Aktif',w.activePics||0,'anggota tim')}${stat('Hari Tersibuk',w.busiestDay||'—',(w.busiestCount||0)+' penugasan')}${stat('Cuti',w.leavePeopleCount||0,(w.leaveConflictCount||0)+' konflik')}</div>`+
-    `<div class="grid2">${renderAgenda(m.todayAgenda,'Agenda Hari Ini')}${renderAgenda(m.tomorrowAgenda,'Agenda Besok')}</div>`+
+    `<div style="margin-bottom:14px">${renderAgendaSwitcher(m.todayAgenda,m.tomorrowAgenda)}</div>`+
     `<div class="card"><div class="card-head"><div><div class="card-title">Distribusi Mingguan per Anggota Tim</div><div class="card-note">${esc(w.weekLabel||'')}</div></div><button class="btn" onclick="openLeaveForm()">+ Catat Cuti</button></div>${matrixTable(w)}</div>`+
     `<div class="grid2"><div class="card"><div class="card-head"><div><div class="card-title">Distribusi Beban per Program</div></div></div>${classTable(m.programWorkload)}</div><div class="card"><div class="card-head"><div><div class="card-title">Distribusi Beban per Aktivitas</div></div></div>${classTable(m.substansiWorkload)}</div></div>`+
     renderLeaveList(m.teamAvailability||[]);
