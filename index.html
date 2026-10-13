@@ -670,6 +670,42 @@ tr:last-child td{border-bottom:0}
   }
 }
 
+
+/* v1.54 — historical project timeline */
+.timeline-actions{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  flex-wrap:wrap;
+  margin-top:8px;
+}
+.timeline-link{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  text-decoration:none;
+}
+.timeline-system-note{
+  margin-top:3px;
+  font-size:8.5px;
+  line-height:1.4;
+  color:#a1a1aa;
+}
+.timeline-date{
+  min-width:118px;
+  text-align:right;
+}
+@media(max-width:620px){
+  .timeline-top{
+    flex-direction:column;
+    gap:5px;
+  }
+  .timeline-date{
+    min-width:0;
+    text-align:left;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -716,7 +752,7 @@ tr:last-child td{border-bottom:0}
 
 <script>
 /*
-  Netlify frontend v1.53 — simplified PIC selector alignment.
+  Netlify frontend v1.54 — editable historical Project timeline dates and direct links.
   Netlify frontend.
   Recommended production setup:
   - index.html is hosted by Netlify/GitHub
@@ -1582,26 +1618,97 @@ function navigateFiltered(page,projectId){
   });
 }
 function filterProjectTimeline(){state.projectTimeline.q=(qs('#timelineSearch')?.value||'').toLowerCase();state.projectTimeline.type=qs('#timelineType')?.value||'';state.projectTimeline.limit=20;renderProjectTimeline()}
-function renderProjectTimeline(){const a=(window.__projectActivities||[]).filter(x=>(!state.projectTimeline.type||x.type===state.projectTimeline.type)&&(!state.projectTimeline.q||(x.title+' '+x.details+' '+x.actor+' '+(x.linksList||[]).join(' ')).toLowerCase().includes(state.projectTimeline.q)));const shown=a.slice(0,state.projectTimeline.limit);qs('#timelineRows').innerHTML=shown.length?shown.map(x=>`<div class="timeline-item"><div class="timeline-top"><div><span class="pill">${esc(projectActivityLabel(x.type))}</span><div class="linked-title" style="margin-top:5px">${esc(x.title)}</div></div><div class="timeline-date">${esc(dateTimeLabel(x.createdAt))}</div></div><div class="timeline-text">${esc(x.details||'')}</div><div class="timeline-meta">${esc(x.origin||'')} · ${esc(x.actor||'Sistem')} · ${esc(x.objectType||'')} ${esc(x.objectId||'')}</div>${(x.linksList||[]).length?`<div class="task-meta">${x.linksList.map(l=>/^https?:\/\//i.test(String(l||''))?`<a class="pill blue" target="_blank" rel="noopener" href="${esc(l)}">${/drive\.google\.com/i.test(l)?'Dokumen Drive ↗':'Buka Link ↗'}</a>`:`<span class="pill blue">${esc(l)}</span>`).join('')}</div>`:''}</div>`).join(''):'<div class="empty">Tidak ada riwayat.</div>';qs('#timelineMore').innerHTML=a.length>state.projectTimeline.limit?'<button class="btn" onclick="state.projectTimeline.limit+=20;renderProjectTimeline()">Muat Riwayat Sebelumnya</button>':''}
+function projectActivityWhenLabel(x){
+  const date=String(x.activityDate||'').trim();
+  const time=String(x.activityTime||'').trim();
+  if(date)return `${fmtDate(date)}${time?' · '+time:''}`;
+  return dateTimeLabel(x.createdAt);
+}
+function projectActivityRecordedLabel(x){
+  if(String(x.origin||'')!=='Manual'||!x.createdAt)return'';
+  const eventDate=String(x.activityDate||'').trim();
+  const createdDate=String(x.createdAt||'').slice(0,10);
+  if(eventDate && eventDate!==createdDate){
+    return `Dicatat di sistem ${dateTimeLabel(x.createdAt)}`;
+  }
+  return '';
+}
+function renderProjectActivityLink(link){
+  const value=String(link||'').trim();
+  if(!value)return'';
+  if(/^https?:\/\//i.test(value)){
+    const isDrive=/drive\.google\.com|docs\.google\.com/i.test(value);
+    return `<a class="mini timeline-link" target="_blank" rel="noopener" href="${esc(value)}">${isDrive?'Buka Dokumen ↗':'Buka Link ↗'}</a>`;
+  }
+  return `<span class="pill blue">${esc(value)}</span>`;
+}
+function renderProjectTimeline(){
+  const a=(window.__projectActivities||[]).filter(x=>
+    (!state.projectTimeline.type||x.type===state.projectTimeline.type)&&
+    (!state.projectTimeline.q||(x.title+' '+x.details+' '+x.actor+' '+(x.linksList||[]).join(' ')).toLowerCase().includes(state.projectTimeline.q))
+  );
+  const shown=a.slice(0,state.projectTimeline.limit);
+  qs('#timelineRows').innerHTML=shown.length?shown.map(x=>{
+    const recorded=projectActivityRecordedLabel(x);
+    const isManual=String(x.origin||'')==='Manual';
+    return `<div class="timeline-item">
+      <div class="timeline-top">
+        <div>
+          <span class="pill">${esc(projectActivityLabel(x.type))}</span>
+          <div class="linked-title" style="margin-top:5px">${esc(x.title)}</div>
+        </div>
+        <div class="timeline-date">${esc(projectActivityWhenLabel(x))}</div>
+      </div>
+      <div class="timeline-text">${esc(x.details||'')}</div>
+      <div class="timeline-meta">${esc(x.origin||'')} · ${esc(x.actor||'Sistem')} · ${esc(x.objectType||'')} ${esc(x.objectId||'')}</div>
+      ${recorded?`<div class="timeline-system-note">${esc(recorded)}</div>`:''}
+      ${(x.linksList||[]).length?`<div class="timeline-actions">${x.linksList.map(renderProjectActivityLink).join('')}</div>`:''}
+      ${isManual?`<div class="timeline-actions"><button class="mini" onclick="editProjectActivity('${esc(x.id)}')">Edit Riwayat</button><button class="mini danger" onclick="deleteProjectActivity('${esc(x.id)}')">Hapus</button></div>`:''}
+    </div>`;
+  }).join(''):'<div class="empty">Tidak ada riwayat.</div>';
+  qs('#timelineMore').innerHTML=a.length>state.projectTimeline.limit?'<button class="btn" onclick="state.projectTimeline.limit+=20;renderProjectTimeline()">Muat Riwayat Sebelumnya</button>':'';
+}
 function projectActivityLabel(t){return({task:'Tugas',document:'Dokumen',meeting:'Pertemuan',decision:'Keputusan',output:'Output / Milestone',note:'Catatan',source:'Sumber'})[t]||t}
 function openProjectForm(p={}){const x=p||{};openModal(x.id?'Edit Project':'Project Baru',`<div class="form-grid"><div class="field full"><label>Nama Project *</label><input id="prName" value="${esc(x.name||'')}"></div><div class="field"><label>Program Utama *</label><select id="prProgram"><option value="">Pilih</option>${(state.bootstrap?.programs||[]).map(v=>`<option ${x.primaryProgram===v?'selected':''}>${esc(v)}</option>`).join('')}</select><div class="helper">Program Utama hanya klasifikasi Project. Tugas/Dokumen dapat berasal dari Program lain.</div></div><div class="field"><label>Status</label><select id="prStatus">${(state.bootstrap?.projectStatuses||[]).map(v=>`<option ${x.status===v?'selected':''}>${esc(v)}</option>`).join('')}</select></div><div class="field"><label>Tanggal Mulai</label><input type="date" id="prStart" value="${esc(x.startDate||'')}"></div><div class="field"><label>Target Selesai</label><input type="date" id="prTarget" value="${esc(x.targetDate||'')}"></div><div class="field full"><label>PIC</label><div class="pic-selector">${(state.bootstrap?.pics||[]).map(v=>`<label class="pic-option"><input type="checkbox" name="prPic" value="${esc(v)}" ${(x.picList||[]).includes(v)?'checked':''}><span>${esc(v)}</span></label>`).join('')}</div><div class="pic-selector-note">Pilih anggota tim yang menjadi PIC utama Project.</div></div><div class="field full"><label>Deskripsi</label><textarea id="prDesc">${esc(x.description||'')}</textarea></div></div>`,`<button class="btn" onclick="closeModal()">Batal</button><button class="btn primary" onclick="saveProject('${esc(x.id||'')}')">Simpan Project</button>`)}
 async function saveProject(id){try{const r=await api('saveProject',{id,name:qs('#prName').value,primaryProgram:qs('#prProgram').value,status:qs('#prStatus').value,startDate:qs('#prStart').value,targetDate:qs('#prTarget').value,picList:qsa('input[name="prPic"]:checked').map(x=>x.value),description:qs('#prDesc').value});closeModal();state.bootstrap=await api('bootstrap');showToast('Project disimpan.');if(state.projectId||r.id)openProject(r.id);else await loadPage()}catch(e){showToast(e.message,true)}}
 function openProjectSourceForm(projectId){openModal('Tambah Sumber / Link',`<div class="form-grid"><div class="field"><label>Jenis *</label><select id="srcType"><option>Spreadsheet</option><option>Dokumen</option><option>Folder</option><option>Form</option><option>Website</option><option>Dashboard</option><option>Link</option></select></div><div class="field"><label>Nama *</label><input id="srcName"></div><div class="field full"><label>URL *</label><input id="srcUrl" placeholder="https://..."></div><div class="field full"><label>Keterangan</label><textarea id="srcNotes"></textarea></div></div>`,`<button class="btn" onclick="closeModal()">Batal</button><button class="btn primary" onclick="saveProjectSource('${esc(projectId)}')">Tambah</button>`)}
 async function saveProjectSource(projectId){try{await api('saveProjectSource',{projectId,type:qs('#srcType').value,name:qs('#srcName').value,url:qs('#srcUrl').value,notes:qs('#srcNotes').value});closeModal();showToast('Sumber ditambahkan.');await loadPage({projectId})}catch(e){showToast(e.message,true)}}
 async function deleteProjectSource(id){if(!confirm('Hapus sumber ini?'))return;try{await api('deleteProjectSource',{id});showToast('Sumber dihapus.');await loadPage({projectId:state.projectId})}catch(e){showToast(e.message,true)}}
-function openProjectActivityForm(projectId){
-  openModal('Tambah Aktivitas Project',
-    `<div class="form-grid">
-      <div class="field"><label>Jenis *</label><select id="actType"><option value="meeting">Pertemuan</option><option value="decision">Keputusan</option><option value="output">Output / Milestone</option><option value="note">Catatan</option></select></div>
-      <div class="field"><label>Dicatat Oleh</label><select id="actActor"><option value="">Pilih</option>${(state.bootstrap?.pics||[]).map(v=>`<option>${esc(v)}</option>`).join('')}</select></div>
-      <div class="field full"><label>Judul *</label><input id="actTitle"></div>
-      <div class="field full"><label>Catatan / Hasil *</label><textarea id="actDetails"></textarea></div>
-      <div class="field full"><label>Tautkan Link (opsional)</label><input type="url" id="actUrl" placeholder="https://..."><div class="helper">Gunakan untuk menautkan spreadsheet, dokumen, dashboard, website, atau sumber eksternal.</div></div>
-      <div class="field full"><label>Upload ke Drive (opsional)</label><input type="file" id="actFile"><div class="helper">File akan diunggah ke Google Drive dan otomatis ditambahkan ke Inventaris Dokumen pada Project ini. Maksimum 8 MB.</div></div>
-    </div>`,
-    `<button class="btn" onclick="closeModal()">Batal</button><button class="btn primary" onclick="saveProjectActivity('${esc(projectId)}')">Tambah Aktivitas</button>`);
+function activityTodayValue(){
+  const d=new Date();
+  const pad=n=>String(n).padStart(2,'0');
+  return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
 }
-async function saveProjectActivity(projectId){
+function editProjectActivity(id){
+  const item=(window.__projectActivities||[]).find(x=>String(x.id)===String(id));
+  if(!item)return showToast('Riwayat tidak ditemukan.',true);
+  if(String(item.origin||'')!=='Manual')return showToast('Riwayat otomatis sistem tidak dapat diedit.',true);
+  openProjectActivityForm(state.projectId,item);
+}
+function openProjectActivityForm(projectId,activity=null){
+  const x=activity||{};
+  const editing=!!x.id;
+  const externalLink=(x.linksList||[]).find(v=>/^https?:\/\//i.test(String(v||''))&&!/drive\.google\.com|docs\.google\.com/i.test(String(v||'')))||'';
+
+  openModal(editing?'Edit Riwayat Project':'Tambah Aktivitas Project',
+    `<div class="form-grid">
+      <div class="field"><label>Jenis *</label><select id="actType">
+        <option value="meeting" ${x.type==='meeting'?'selected':''}>Pertemuan</option>
+        <option value="decision" ${x.type==='decision'?'selected':''}>Keputusan</option>
+        <option value="output" ${x.type==='output'?'selected':''}>Output / Milestone</option>
+        <option value="note" ${!x.type||x.type==='note'?'selected':''}>Catatan</option>
+      </select></div>
+      <div class="field"><label>Dicatat Oleh</label><select id="actActor"><option value="">Pilih</option>${(state.bootstrap?.pics||[]).map(v=>`<option ${x.actor===v?'selected':''}>${esc(v)}</option>`).join('')}</select></div>
+      <div class="field"><label>Tanggal Aktivitas *</label><input type="date" id="actDate" value="${esc(x.activityDate||activityTodayValue())}"><div class="helper">Gunakan tanggal kejadian sebenarnya, misalnya tanggal surat, rapat, keputusan, atau output dibuat.</div></div>
+      <div class="field"><label>Waktu (opsional)</label><input type="time" id="actTime" value="${esc(x.activityTime||'')}"><div class="helper">Kosongkan jika hanya tanggal yang diketahui.</div></div>
+      <div class="field full"><label>Judul *</label><input id="actTitle" value="${esc(x.title||'')}"></div>
+      <div class="field full"><label>Catatan / Hasil *</label><textarea id="actDetails">${esc(x.details||'')}</textarea></div>
+      <div class="field full"><label>Tautkan Link (opsional)</label><input type="url" id="actUrl" value="${esc(externalLink)}" placeholder="https://..."><div class="helper">Link akan tampil sebagai tombol yang dapat langsung dibuka dari Riwayat Project.</div></div>
+      <div class="field full"><label>Upload ke Drive (opsional)</label><input type="file" id="actFile"><div class="helper">${editing?'Tambahkan file baru bila diperlukan. File Drive yang sudah terhubung tetap dipertahankan.':'File akan diunggah ke Google Drive dan otomatis ditambahkan ke Inventaris Dokumen pada Project ini.'} Maksimum 8 MB.</div></div>
+    </div>`,
+    `<button class="btn" onclick="closeModal()">Batal</button><button class="btn primary" onclick="saveProjectActivity('${esc(projectId)}','${esc(x.id||'')}')">${editing?'Simpan Perubahan':'Tambah Aktivitas'}</button>`);
+}
+async function saveProjectActivity(projectId,id=''){
   try{
     const file=qs('#actFile')?.files?.[0]||null;
     let upload=null;
@@ -1615,17 +1722,30 @@ async function saveProjectActivity(projectId){
       };
     }
     await api('saveProjectActivity',{
+      id,
       projectId,
       type:qs('#actType').value,
       actor:qs('#actActor').value,
+      activityDate:qs('#actDate').value,
+      activityTime:qs('#actTime').value,
       title:qs('#actTitle').value,
       details:qs('#actDetails').value,
       linkUrl:(qs('#actUrl')?.value||'').trim(),
       upload
     });
     closeModal();
-    showToast(file?'Aktivitas dan dokumen ditambahkan.':'Aktivitas ditambahkan.');
+    showToast(id?'Riwayat diperbarui.':(file?'Aktivitas dan dokumen ditambahkan.':'Aktivitas ditambahkan.'));
     await loadPage({projectId});
+  }catch(e){
+    showToast(e.message,true);
+  }
+}
+async function deleteProjectActivity(id){
+  if(!confirm('Hapus riwayat manual ini?'))return;
+  try{
+    await api('deleteProjectActivity',{id});
+    showToast('Riwayat dihapus.');
+    await loadPage({projectId:state.projectId});
   }catch(e){
     showToast(e.message,true);
   }
