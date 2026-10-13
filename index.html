@@ -104,18 +104,80 @@ tr:last-child td{border-bottom:0}
 
 /* Circular global loading indicator */
 .global-progress{
-  position:fixed;top:14px;right:16px;width:30px;height:30px;z-index:500;
-  pointer-events:none;opacity:0;display:grid;place-items:center;
-  border:1px solid #e4e4e7;border-radius:999px;background:rgba(255,255,255,.96);
-  box-shadow:0 4px 14px rgba(24,24,27,.10);transition:opacity .15s ease
+  position:fixed;
+  top:14px;
+  right:16px;
+  width:156px;
+  min-height:31px;
+  z-index:500;
+  pointer-events:none;
+  opacity:0;
+  transform:translateY(-5px);
+  border:1px solid #e4e4e7;
+  border-radius:8px;
+  background:rgba(255,255,255,.98);
+  box-shadow:0 4px 14px rgba(24,24,27,.10);
+  padding:6px 8px 8px;
+  transition:opacity .14s ease,transform .14s ease;
 }
-.global-progress.show{opacity:1}
+.global-progress.show{
+  opacity:1;
+  transform:translateY(0);
+}
+.global-progress-copy{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  height:12px;
+  font-size:8.5px;
+  line-height:1;
+  font-weight:700;
+  color:#52525b;
+  white-space:nowrap;
+}
+.global-progress-dot{
+  width:5px;
+  height:5px;
+  flex:0 0 5px;
+  border-radius:999px;
+  background:#dc2626;
+}
+.global-progress-track{
+  position:absolute;
+  left:8px;
+  right:8px;
+  bottom:5px;
+  height:3px;
+  overflow:hidden;
+  border-radius:999px;
+  background:#fee2e2;
+}
 .global-progress-bar{
-  width:16px;height:16px;border:2px solid #e4e4e7;border-top-color:#18181b;
-  border-radius:50%;animation:global-spin .72s linear infinite
+  width:0;
+  height:100%;
+  border-radius:999px;
+  background:#dc2626;
+  transition:width 1.6s cubic-bezier(.22,.61,.36,1);
 }
-@keyframes global-spin{to{transform:rotate(360deg)}}
-@media(prefers-reduced-motion:reduce){.global-progress-bar{animation-duration:1.5s}}
+.global-progress.complete .global-progress-bar{
+  transition-duration:.16s;
+}
+.global-progress.complete .global-progress-copy{
+  color:#991b1b;
+}
+@media(max-width:600px){
+  .global-progress{
+    top:10px;
+    right:10px;
+    width:132px;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .global-progress,
+  .global-progress-bar{
+    transition-duration:.01ms !important;
+  }
+}
 
 
 /* Agenda day switcher */
@@ -914,12 +976,26 @@ tr:last-child td{border-bottom:0}
 }
 @media(max-width:720px){.task-scorecards{grid-template-columns:1fr}}
 
+
+.project-secondary-loading{
+  padding:18px 14px;
+  font-size:9px;
+  color:#a1a1aa;
+  text-align:center;
+}
+
 </style>
 </head>
 <body>
 
-<div id="globalProgress" class="global-progress" aria-hidden="true">
-  <div id="globalProgressBar" class="global-progress-bar"></div>
+<div id="globalProgress" class="global-progress" aria-hidden="true" aria-live="polite">
+  <div class="global-progress-copy">
+    <span class="global-progress-dot" aria-hidden="true"></span>
+    <span id="globalProgressText">Memuat…</span>
+  </div>
+  <div class="global-progress-track" aria-hidden="true">
+    <div id="globalProgressBar" class="global-progress-bar"></div>
+  </div>
 </div>
 
 <div class="app">
@@ -960,7 +1036,7 @@ tr:last-child td{border-bottom:0}
 
 <script>
 /*
-  Netlify frontend v1.58 — row task list, calendar/email helpers, idempotent save, circular loading.
+  Netlify frontend v1.61 — performance pass: request cache, staged Project loading, combined initial load.
   Netlify frontend.
   Recommended production setup:
   - index.html is hosted by Netlify/GitHub
@@ -973,19 +1049,67 @@ const API_ENDPOINT = '/api';
 
 
 let __activeRequests=0;
+let __globalProgressHideTimer=null;
 
 function startGlobalProgress(){
   __activeRequests++;
   if(__activeRequests!==1)return;
+
   const shell=document.getElementById('globalProgress');
-  if(shell)shell.classList.add('show');
+  const bar=document.getElementById('globalProgressBar');
+  const text=document.getElementById('globalProgressText');
+
+  if(__globalProgressHideTimer){
+    clearTimeout(__globalProgressHideTimer);
+    __globalProgressHideTimer=null;
+  }
+
+  if(!shell)return;
+
+  shell.classList.remove('complete');
+  shell.classList.add('show');
+  shell.setAttribute('aria-hidden','false');
+
+  if(text)text.textContent='Memuat…';
+
+  if(bar){
+    bar.style.transition='none';
+    bar.style.width='10%';
+
+    requestAnimationFrame(()=>{
+      requestAnimationFrame(()=>{
+        bar.style.transition='width 1.6s cubic-bezier(.22,.61,.36,1)';
+        bar.style.width='76%';
+      });
+    });
+  }
 }
 
 function finishGlobalProgress(){
   __activeRequests=Math.max(0,__activeRequests-1);
   if(__activeRequests>0)return;
+
   const shell=document.getElementById('globalProgress');
-  if(shell)setTimeout(()=>shell.classList.remove('show'),120);
+  const bar=document.getElementById('globalProgressBar');
+  const text=document.getElementById('globalProgressText');
+
+  if(!shell)return;
+
+  shell.classList.add('complete');
+  if(text)text.textContent='Selesai';
+  if(bar)bar.style.width='100%';
+
+  __globalProgressHideTimer=setTimeout(()=>{
+    shell.classList.remove('show','complete');
+    shell.setAttribute('aria-hidden','true');
+
+    if(bar){
+      bar.style.transition='none';
+      bar.style.width='0';
+    }
+
+    if(text)text.textContent='Memuat…';
+  },420);
 }
 
 const __nativeFetch=window.fetch.bind(window);
@@ -1039,8 +1163,11 @@ function setError(msg=''){qs('#errorBox').innerHTML=msg?`<div class="error">${es
 async function api(action,payload={}){
   const READ_ACTIONS=new Set([
     'bootstrap',
+    'initial',
     'getPage',
-    'taskDetail'
+    'taskDetail',
+    'projectAssets',
+    'projectHistory'
   ]);
 
   if(READ_ACTIONS.has(action)){
@@ -1861,10 +1988,10 @@ function backToProjects(){
 function renderProjectDetail(d){
   const p=d.project;
   const tasks=d.tasks||[];
+  const stages=d.stages||[];
+  const assetsLoaded=!!d.assetsLoaded;
   const docs=d.documents||[];
   const sources=d.sources||[];
-  const stages=d.stages||[];
-  const history=d.systemHistory||[];
 
   window.__projectDetail=d;
 
@@ -1882,7 +2009,7 @@ function renderProjectDetail(d){
         <button class="btn" onclick="openProjectForm(window.__projectDetail.project)">Edit Project</button>
         <button class="btn" onclick="openProjectStageForm('${esc(p.id)}')">+ Tahapan</button>
         <button class="btn primary" onclick="openTaskForm('', '${esc(p.id)}', '${esc(activeStageId)}')">+ Tugas</button>
-        <button class="btn" onclick="openDocumentForm({projectId:'${esc(p.id)}'})">+ Dokumen</button>
+        <button class="btn" onclick="openDocumentForm({projectId:'${esc(p.id)}',program:'${esc(p.primaryProgram||'')}',tag:'Dokumen Project'})">+ Dokumen</button>
       </div>`
     )+
     `<div class="project-back" onclick="backToProjects()">‹ Kembali ke daftar Project</div>`+
@@ -1890,7 +2017,11 @@ function renderProjectDetail(d){
       ${stat('Tahapan',stages.length,'fase pekerjaan')}
       ${stat('Tugas',tasks.length,'terhubung')}
       ${stat('Tugas Aktif',tasks.filter(t=>t.status!=='done').length,'masih berjalan')}
-      ${stat('Dokumen',docs.length,'terhubung')}
+      <div class="stat">
+        <div class="stat-label">Dokumen</div>
+        <div class="stat-value" id="projectDocumentCount">${assetsLoaded?docs.length:'…'}</div>
+        <div class="stat-note">terhubung</div>
+      </div>
     </div>`+
     `<div class="project-health">
       <span><strong>${p.overdueTaskCount||0}</strong> tugas terlambat</span>
@@ -1915,21 +2046,15 @@ function renderProjectDetail(d){
         <div class="card-head">
           <div>
             <div class="card-title">Dokumen Terhubung</div>
-            <div class="card-note">Dokumen yang terhubung langsung ke Project.</div>
+            <div class="card-note">Dokumen Project dan hasil Tugas yang otomatis masuk ke Inventaris Dokumen.</div>
           </div>
           <button class="mini" onclick="navigateFiltered('documents','${esc(p.id)}')">Dokumen ↗</button>
         </div>
-        ${docs.length?docs.map(x=>`<div class="linked-item">
-          <div class="linked-title">${esc(x.name)}</div>
-          <div class="task-meta">
-            <span class="pill">${esc(x.program||'')}</span>
-            <span class="pill">${esc(x.tag||'')}</span>
-          </div>
-          <div class="row-actions" style="margin-top:7px">
-            ${x.url?`<a class="mini primary" target="_blank" rel="noopener" href="${esc(x.url)}">Buka Dokumen ↗</a>`:''}
-            <button class="mini" onclick='openDocumentForm(${JSON.stringify(x)})'>Edit</button>
-          </div>
-        </div>`).join(''):'<div class="empty">Belum ada dokumen terhubung.</div>'}
+        <div id="projectDocumentBody">
+          ${assetsLoaded
+            ? renderProjectDocumentsList(docs)
+            : '<div class="project-secondary-loading">Memuat dokumen…</div>'}
+        </div>
       </div>
 
       <div>
@@ -1937,18 +2062,15 @@ function renderProjectDetail(d){
           <div class="card-head">
             <div>
               <div class="card-title">Sumber & Link Tambahan</div>
-              <div class="card-note">Referensi pendukung Project.</div>
+              <div class="card-note">Link Project, termasuk link hasil Tugas yang tersinkron otomatis.</div>
             </div>
             <button class="mini" onclick="openProjectSourceForm('${esc(p.id)}')">+ Tambah</button>
           </div>
-          ${sources.length?sources.map(s=>`<div class="source-item">
-            <div class="linked-title">${esc(s.name)}</div>
-            <div class="sub">${esc(s.type)} · ${esc(s.notes||'')}</div>
-            <div class="row-actions" style="margin-top:7px">
-              <a class="mini" target="_blank" rel="noopener" href="${esc(s.url)}">Buka ↗</a>
-              <button class="mini danger" onclick="deleteProjectSource('${esc(s.id)}')">Hapus</button>
-            </div>
-          </div>`).join(''):'<div class="empty">Belum ada sumber tambahan.</div>'}
+          <div id="projectSourceBody">
+            ${assetsLoaded
+              ? renderProjectSourcesList(sources)
+              : '<div class="project-secondary-loading">Memuat sumber & link…</div>'}
+          </div>
         </div>
 
         <div class="card">
@@ -1964,7 +2086,7 @@ function renderProjectDetail(d){
         </div>
       </div>
     </div>`+
-    renderProjectSystemHistory(history);
+    renderProjectSystemHistory(p.id);
 
   setTimeout(()=>{
     if(state.projectTaskFocus){
@@ -1976,8 +2098,80 @@ function renderProjectDetail(d){
       }
       state.projectTaskFocus='';
     }
+
     state.projectStageFocus='';
+
+    if(!assetsLoaded){
+      loadProjectAssets(p.id);
+    }
   },30);
+}
+
+function renderProjectDocumentsList(docs){
+  return docs.length
+    ? docs.map(x=>`<div class="linked-item">
+        <div class="linked-title">${esc(x.name)}</div>
+        <div class="task-meta">
+          <span class="pill">${esc(x.program||'')}</span>
+          <span class="pill">${esc(x.tag||'')}</span>
+        </div>
+        <div class="row-actions" style="margin-top:7px">
+          ${x.url?`<a class="mini primary" target="_blank" rel="noopener" href="${esc(x.url)}">Buka Dokumen ↗</a>`:''}
+          <button class="mini" onclick='openDocumentForm(${JSON.stringify(x)})'>Edit</button>
+        </div>
+      </div>`).join('')
+    : '<div class="empty">Belum ada dokumen terhubung.</div>';
+}
+
+function renderProjectSourcesList(sources){
+  return sources.length
+    ? sources.map(s=>`<div class="source-item">
+        <div class="linked-title">${esc(s.name)}</div>
+        <div class="sub">${esc(s.type)} · ${esc(s.notes||'')}</div>
+        <div class="row-actions" style="margin-top:7px">
+          <a class="mini" target="_blank" rel="noopener" href="${esc(s.url)}">Buka ↗</a>
+          <button class="mini danger" onclick="deleteProjectSource('${esc(s.id)}')">Hapus</button>
+        </div>
+      </div>`).join('')
+    : '<div class="empty">Belum ada sumber tambahan.</div>';
+}
+
+async function loadProjectAssets(projectId){
+  try{
+    const assets=await api('projectAssets',{projectId});
+
+    if(
+      state.page!=='project' ||
+      String(state.projectId)!==String(projectId)
+    ){
+      return;
+    }
+
+    if(window.__projectDetail){
+      window.__projectDetail.documents=assets.documents||[];
+      window.__projectDetail.sources=assets.sources||[];
+      window.__projectDetail.assetsLoaded=true;
+    }
+
+    const docCount=qs('#projectDocumentCount');
+    const docBody=qs('#projectDocumentBody');
+    const sourceBody=qs('#projectSourceBody');
+
+    if(docCount)docCount.textContent=assets.documentCount||0;
+    if(docBody)docBody.innerHTML=renderProjectDocumentsList(assets.documents||[]);
+    if(sourceBody)sourceBody.innerHTML=renderProjectSourcesList(assets.sources||[]);
+  }catch(e){
+    const docBody=qs('#projectDocumentBody');
+    const sourceBody=qs('#projectSourceBody');
+
+    if(docBody){
+      docBody.innerHTML='<div class="empty">Dokumen belum dapat dimuat. <button class="mini" onclick="loadProjectAssets(\''+esc(projectId)+'\')">Coba lagi</button></div>';
+    }
+
+    if(sourceBody){
+      sourceBody.innerHTML='<div class="empty">Sumber belum dapat dimuat.</div>';
+    }
+  }
 }
 
 function renderProjectStages(project,stages,tasks,activeStageId){
@@ -2070,24 +2264,75 @@ function toggleProjectStage(id){
   if(el)el.style.display=el.style.display==='none'?'block':'none';
 }
 
-function renderProjectSystemHistory(history){
-  return `<details class="system-history-compact">
-    <summary>Riwayat Sistem · ${history.length} log</summary>
-    <div>
-      ${history.length?history.map(x=>`<div class="system-history-row">
-        <div class="system-history-date">${esc(dateTimeLabel(x.createdAt))}</div>
-        <div>
-          <div class="system-history-title">${esc(x.title)}</div>
-          <div class="system-history-text">${esc(x.details||'')}</div>
-        </div>
-        <div>
-          ${((x.linksList||[]).find(l=>/^https?:\/\//i.test(String(l||''))))
-            ? `<a class="mini" target="_blank" rel="noopener" href="${esc((x.linksList||[]).find(l=>/^https?:\/\//i.test(String(l||''))))}">Buka ↗</a>`
-            : ''}
-        </div>
-      </div>`).join(''):'<div class="empty">Belum ada riwayat sistem.</div>'}
+function renderProjectSystemHistory(projectId){
+  return `<details class="system-history-compact" id="projectSystemHistory" ontoggle="loadProjectHistoryOnOpen(this,'${esc(projectId)}')">
+    <summary>
+      Riwayat Sistem
+      <span id="projectHistorySummary" class="sub">· klik untuk memuat</span>
+    </summary>
+    <div id="projectHistoryBody">
+      <div class="project-secondary-loading">Riwayat baru dimuat ketika bagian ini dibuka.</div>
     </div>
   </details>`;
+}
+
+async function loadProjectHistoryOnOpen(details,projectId){
+  if(!details.open)return;
+  if(details.dataset.loaded==='1'||details.dataset.loading==='1')return;
+
+  details.dataset.loading='1';
+
+  const body=qs('#projectHistoryBody');
+  const summary=qs('#projectHistorySummary');
+
+  if(body){
+    body.innerHTML='<div class="project-secondary-loading">Memuat riwayat sistem…</div>';
+  }
+
+  try{
+    const result=await api('projectHistory',{
+      projectId,
+      limit:50
+    });
+
+    if(
+      state.page!=='project' ||
+      String(state.projectId)!==String(projectId)
+    ){
+      return;
+    }
+
+    const history=result.rows||[];
+
+    if(summary){
+      summary.textContent=`· ${result.total||0} log`;
+    }
+
+    if(body){
+      body.innerHTML=history.length
+        ? history.map(x=>`<div class="system-history-row">
+            <div class="system-history-date">${esc(dateTimeLabel(x.createdAt))}</div>
+            <div>
+              <div class="system-history-title">${esc(x.title)}</div>
+              <div class="system-history-text">${esc(x.details||'')}</div>
+            </div>
+            <div>
+              ${((x.linksList||[]).find(l=>/^https?:\/\//i.test(String(l||''))))
+                ? `<a class="mini" target="_blank" rel="noopener" href="${esc((x.linksList||[]).find(l=>/^https?:\/\//i.test(String(l||''))))}">Buka ↗</a>`
+                : ''}
+            </div>
+          </div>`).join('')
+        : '<div class="empty">Belum ada riwayat sistem.</div>';
+    }
+
+    details.dataset.loaded='1';
+  }catch(e){
+    if(body){
+      body.innerHTML=`<div class="empty">Riwayat belum dapat dimuat. <button class="mini" onclick="delete this.closest('details').dataset.loading;loadProjectHistoryOnOpen(this.closest('details'),'${esc(projectId)}')">Coba lagi</button></div>`;
+    }
+  }finally{
+    details.dataset.loading='0';
+  }
 }
 
 function openProjectContext(projectId,stageId='',taskId=''){
@@ -2240,7 +2485,7 @@ async function deleteProjectStage(id){
 
 function openProjectForm(p={}){const x=p||{};openModal(x.id?'Edit Project':'Project Baru',`<div class="form-grid"><div class="field full"><label>Nama Project *</label><input id="prName" value="${esc(x.name||'')}"></div><div class="field"><label>Program Utama *</label><select id="prProgram"><option value="">Pilih</option>${(state.bootstrap?.programs||[]).map(v=>`<option ${x.primaryProgram===v?'selected':''}>${esc(v)}</option>`).join('')}</select><div class="helper">Program Utama hanya klasifikasi Project. Tugas/Dokumen dapat berasal dari Program lain.</div></div><div class="field"><label>Status</label><select id="prStatus">${(state.bootstrap?.projectStatuses||[]).map(v=>`<option ${x.status===v?'selected':''}>${esc(v)}</option>`).join('')}</select></div><div class="field"><label>Tanggal Mulai</label><input type="date" id="prStart" value="${esc(x.startDate||'')}"></div><div class="field"><label>Target Selesai</label><input type="date" id="prTarget" value="${esc(x.targetDate||'')}"></div><div class="field full"><label>PIC</label><div class="pic-selector">${(state.bootstrap?.pics||[]).map(v=>`<label class="pic-option"><input type="checkbox" name="prPic" value="${esc(v)}" ${(x.picList||[]).includes(v)?'checked':''}><span>${esc(v)}</span></label>`).join('')}</div><div class="pic-selector-note">Pilih anggota tim yang menjadi PIC utama Project.</div></div><div class="field full"><label>Deskripsi</label><textarea id="prDesc">${esc(x.description||'')}</textarea></div></div>`,`<button class="btn" onclick="closeModal()">Batal</button><button class="btn primary" onclick="saveProject('${esc(x.id||'')}')">Simpan Project</button>`)}
 async function saveProject(id){try{const r=await api('saveProject',{id,name:qs('#prName').value,primaryProgram:qs('#prProgram').value,status:qs('#prStatus').value,startDate:qs('#prStart').value,targetDate:qs('#prTarget').value,picList:qsa('input[name="prPic"]:checked').map(x=>x.value),description:qs('#prDesc').value});closeModal();state.bootstrap=await api('bootstrap');showToast('Project disimpan.');if(state.projectId||r.id)openProject(r.id);else await loadPage()}catch(e){showToast(e.message,true)}}
-function openProjectSourceForm(projectId){openModal('Tambah Sumber / Link',`<div class="form-grid"><div class="field"><label>Jenis *</label><select id="srcType"><option>Spreadsheet</option><option>Dokumen</option><option>Folder</option><option>Form</option><option>Website</option><option>Dashboard</option><option>Link</option></select></div><div class="field"><label>Nama *</label><input id="srcName"></div><div class="field full"><label>URL *</label><input id="srcUrl" placeholder="https://..."></div><div class="field full"><label>Keterangan</label><textarea id="srcNotes"></textarea></div></div>`,`<button class="btn" onclick="closeModal()">Batal</button><button class="btn primary" onclick="saveProjectSource('${esc(projectId)}')">Tambah</button>`)}
+function openProjectSourceForm(projectId){openModal('Tambah Sumber / Link',`<div class="form-grid"><div class="field"><label>Jenis *</label><select id="srcType"><option>Spreadsheet</option><option>Dokumen</option><option>Folder</option><option>Form</option><option>Website</option><option>Dashboard</option><option>Link</option></select></div><div class="field"><label>Nama *</label><input id="srcName"></div><div class="field full"><label>URL *</label><input id="srcUrl" placeholder="https://..."></div><div class="field full"><label>Keterangan</label><textarea id="srcNotes"></textarea></div><div class="field full"><div class="helper">Sumber/link akan tampil di Project dan otomatis dicatat juga pada Inventaris Dokumen menggunakan Program Utama Project dan Jenis sebagai tag.</div></div></div>`,`<button class="btn" onclick="closeModal()">Batal</button><button class="btn primary" onclick="saveProjectSource('${esc(projectId)}')">Tambah</button>`)}
 async function saveProjectSource(projectId){try{await api('saveProjectSource',{projectId,type:qs('#srcType').value,name:qs('#srcName').value,url:qs('#srcUrl').value,notes:qs('#srcNotes').value});closeModal();showToast('Sumber ditambahkan.');await loadPage({projectId})}catch(e){showToast(e.message,true)}}
 async function deleteProjectSource(id){if(!confirm('Hapus sumber ini?'))return;try{await api('deleteProjectSource',{id});showToast('Sumber dihapus.');await loadPage({projectId:state.projectId})}catch(e){showToast(e.message,true)}}
 function activityTodayValue(){
@@ -3165,6 +3410,10 @@ function completeTask(id,recap=false){
        <div class="complete-required">Hasil pekerjaan wajib dicatat sebelum status menjadi Selesai.</div>
      </div>
 
+     ${task?.projectId?`<div class="helper" style="margin-top:10px">
+       Tugas ini terhubung ke Project. File/Docs hasil akan otomatis masuk ke <strong>Dokumen Terhubung</strong>; link hasil juga masuk ke <strong>Sumber & Link Tambahan</strong> dan Inventaris Dokumen.
+     </div>`:''}
+
      <div style="margin-top:16px">
        <div class="sub" style="font-weight:700;color:var(--ink)">Lampiran Hasil <span style="font-weight:400">(opsional)</span></div>
        <div class="complete-attachments">
@@ -3260,7 +3509,7 @@ async function submitComplete(id,recap){
     }
 
     if(__completeAttachMode==='docs'){
-      await api('createResultDoc',{taskId:id});
+      await api('createResultDoc',{taskId:id,resultText});
     }
 
     await api('completeTask',{id,resultText});
@@ -3429,8 +3678,31 @@ async function saveRecipientEmail(id,email){try{await api('saveBlastEmail',{reci
 
 async function init(){
   buildNav();
-  try{state.bootstrap=await api('bootstrap');await loadPage()}
-  catch(e){setError(e.message);qs('#page').innerHTML=`<div class="card"><div class="card-body"><strong>Frontend belum terhubung ke API.</strong><div class="sub" style="margin-top:6px">Pastikan Environment Variable Netlify bernama APPS_SCRIPT_URL dan nilainya adalah URL Apps Script yang berakhiran /exec.</div></div></div>`}
+
+  try{
+    const initial=await api('initial',{
+      page:state.page,
+      week:state.week,
+      projectId:state.projectId
+    });
+
+    state.bootstrap=initial.bootstrap;
+    state.model=initial.page;
+
+    if(
+      state.page==='workload' &&
+      state.model?.workload
+    ){
+      state.week=
+        state.model.workload.weekKey||'';
+    }
+
+    buildNav();
+    renderCurrent();
+  }catch(e){
+    setError(e.message);
+    qs('#page').innerHTML=`<div class="card"><div class="card-body"><strong>Frontend belum terhubung ke API.</strong><div class="sub" style="margin-top:6px">Pastikan Environment Variable Netlify bernama APPS_SCRIPT_URL dan nilainya adalah URL Apps Script yang berakhiran /exec.</div></div></div>`;
+  }
 }
 init();
 </script>
