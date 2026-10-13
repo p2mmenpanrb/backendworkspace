@@ -1344,6 +1344,188 @@ tr:last-child td{border-bottom:0}
   }
 }
 
+
+/* v1.66 — refined cohort-based Tren Pekerjaan */
+.trend-logic-note{
+  margin:0 0 12px;
+  border:1px solid #dbeafe;
+  background:#f8fbff;
+  border-radius:9px;
+  padding:10px 12px;
+  font-size:10.5px;
+  line-height:1.5;
+  color:#475569;
+}
+.trend-logic-note strong{color:#1e3a8a}
+
+.trend-progress-card{margin-bottom:14px}
+.trend-progress-wrap{padding:14px 15px 16px}
+.trend-progress-chart{
+  position:relative;
+  height:250px;
+  margin-left:42px;
+  border-bottom:1px solid var(--line);
+}
+.trend-progress-gridline{
+  position:absolute;
+  left:0;
+  right:0;
+  border-top:1px solid #f1f1f2;
+}
+.trend-progress-gridline span{
+  position:absolute;
+  left:-38px;
+  top:-6px;
+  width:30px;
+  text-align:right;
+  font-size:8.5px;
+  color:#a1a1aa;
+}
+.trend-progress-bars{
+  position:absolute;
+  inset:0;
+  display:grid;
+  gap:10px;
+  align-items:end;
+  padding:0 6px;
+}
+.trend-progress-col{
+  height:100%;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+}
+.trend-backlog-bar{
+  width:24px;
+  min-height:2px;
+  background:#dbeafe;
+  border-radius:4px 4px 0 0;
+}
+.trend-progress-svg{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  overflow:visible;
+  pointer-events:none;
+}
+.trend-progress-line{
+  fill:none;
+  stroke:#2563eb;
+  stroke-width:2;
+}
+.trend-progress-point{
+  fill:#fff;
+  stroke:#2563eb;
+  stroke-width:2;
+}
+.trend-progress-rate-label{
+  font-size:8px;
+  fill:#1e3a8a;
+  font-weight:700;
+}
+.trend-progress-months{
+  margin:7px 0 0 42px;
+  display:grid;
+  gap:10px;
+  padding:0 6px;
+}
+.trend-progress-month{
+  text-align:center;
+  font-size:9px;
+  color:var(--muted);
+}
+.trend-progress-summary{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;
+  margin-top:14px;
+}
+.trend-progress-mini{
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:9px 10px;
+  background:#fafafa;
+}
+.trend-progress-mini-label{
+  font-size:9px;
+  color:var(--muted);
+}
+.trend-progress-mini-value{
+  margin-top:3px;
+  font-size:16px;
+  font-weight:800;
+}
+.trend-legend-dot.backlog{background:#dbeafe}
+.trend-legend-line{
+  width:18px;
+  height:2px;
+  border-radius:999px;
+  background:#2563eb;
+  display:inline-block;
+}
+
+.trend-team-scroll{width:100%;overflow-x:auto}
+#trendTeamHeatmap{width:100%}
+.trend-team-grid{
+  width:100%;
+  grid-template-columns:150px repeat(var(--trend-month-count), minmax(58px,1fr)) 58px;
+}
+
+@media(max-width:980px){
+  .trend-progress-summary{grid-template-columns:1fr}
+}
+
+
+/* v1.67 — Repositori Pengetahuan */
+.repo-discovery{
+  margin:14px 0 18px;
+  padding:20px;
+  background:linear-gradient(135deg,#f8fbff 0%,#fff 65%);
+  border:1px solid #dbeafe;
+  border-radius:12px;
+}
+.repo-discovery-label{font-size:9px;font-weight:800;color:#1e3a8a;text-transform:uppercase;letter-spacing:.05em}
+.repo-discovery-title{margin-top:7px;font-size:18px;font-weight:850;letter-spacing:-.01em}
+.repo-discovery-text{margin-top:5px;font-size:10.5px;line-height:1.5;color:#64748b}
+.repo-search-row{margin-top:14px;display:grid;grid-template-columns:1fr auto;gap:8px}
+.repo-search-row input{height:42px;border:1px solid #bfdbfe;border-radius:9px;padding:0 12px;background:#fff;font-size:11px}
+.repo-section{margin-top:18px}
+.repo-section-title{font-size:14px;font-weight:850}
+.repo-section-note{margin-top:3px;font-size:10px;color:var(--muted);line-height:1.45}
+.repo-collections{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-top:9px}
+.repo-collection{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;cursor:pointer;transition:.15s ease}
+.repo-collection:hover,.repo-collection.active{border-color:#bfdbfe;background:#f8fbff}
+.repo-collection-name{font-size:11px;font-weight:800}
+.repo-collection-count{margin-top:3px;font-size:8.8px;color:var(--muted)}
+.repo-collection-desc{margin-top:7px;font-size:8.8px;line-height:1.4;color:#52525b}
+.repo-library{margin-top:20px}
+.repo-library-toolbar{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:10px}
+.repo-tabs{display:inline-flex;gap:3px;padding:3px;border:1px solid var(--line);border-radius:9px;background:#f1f1f2}
+.repo-tab{border:0;background:transparent;border-radius:7px;padding:8px 11px;font-size:10px;color:#52525b;font-weight:700;cursor:pointer}
+.repo-tab.active{background:#fff;color:#18181b;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+.repo-filters{display:flex;gap:7px;flex-wrap:wrap}
+.repo-filters select{height:34px;border:1px solid var(--line);border-radius:7px;background:#fff;padding:0 9px;font-size:9.5px}
+.repo-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.repo-card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px;min-width:0}
+.repo-card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.repo-type{font-size:8.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;font-weight:800}
+.repo-title{margin-top:5px;font-size:13px;line-height:1.4;font-weight:830}
+.repo-topic-pill{white-space:nowrap;padding:4px 7px;border-radius:999px;background:#eff6ff;border:1px solid #bfdbfe;color:#1e3a8a;font-size:8.5px}
+.repo-hook{margin-top:8px;font-size:10px;line-height:1.5;color:#3f3f46}
+.repo-relevance{margin-top:10px;padding-top:9px;border-top:1px solid #f1f1f2}
+.repo-relevance-label{font-size:8px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.repo-relevance-text{margin-top:4px;font-size:9.5px;line-height:1.45;color:#52525b}
+.repo-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.repo-tag{display:inline-flex;align-items:center;padding:4px 7px;border:1px solid var(--line);border-radius:999px;font-size:8.5px;color:#52525b;background:#fff}
+.repo-card-foot{margin-top:11px;display:flex;justify-content:space-between;gap:10px;align-items:center}
+.repo-source{font-size:8.8px;color:var(--muted)}
+.repo-empty{grid-column:1/-1;padding:28px 15px;text-align:center;color:var(--muted);font-size:10px;border:1px dashed var(--line);border-radius:10px;background:#fff}
+.repo-asset-tabs{display:flex;gap:5px;margin-bottom:8px}
+.repo-asset-tabs .btn.active{background:#18181b;color:#fff;border-color:#18181b}
+@media(max-width:980px){.repo-collections{grid-template-columns:repeat(3,1fr)}.repo-grid{grid-template-columns:1fr}}
+@media(max-width:720px){.repo-collections{grid-template-columns:1fr 1fr}.repo-library-toolbar{align-items:flex-start;flex-direction:column}.repo-search-row{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
@@ -1396,7 +1578,7 @@ tr:last-child td{border-bottom:0}
 
 <script>
 /*
-  Netlify frontend v1.65 — refined Project UI + automatic proportional Gantt.
+  Netlify frontend v1.67 — Repositori Pengetahuan + v1.66 Trend refinement.
   Netlify frontend.
   Recommended production setup:
   - index.html is hosted by Netlify/GitHub
@@ -1490,6 +1672,7 @@ const PAGES=[
   ['taskmatrix','Kelola Tugas','Pekerjaan'],
   ['taskrecap','Tugas Saya','Pekerjaan'],
   ['documents','Dokumen','Referensi & Koordinasi'],
+  ['knowledge','Repositori Pengetahuan','Referensi & Koordinasi'],
   ['pics','PIC & Kontak Instansi','Referensi & Koordinasi'],
   ['blast','Blast & Komunikasi','Referensi & Koordinasi'],
   ['apps','Aplikasi Tim','Tools']
@@ -1508,7 +1691,12 @@ const state={
   recapPic:'',
   taskListPage:1,
   taskSectionPages:{todo:1,progress:1,done:1,update:1},
-  projectTimeline:{q:'',type:'',limit:20}
+  projectTimeline:{q:'',type:'',limit:20},
+  knowledgeTab:'internal',
+  knowledgeSearch:'',
+  knowledgeTopic:'',
+  knowledgeType:'',
+  knowledgeAssetMode:'link'
 };
 
 function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
@@ -1746,7 +1934,7 @@ async function loadPage(extra={}){
 function renderCurrent(){
   const map={
     workload:renderWorkload,trend:renderTrend,project:renderProject,taskmatrix:renderTaskMatrix,
-    taskrecap:renderTaskRecap,documents:renderDocuments,pics:renderPics,
+    taskrecap:renderTaskRecap,documents:renderDocuments,knowledge:renderKnowledge,pics:renderPics,
     blast:renderBlast,apps:renderApps
   };
   (map[state.page]||renderWorkload)();
@@ -2053,14 +2241,19 @@ function trendIsoDate(value){
   const m=raw.match(/^(\d{4}-\d{2}-\d{2})/);
   return m?m[1]:'';
 }
+function trendWorkDate(task){
+  return trendIsoDate(task.startDate)||
+    trendIsoDate(task.endDate)||
+    trendIsoDate(task.due)||
+    trendIsoDate(task.createdAt)||
+    trendIsoDate(task.updatedAt);
+}
 function trendCreatedDate(task){
-  return trendIsoDate(task.createdAt)||trendIsoDate(task.startDate)||trendIsoDate(task.endDate)||trendIsoDate(task.due)||trendIsoDate(task.updatedAt);
+  return trendWorkDate(task);
 }
 function trendCompletedDate(task){
-  const explicit=trendIsoDate(task.completedAt);
-  if(explicit)return explicit;
-  if(task.status!=='done')return'';
-  return trendIsoDate(task.endDate)||trendIsoDate(task.startDate)||trendIsoDate(task.due)||trendIsoDate(task.updatedAt);
+  if(!task||task.status!=='done')return'';
+  return trendWorkDate(task);
 }
 function trendDateFromKey(key){
   const p=String(key||'').split('-').map(Number);
@@ -2134,20 +2327,31 @@ function resetTrend(){
 }
 function trendBuildBuckets(tasks,keys){
   const map={};
-  keys.forEach(k=>map[k]={key:k,incoming:0,completed:0});
+  keys.forEach(k=>map[k]={key:k,incoming:0,completed:0,backlog:0,completionRate:0});
+
   tasks.forEach(t=>{
-    const a=trendCreatedDate(t),b=trendCompletedDate(t);
-    if(a&&map[a.slice(0,7)])map[a.slice(0,7)].incoming++;
-    if(b&&map[b.slice(0,7)])map[b.slice(0,7)].completed++;
+    const d=trendWorkDate(t);
+    if(!d)return;
+
+    const bucket=map[d.slice(0,7)];
+    if(!bucket)return;
+
+    bucket.incoming++;
+
+    if(t.status==='done'){
+      bucket.completed++;
+    }else{
+      bucket.backlog++;
+    }
   });
-  return keys.map(k=>map[k]);
-}
-function trendTimeliness(task){
-  if(!task||task.status!=='done')return null;
-  const completed=trendIsoDate(task.completedAt);
-  const deadline=trendIsoDate(task.endDate||task.startDate||task.due);
-  if(!completed||!deadline)return null;
-  return completed<=deadline;
+
+  return keys.map(k=>{
+    const row=map[k];
+    row.completionRate=row.incoming
+      ? Math.round(row.completed/row.incoming*100)
+      : 0;
+    return row;
+  });
 }
 const TREND_PROGRAM_COLORS={
   'SKM':'#4f46e5','FKP':'#60a5fa','LAPOR':'#0891b2','OECD':'#2563eb',
@@ -2169,7 +2373,7 @@ function renderTrend(){
     `<div class="topbar">
       <div>
         <h1>Tren Pekerjaan</h1>
-        <div class="subtitle">Melihat volume, ketepatan penyelesaian, dan perubahan komposisi pekerjaan unit dari waktu ke waktu.</div>
+        <div class="subtitle">Melihat volume pekerjaan, tingkat penyelesaian, backlog, komposisi, dan tren penugasan berdasarkan waktu pekerjaan yang sebenarnya.</div>
       </div>
       <div class="trend-segmented" id="trendPeriodButtons">
         <button type="button" class="${f.period==='3'?'active':''}" onclick="setTrendPeriod('3')">3 Bulan</button>
@@ -2178,30 +2382,125 @@ function renderTrend(){
         <button type="button" class="${f.period==='all'?'active':''}" onclick="setTrendPeriod('all')">Semua Waktu</button>
       </div>
     </div>`+
+
+    `<div class="trend-logic-note">
+      <strong>Logika analisis:</strong> tren menggunakan tanggal pekerjaan. Prioritas tanggal: Tanggal Mulai → Tanggal Selesai/Target → waktu input sistem hanya sebagai fallback untuk tugas tanpa tanggal.
+    </div>`+
+
     `<div class="toolbar" style="grid-template-columns:220px 220px 1fr auto">
-      <select id="trendProgram" onchange="trendFilter()"><option value="">Semua Program</option>${programs.map(x=>`<option value="${esc(x)}" ${x===f.program?'selected':''}>${esc(x)}</option>`).join('')}<option value="Belum Diklasifikasikan" ${f.program==='Belum Diklasifikasikan'?'selected':''}>Belum Diklasifikasikan</option></select>
-      <select id="trendActivity" onchange="trendFilter()"><option value="">Semua Aktivitas</option>${activities.map(x=>`<option value="${esc(x)}" ${x===f.activity?'selected':''}>${esc(x)}</option>`).join('')}<option value="Belum Diklasifikasikan" ${f.activity==='Belum Diklasifikasikan'?'selected':''}>Belum Diklasifikasikan</option></select>
-      <div></div><button class="btn" onclick="resetTrend()">Reset</button>
+      <select id="trendProgram" onchange="trendFilter()">
+        <option value="">Semua Program</option>
+        ${programs.map(x=>`<option value="${esc(x)}" ${x===f.program?'selected':''}>${esc(x)}</option>`).join('')}
+        <option value="Belum Diklasifikasikan" ${f.program==='Belum Diklasifikasikan'?'selected':''}>Belum Diklasifikasikan</option>
+      </select>
+
+      <select id="trendActivity" onchange="trendFilter()">
+        <option value="">Semua Aktivitas</option>
+        ${activities.map(x=>`<option value="${esc(x)}" ${x===f.activity?'selected':''}>${esc(x)}</option>`).join('')}
+        <option value="Belum Diklasifikasikan" ${f.activity==='Belum Diklasifikasikan'?'selected':''}>Belum Diklasifikasikan</option>
+      </select>
+
+      <div></div>
+      <button class="btn" onclick="resetTrend()">Reset</button>
     </div>`+
+
     `<div class="stats">
-      <div class="stat"><div class="stat-label">Total Tugas Masuk</div><div class="stat-value" id="trendTotalIncoming">0</div><div class="sub">Masuk pada periode terpilih</div></div>
-      <div class="stat"><div class="stat-label">Total Tugas Selesai</div><div class="stat-value" id="trendTotalCompleted">0</div><div class="sub">Diselesaikan pada periode terpilih</div></div>
-      <div class="stat"><div class="stat-label">Terlambat</div><div class="stat-value" id="trendOverdue">0</div><div class="sub">Tugas aktif melewati target waktu</div></div>
-      <div class="stat"><div class="stat-label">Ketepatan Waktu Penyelesaian</div><div class="stat-value" id="trendOnTimeRate">—</div><div class="sub" id="trendOnTimeNote">Selesai sesuai target waktu</div></div>
+      <div class="stat">
+        <div class="stat-label">Total Tugas</div>
+        <div class="stat-value" id="trendTotalIncoming">0</div>
+        <div class="sub">Tugas pada periode kerja terpilih</div>
+      </div>
+
+      <div class="stat">
+        <div class="stat-label">Tugas Selesai</div>
+        <div class="stat-value" id="trendTotalCompleted">0</div>
+        <div class="sub">Tugas pada cohort yang sama dengan status Selesai</div>
+      </div>
+
+      <div class="stat">
+        <div class="stat-label">Perlu Update</div>
+        <div class="stat-value" id="trendOverdue">0</div>
+        <div class="sub">Belum selesai dan telah melewati target</div>
+      </div>
+
+      <div class="stat">
+        <div class="stat-label">Persentase Penyelesaian Tugas</div>
+        <div class="stat-value" id="trendCompletionRate">—</div>
+        <div class="sub" id="trendCompletionNote">Proporsi tugas yang telah selesai</div>
+      </div>
     </div>`+
+
     `<div class="card trend-chart-card trend-volume-card">
-      <div class="card-head"><div><div class="card-title">Tugas Masuk vs Selesai per Bulan</div><div class="card-note">Membandingkan arus pekerjaan masuk dengan penyelesaian setiap bulan.</div></div>
-      <div class="trend-legend"><span class="trend-legend-item"><span class="trend-legend-dot incoming"></span>Masuk</span><span class="trend-legend-item"><span class="trend-legend-dot completed"></span>Selesai</span></div></div>
-      <div class="trend-chart-scroll"><div class="trend-volume-chart" id="trendVolumeChart"></div></div>
+      <div class="card-head">
+        <div>
+          <div class="card-title">Tugas vs Tugas Selesai per Bulan</div>
+          <div class="card-note">Membandingkan jumlah tugas berdasarkan bulan pelaksanaan dengan tugas pada periode yang sama yang telah diselesaikan.</div>
+        </div>
+        <div class="trend-legend">
+          <span class="trend-legend-item"><span class="trend-legend-dot incoming"></span>Total Tugas</span>
+          <span class="trend-legend-item"><span class="trend-legend-dot completed"></span>Selesai</span>
+        </div>
+      </div>
+      <div class="trend-chart-scroll">
+        <div class="trend-volume-chart" id="trendVolumeChart"></div>
+      </div>
     </div>`+
+
+    `<div class="card trend-progress-card">
+      <div class="card-head">
+        <div>
+          <div class="card-title">Perkembangan Penyelesaian Tugas</div>
+          <div class="card-note">Backlog menunjukkan tugas pada cohort bulan yang belum selesai. Garis menunjukkan persentase penyelesaian pada cohort bulan yang sama.</div>
+        </div>
+        <div class="trend-legend">
+          <span class="trend-legend-item"><span class="trend-legend-dot backlog"></span>Backlog</span>
+          <span class="trend-legend-item"><span class="trend-legend-line"></span>% Penyelesaian</span>
+        </div>
+      </div>
+      <div id="trendCompletionProgress"></div>
+    </div>`+
+
     `<div class="trend-grid">
-      <div class="card"><div class="card-head"><div><div class="card-title">Komposisi Pekerjaan per Program per Bulan</div><div class="card-note">Menunjukkan perubahan fokus program pada setiap bulan.</div></div></div><div class="trend-monthly-composition" id="trendProgramMonthly"></div><div class="trend-monthly-legend" id="trendProgramLegend"></div></div>
-      <div class="card"><div class="card-head"><div><div class="card-title">Komposisi Pekerjaan per Aktivitas per Bulan</div><div class="card-note">Menunjukkan perubahan komposisi aktivitas tim pada setiap bulan.</div></div></div><div class="trend-monthly-composition" id="trendActivityMonthly"></div><div class="trend-monthly-legend" id="trendActivityLegend"></div></div>
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Komposisi Pekerjaan per Program per Bulan</div>
+            <div class="card-note">Menunjukkan perubahan fokus program pada setiap bulan berdasarkan tanggal pekerjaan.</div>
+          </div>
+        </div>
+        <div class="trend-monthly-composition" id="trendProgramMonthly"></div>
+        <div class="trend-monthly-legend" id="trendProgramLegend"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Komposisi Pekerjaan per Aktivitas per Bulan</div>
+            <div class="card-note">Menunjukkan perubahan komposisi aktivitas tim pada setiap bulan berdasarkan tanggal pekerjaan.</div>
+          </div>
+        </div>
+        <div class="trend-monthly-composition" id="trendActivityMonthly"></div>
+        <div class="trend-monthly-legend" id="trendActivityLegend"></div>
+      </div>
     </div>`+
+
     `<div class="card trend-team-card">
-      <div class="card-head"><div><div class="card-title">Tren Penugasan Tim</div><div class="card-note">Perbandingan historis pekerjaan setiap anggota tim pada periode terpilih.</div></div>
-      <div class="trend-team-metric"><button type="button" class="${TREND_TEAM_METRIC==='assigned'?'active':''}" onclick="setTrendTeamMetric('assigned')">Penugasan</button><button type="button" class="${TREND_TEAM_METRIC==='completed'?'active':''}" onclick="setTrendTeamMetric('completed')">Selesai</button><button type="button" class="${TREND_TEAM_METRIC==='late'?'active':''}" onclick="setTrendTeamMetric('late')">Terlambat</button></div></div>
-      <div class="trend-team-scroll"><div id="trendTeamHeatmap"></div></div>
+      <div class="card-head">
+        <div>
+          <div class="card-title">Tren Penugasan Tim</div>
+          <div class="card-note">Penugasan PIC ditempatkan pada bulan pekerjaan, sehingga input backdate tetap terbaca pada periode yang benar.</div>
+        </div>
+
+        <div class="trend-team-metric">
+          <button type="button" class="${TREND_TEAM_METRIC==='assigned'?'active':''}" onclick="setTrendTeamMetric('assigned')">Penugasan</button>
+          <button type="button" class="${TREND_TEAM_METRIC==='completed'?'active':''}" onclick="setTrendTeamMetric('completed')">Selesai</button>
+          <button type="button" class="${TREND_TEAM_METRIC==='late'?'active':''}" onclick="setTrendTeamMetric('late')">Perlu Update</button>
+        </div>
+      </div>
+
+      <div class="trend-team-scroll">
+        <div id="trendTeamHeatmap"></div>
+      </div>
     </div>`;
 
   renderTrendDashboard();
@@ -2213,21 +2512,48 @@ function renderTrendDashboard(){
   const buckets=trendBuildBuckets(tasks,keys);
   const keySet=new Set(keys);
 
-  const incoming=tasks.filter(t=>{const d=trendCreatedDate(t);return d&&keySet.has(d.slice(0,7))});
-  const completed=tasks.filter(t=>{const d=trendCompletedDate(t);return d&&keySet.has(d.slice(0,7))});
-  const overdue=incoming.filter(t=>!!t.overdue).length;
-  const timed=completed.map(trendTimeliness).filter(v=>v!==null);
-  const ontime=timed.filter(Boolean).length;
+  const cohort=tasks.filter(t=>{
+    const d=trendWorkDate(t);
+    return d&&keySet.has(d.slice(0,7));
+  });
 
-  qs('#trendTotalIncoming').textContent=incoming.length;
+  const completed=cohort.filter(t=>t.status==='done');
+  const overdue=cohort.filter(t=>t.status!=='done'&&!!t.overdue);
+  const completionRate=cohort.length
+    ?Math.round(completed.length/cohort.length*100)
+    :0;
+
+  qs('#trendTotalIncoming').textContent=cohort.length;
   qs('#trendTotalCompleted').textContent=completed.length;
-  qs('#trendOverdue').textContent=overdue;
-  qs('#trendOnTimeRate').textContent=timed.length?Math.round(ontime/timed.length*100)+'%':'—';
-  qs('#trendOnTimeNote').textContent=timed.length?ontime+' dari '+timed.length+' tugas selesai tepat waktu':'Belum ada tugas selesai dengan target dan waktu selesai tercatat';
+  qs('#trendOverdue').textContent=overdue.length;
+  qs('#trendCompletionRate').textContent=cohort.length?completionRate+'%':'—';
+  qs('#trendCompletionNote').textContent=cohort.length
+    ?completed.length+' dari '+cohort.length+' tugas telah diselesaikan'
+    :'Belum ada tugas pada periode terpilih';
 
   renderTrendVolume(buckets);
-  renderTrendMonthlyComposition('trendProgramMonthly','trendProgramLegend',incoming,keys,'program',state.bootstrap?.programs||[],TREND_PROGRAM_COLORS);
-  renderTrendMonthlyComposition('trendActivityMonthly','trendActivityLegend',incoming,keys,'substansi',state.bootstrap?.activities||[],TREND_ACTIVITY_COLORS);
+  renderTrendCompletionProgress(buckets);
+
+  renderTrendMonthlyComposition(
+    'trendProgramMonthly',
+    'trendProgramLegend',
+    cohort,
+    keys,
+    'program',
+    state.bootstrap?.programs||[],
+    TREND_PROGRAM_COLORS
+  );
+
+  renderTrendMonthlyComposition(
+    'trendActivityMonthly',
+    'trendActivityLegend',
+    cohort,
+    keys,
+    'substansi',
+    state.bootstrap?.activities||[],
+    TREND_ACTIVITY_COLORS
+  );
+
   renderTrendTeamHeatmap(tasks,keys);
 }
 
@@ -2241,8 +2567,106 @@ function renderTrendVolume(buckets){
   el.innerHTML=buckets.map(x=>{
     const a=x.incoming?Math.max(4,x.incoming/max*100):1;
     const b=x.completed?Math.max(4,x.completed/max*100):1;
-    return `<div class="trend-month-group"><div class="trend-bar-pair"><div class="trend-bar incoming" title="${x.incoming} tugas masuk" style="height:${a}%"></div><div class="trend-bar completed" title="${x.completed} tugas selesai" style="height:${b}%"></div></div><div class="trend-month-label">${trendMonthLabel(x.key,includeYear)}</div></div>`;
+    return `<div class="trend-month-group"><div class="trend-bar-pair"><div class="trend-bar incoming" title="${x.incoming} total tugas" style="height:${a}%"></div><div class="trend-bar completed" title="${x.completed} tugas selesai" style="height:${b}%"></div></div><div class="trend-month-label">${trendMonthLabel(x.key,includeYear)}</div></div>`;
   }).join('');
+}
+
+function renderTrendCompletionProgress(buckets){
+  const host=qs('#trendCompletionProgress');
+  if(!host)return;
+
+  if(!buckets.length){
+    host.innerHTML='<div class="empty">Belum ada data historis.</div>';
+    return;
+  }
+
+  const maxBacklog=Math.max(1,...buckets.map(x=>x.backlog||0));
+  const years=new Set(buckets.map(x=>x.key.slice(0,4)));
+  const includeYear=years.size>1;
+  const n=buckets.length;
+
+  const barCols=buckets.map(x=>{
+    const h=(x.backlog||0)
+      ?Math.max(3,(x.backlog/maxBacklog)*100)
+      :0;
+
+    return `<div class="trend-progress-col">
+      <div class="trend-backlog-bar" title="${x.backlog||0} backlog" style="height:${h}%"></div>
+    </div>`;
+  }).join('');
+
+  const months=buckets.map(x=>
+    `<div class="trend-progress-month">${trendMonthLabel(x.key,includeYear)}</div>`
+  ).join('');
+
+  const viewW=1000;
+  const viewH=250;
+  const step=viewW/n;
+
+  const pointData=buckets.map((x,i)=>{
+    const rate=x.completionRate||0;
+    const px=(i+.5)*step;
+    const py=viewH-(rate/100*viewH);
+    return {px,py,rate};
+  });
+
+  const polyline=pointData.map(p=>`${p.px},${p.py}`).join(' ');
+
+  const points=pointData.map(p=>
+    `<circle class="trend-progress-point" cx="${p.px}" cy="${p.py}" r="4"></circle>
+     <text class="trend-progress-rate-label" x="${p.px}" y="${Math.max(10,p.py-9)}" text-anchor="middle">${p.rate}%</text>`
+  ).join('');
+
+  const largestBacklog=Math.max(...buckets.map(x=>x.backlog||0));
+  const bestRate=Math.max(...buckets.map(x=>x.completionRate||0));
+  const latest=buckets[buckets.length-1];
+
+  const gridValues=[maxBacklog,Math.round(maxBacklog*.75),Math.round(maxBacklog*.5),Math.round(maxBacklog*.25),0]
+    .filter((v,i,a)=>a.indexOf(v)===i);
+
+  const grid=gridValues.map(v=>{
+    const top=maxBacklog
+      ?(1-v/maxBacklog)*100
+      :100;
+
+    return `<div class="trend-progress-gridline" style="top:${top}%"><span>${v}</span></div>`;
+  }).join('');
+
+  host.innerHTML=`<div class="trend-progress-wrap">
+    <div class="trend-progress-chart">
+      ${grid}
+
+      <div class="trend-progress-bars" style="grid-template-columns:repeat(${n},1fr)">
+        ${barCols}
+      </div>
+
+      <svg class="trend-progress-svg" viewBox="0 0 ${viewW} ${viewH}" preserveAspectRatio="none">
+        <polyline class="trend-progress-line" points="${polyline}"></polyline>
+        ${points}
+      </svg>
+    </div>
+
+    <div class="trend-progress-months" style="grid-template-columns:repeat(${n},1fr)">
+      ${months}
+    </div>
+
+    <div class="trend-progress-summary">
+      <div class="trend-progress-mini">
+        <div class="trend-progress-mini-label">Backlog terbesar</div>
+        <div class="trend-progress-mini-value">${largestBacklog} tugas</div>
+      </div>
+
+      <div class="trend-progress-mini">
+        <div class="trend-progress-mini-label">Penyelesaian tertinggi</div>
+        <div class="trend-progress-mini-value">${bestRate}%</div>
+      </div>
+
+      <div class="trend-progress-mini">
+        <div class="trend-progress-mini-label">Penyelesaian periode terbaru</div>
+        <div class="trend-progress-mini-value">${latest?.completionRate||0}%</div>
+      </div>
+    </div>
+  </div>`;
 }
 
 function renderTrendMonthlyComposition(elementId,legendId,tasks,keys,field,master,colors){
@@ -2251,7 +2675,7 @@ function renderTrendMonthlyComposition(elementId,legendId,tasks,keys,field,maste
   const years=new Set(keys.map(k=>k.slice(0,4))),includeYear=years.size>1;
   const order=[...master,'Lain-lain','Belum Diklasifikasikan'].filter((x,i,a)=>x&&a.indexOf(x)===i);
   const rows=keys.map(key=>{
-    const monthTasks=tasks.filter(t=>{const d=trendCreatedDate(t);return d&&d.slice(0,7)===key});
+    const monthTasks=tasks.filter(t=>{const d=trendWorkDate(t);return d&&d.slice(0,7)===key});
     const counts={};
     monthTasks.forEach(t=>{const v=t[field]||'Belum Diklasifikasikan';counts[v]=(counts[v]||0)+1});
     return{key,total:monthTasks.length,counts};
@@ -2279,20 +2703,20 @@ function trendTaskDeadline(task){
   return trendIsoDate(task.endDate||task.startDate||task.due);
 }
 function trendLateAnchorDate(task){
-  const deadline=trendTaskDeadline(task);
-  if(!deadline)return'';
-  const completed=trendIsoDate(task.completedAt);
-  if(completed)return completed>deadline?deadline:'';
-  const today=new Date().toISOString().slice(0,10);
-  return task.status!=='done'&&deadline<today?deadline:'';
+  if(!task||task.status==='done'||!task.overdue)return'';
+  return trendWorkDate(task);
 }
 function trendMetricAnchorDate(task,metric){
-  if(metric==='completed')return trendCompletedDate(task);
-  if(metric==='late')return trendLateAnchorDate(task);
-  return trendCreatedDate(task);
+  if(metric==='completed'){
+    return task.status==='done'?trendWorkDate(task):'';
+  }
+  if(metric==='late'){
+    return trendLateAnchorDate(task);
+  }
+  return trendWorkDate(task);
 }
 function trendMetricLabel(metric){
-  return metric==='completed'?'Selesai':metric==='late'?'Terlambat':'Penugasan';
+  return metric==='completed'?'Selesai':metric==='late'?'Perlu Update':'Penugasan';
 }
 function trendHeatLevel(value,max){
   if(!value||!max)return 0;
@@ -2320,7 +2744,8 @@ function renderTrendTeamHeatmap(tasks,keys){
   let max=0;rows.forEach(r=>r.months.forEach(x=>{if(x.count>max)max=x.count}));
   const header=`<div class="trend-team-grid trend-team-header"><div class="trend-team-name-head">Anggota Tim</div>${keys.map(k=>`<div class="trend-team-month-head">${trendMonthLabel(k,includeYear)}</div>`).join('')}<div class="trend-team-total-head">Total</div></div>`;
   const body=rows.map(r=>`<div class="trend-team-grid trend-team-row"><div class="trend-team-name">${esc(r.name)}</div>${r.months.map(x=>`<div class="trend-team-cell heat-${trendHeatLevel(x.count,max)}" title="${esc(r.name)} · ${trendMonthLabel(x.key,includeYear)} · ${trendMetricLabel(TREND_TEAM_METRIC)}: ${x.count}">${x.count}</div>`).join('')}<div class="trend-team-total">${r.total}</div></div>`).join('');
-  el.style.minWidth=Math.max(760,160+keys.length*58+65)+'px';
+  el.style.width='100%';
+  el.style.minWidth=Math.max(880,160+keys.length*64+65)+'px';
   el.style.setProperty('--trend-month-count',String(keys.length));
   el.innerHTML=header+body;
 }
@@ -3687,6 +4112,310 @@ async function changeRecapStatus(id,select){
     await loadPage();
   }catch(e){
     select.value=task.status;
+    showToast(e.message,true);
+  }
+}
+
+function knowledgeItems(){
+  return Array.isArray(state.model?.knowledge)
+    ?state.model.knowledge
+    :[];
+}
+
+function knowledgeCoreTopics(){
+  return ['SKM','FKP','LAPOR','OECD','Pelayanan Publik'];
+}
+
+function knowledgeTopicDescription(topic){
+  return ({
+    'SKM':'Kepuasan, pengalaman pengguna, instrumen, dan tindak lanjut.',
+    'FKP':'Konsultasi publik, partisipasi, engagement, dan tindak lanjut.',
+    'LAPOR':'Pengaduan, respons, service recovery, dan analisis keluhan.',
+    'OECD':'HCPAS, inovasi sektor publik, benchmarking, dan accession.',
+    'Pelayanan Publik':'Citizen-centric, human-centered, standar, dan transformasi layanan.'
+  })[topic]||'Kumpulan pengetahuan dan referensi terkait.';
+}
+
+function knowledgeTags(item){
+  return String(item?.tags||'')
+    .split(',')
+    .map(x=>x.trim())
+    .filter(Boolean)
+    .slice(0,5);
+}
+
+function knowledgeVisibleItems(scope){
+  const q=String(state.knowledgeSearch||'').toLowerCase().trim();
+  const topic=state.knowledgeTopic||'';
+  const type=state.knowledgeType||'';
+
+  return knowledgeItems().filter(item=>{
+    if(String(item.scope||'internal')!==scope)return false;
+    if(topic&&String(item.topic||'')!==topic)return false;
+    if(type&&String(item.type||'')!==type)return false;
+
+    if(q){
+      const hay=[
+        item.title,item.type,item.topic,item.owner,item.summary,
+        item.relevance,item.tags,item.year,item.language
+      ].join(' ').toLowerCase();
+      if(!hay.includes(q))return false;
+    }
+    return true;
+  });
+}
+
+function renderKnowledge(){
+  const items=knowledgeItems();
+  const counts={};
+  knowledgeCoreTopics().forEach(t=>counts[t]=0);
+  items.forEach(item=>{
+    if(Object.prototype.hasOwnProperty.call(counts,item.topic))counts[item.topic]++;
+  });
+
+  const types=state.knowledgeTab==='internal'
+    ?(state.bootstrap?.knowledgeInternalTypes||[])
+    :(state.bootstrap?.knowledgeExternalTypes||[]);
+
+  qs('#page').innerHTML=topbar(
+    'Repositori Pengetahuan',
+    'Temukan insight, referensi, dan produk pengetahuan yang dapat digunakan kembali untuk analisis, penyusunan kebijakan, dan pekerjaan tim Asdep PPP.',
+    `<div style="display:flex;gap:7px;flex-wrap:wrap">
+      <button class="btn" onclick="openKnowledgeForm('external')">+ Referensi Eksternal</button>
+      <button class="btn primary" onclick="openKnowledgeForm('internal')">+ Produk Pengetahuan</button>
+    </div>`
+  )+
+  `<section class="repo-discovery">
+    <div class="repo-discovery-label">Knowledge Discovery</div>
+    <div class="repo-discovery-title">Apa yang sedang Anda cari untuk mendukung pekerjaan hari ini?</div>
+    <div class="repo-discovery-text">Cari berdasarkan topik, masalah kebijakan, penulis, sumber, atau kata kunci.</div>
+    <div class="repo-search-row">
+      <input id="knowledgeSearch" value="${esc(state.knowledgeSearch||'')}" placeholder="Contoh: feedback loop, SKM, OECD, pengaduan, citizen-centric..." oninput="knowledgeSearchChanged(this.value)">
+      <button class="btn primary" onclick="knowledgeScrollLibrary()">Cari</button>
+    </div>
+  </section>`+
+  `<section class="repo-section">
+    <div class="repo-section-title">Jelajahi Koleksi</div>
+    <div class="repo-section-note">Pilih topik untuk melihat pengetahuan yang paling relevan.</div>
+    <div class="repo-collections">
+      ${knowledgeCoreTopics().map(topic=>`<div class="repo-collection ${state.knowledgeTopic===topic?'active':''}" onclick="knowledgeSelectTopic('${esc(topic)}')">
+        <div class="repo-collection-name">${esc(topic)}</div>
+        <div class="repo-collection-count">${counts[topic]||0} item</div>
+        <div class="repo-collection-desc">${esc(knowledgeTopicDescription(topic))}</div>
+      </div>`).join('')}
+    </div>
+  </section>`+
+  `<section class="repo-library" id="knowledgeLibrary">
+    <div class="repo-library-toolbar">
+      <div class="repo-tabs">
+        <button class="repo-tab ${state.knowledgeTab==='internal'?'active':''}" onclick="knowledgeSetTab('internal')">Produk Pengetahuan Tim</button>
+        <button class="repo-tab ${state.knowledgeTab==='external'?'active':''}" onclick="knowledgeSetTab('external')">Referensi Eksternal</button>
+      </div>
+      <div class="repo-filters">
+        <select id="knowledgeTopicFilter" onchange="knowledgeTopicChanged(this.value)">
+          <option value="">Semua Topik</option>
+          ${(state.bootstrap?.knowledgeTopics||[]).map(v=>`<option value="${esc(v)}" ${state.knowledgeTopic===v?'selected':''}>${esc(v)}</option>`).join('')}
+        </select>
+        <select id="knowledgeTypeFilter" onchange="knowledgeTypeChanged(this.value)">
+          <option value="">Semua Jenis</option>
+          ${types.map(v=>`<option value="${esc(v)}" ${state.knowledgeType===v?'selected':''}>${esc(v)}</option>`).join('')}
+        </select>
+        <button class="mini" onclick="knowledgeResetFilters()">Reset</button>
+      </div>
+    </div>
+    <div id="knowledgeGrid" class="repo-grid"></div>
+  </section>`;
+
+  renderKnowledgeGrid();
+}
+
+function renderKnowledgeGrid(){
+  const host=qs('#knowledgeGrid');
+  if(!host)return;
+  const rows=knowledgeVisibleItems(state.knowledgeTab);
+
+  if(!rows.length){
+    host.innerHTML='<div class="repo-empty">Belum ada item yang sesuai dengan pencarian atau filter.</div>';
+    return;
+  }
+
+  host.innerHTML=rows.map(item=>{
+    const tags=knowledgeTags(item);
+    const actionLabel=item.scope==='external'?'Baca Sumber ↗':'Baca →';
+    const metaOwner=item.owner||'—';
+    return `<article class="repo-card">
+      <div class="repo-card-head">
+        <div style="min-width:0">
+          <div class="repo-type">${esc(item.type||'Pengetahuan')} · ${esc(item.year||'')}</div>
+          <div class="repo-title">${esc(item.title||'Tanpa judul')}</div>
+        </div>
+        <span class="repo-topic-pill">${esc(item.topic||'Lain-lain')}</span>
+      </div>
+      <div class="repo-hook">${esc(item.summary||'Belum ada ringkasan.')}</div>
+      <div class="repo-relevance">
+        <div class="repo-relevance-label">Relevan untuk</div>
+        ${item.relevance?`<div class="repo-relevance-text">${esc(item.relevance)}</div>`:''}
+        <div class="repo-tags">
+          ${(tags.length?tags:[item.topic||'Lain-lain']).map(tag=>`<span class="repo-tag">${esc(tag)}</span>`).join('')}
+        </div>
+      </div>
+      <div class="repo-card-foot">
+        <div class="repo-source">${esc(metaOwner)}${item.year?' · '+esc(item.year):''}</div>
+        <div style="display:flex;gap:5px;align-items:center">
+          <button class="mini" title="Edit" onclick="openKnowledgeForm('${esc(item.scope||'internal')}','${esc(item.id)}')">✎</button>
+          ${item.url?`<a class="mini primary" target="_blank" rel="noopener" href="${esc(item.url)}">${actionLabel}</a>`:''}
+        </div>
+      </div>
+    </article>`;
+  }).join('');
+}
+
+function knowledgeSearchChanged(value){
+  state.knowledgeSearch=value||'';
+  renderKnowledgeGrid();
+}
+
+function knowledgeSelectTopic(topic){
+  state.knowledgeTopic=topic||'';
+  state.knowledgeType='';
+  renderKnowledge();
+  requestAnimationFrame(()=>knowledgeScrollLibrary());
+}
+
+function knowledgeTopicChanged(value){
+  state.knowledgeTopic=value||'';
+  renderKnowledge();
+  requestAnimationFrame(()=>knowledgeScrollLibrary());
+}
+
+function knowledgeTypeChanged(value){
+  state.knowledgeType=value||'';
+  renderKnowledgeGrid();
+}
+
+function knowledgeSetTab(tab){
+  state.knowledgeTab=tab==='external'?'external':'internal';
+  state.knowledgeType='';
+  renderKnowledge();
+  requestAnimationFrame(()=>knowledgeScrollLibrary());
+}
+
+function knowledgeResetFilters(){
+  state.knowledgeSearch='';
+  state.knowledgeTopic='';
+  state.knowledgeType='';
+  renderKnowledge();
+  requestAnimationFrame(()=>knowledgeScrollLibrary());
+}
+
+function knowledgeScrollLibrary(){
+  const el=qs('#knowledgeLibrary');
+  if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function findKnowledgeItem(id){
+  return knowledgeItems().find(x=>String(x.id||'')===String(id||''))||null;
+}
+
+function openKnowledgeForm(scope,id=''){
+  const item=id?findKnowledgeItem(id):null;
+  const actualScope=scope==='external'?'external':'internal';
+  state.knowledgeAssetMode=item?.assetKind||'link';
+
+  const types=actualScope==='internal'
+    ?(state.bootstrap?.knowledgeInternalTypes||[])
+    :(state.bootstrap?.knowledgeExternalTypes||[]);
+  const ownerLabel=actualScope==='internal'?'Penulis / Penyusun':'Sumber / Penerbit';
+
+  openModal(
+    item?'Edit Pengetahuan':(actualScope==='internal'?'Tambah Produk Pengetahuan':'Tambah Referensi Eksternal'),
+    `<div class="form-grid">
+      <div class="field full"><label>Judul *</label><input id="kTitle" value="${esc(item?.title||'')}"></div>
+      <div class="field"><label>Jenis *</label><select id="kType"><option value="">Pilih Jenis</option>${types.map(v=>`<option value="${esc(v)}" ${item?.type===v?'selected':''}>${esc(v)}</option>`).join('')}</select></div>
+      <div class="field"><label>Topik *</label><select id="kTopic"><option value="">Pilih Topik</option>${(state.bootstrap?.knowledgeTopics||[]).map(v=>`<option value="${esc(v)}" ${item?.topic===v?'selected':''}>${esc(v)}</option>`).join('')}</select></div>
+      <div class="field"><label>${ownerLabel} *</label><input id="kOwner" value="${esc(item?.owner||'')}"></div>
+      <div class="field"><label>Tahun *</label><input id="kYear" type="number" min="1900" max="2100" value="${esc(item?.year||new Date().getFullYear())}"></div>
+      <div class="field"><label>Bahasa</label><select id="kLanguage">${['Indonesia','English','Lainnya'].map(v=>`<option ${String(item?.language||'Indonesia')===v?'selected':''}>${v}</option>`).join('')}</select></div>
+      <div class="field full"><label>Ringkasan / Hook</label><textarea id="kSummary" placeholder="Apa yang akan pembaca temukan dari dokumen ini?">${esc(item?.summary||'')}</textarea><div class="helper">Tulis singkat sebagai teaser, bukan abstrak panjang.</div></div>
+      <div class="field full"><label>Relevansi / Catatan Penggunaan</label><textarea id="kRelevance" placeholder="Contoh: Digunakan untuk revisi SKM atau bahan OECD accession.">${esc(item?.relevance||'')}</textarea></div>
+      <div class="field full">
+        <label>File atau Tautan *</label>
+        <div class="repo-asset-tabs">
+          <button type="button" id="kAssetLinkBtn" class="btn ${state.knowledgeAssetMode==='link'?'active':''}" onclick="setKnowledgeAssetMode('link')">🔗 Tautan</button>
+          <button type="button" id="kAssetFileBtn" class="btn ${state.knowledgeAssetMode==='file'?'active':''}" onclick="setKnowledgeAssetMode('file')">▣ Upload File</button>
+        </div>
+        <div id="kLinkPane" style="${state.knowledgeAssetMode==='link'?'':'display:none'}"><input id="kUrl" value="${esc(item?.assetKind==='link'?item?.url||'':'')}" placeholder="https://..."></div>
+        <div id="kFilePane" style="${state.knowledgeAssetMode==='file'?'':'display:none'}"><input id="kFile" type="file"><div class="helper">Maksimum 8 MB.${item?.assetKind==='file'&&item?.fileName?' File saat ini: '+esc(item.fileName):''}</div></div>
+      </div>
+      <div class="field full"><label>Tag / Kata Kunci</label><input id="kTags" value="${esc(item?.tags||'')}" placeholder="feedback loop, citizen-centric, SKM"></div>
+    </div>`,
+    `${item?`<button class="btn danger" onclick="deleteKnowledge('${esc(item.id)}')">Hapus</button>`:''}
+     <button class="btn" onclick="closeModal()">Batal</button>
+     <button class="btn primary" onclick="saveKnowledge('${esc(item?.id||'')}','${actualScope}')">Simpan</button>`
+  );
+}
+
+function setKnowledgeAssetMode(mode){
+  state.knowledgeAssetMode=mode==='file'?'file':'link';
+  const link=qs('#kLinkPane'),file=qs('#kFilePane');
+  const linkBtn=qs('#kAssetLinkBtn'),fileBtn=qs('#kAssetFileBtn');
+  if(link)link.style.display=state.knowledgeAssetMode==='link'?'':'none';
+  if(file)file.style.display=state.knowledgeAssetMode==='file'?'':'none';
+  if(linkBtn)linkBtn.classList.toggle('active',state.knowledgeAssetMode==='link');
+  if(fileBtn)fileBtn.classList.toggle('active',state.knowledgeAssetMode==='file');
+}
+
+async function saveKnowledge(id,scope){
+  try{
+    const payload={
+      id,
+      scope,
+      title:qs('#kTitle').value,
+      type:qs('#kType').value,
+      topic:qs('#kTopic').value,
+      owner:qs('#kOwner').value,
+      year:qs('#kYear').value,
+      language:qs('#kLanguage').value,
+      summary:qs('#kSummary').value,
+      relevance:qs('#kRelevance').value,
+      tags:qs('#kTags').value,
+      assetKind:state.knowledgeAssetMode
+    };
+
+    if(state.knowledgeAssetMode==='link'){
+      payload.url=qs('#kUrl').value;
+    }else{
+      const file=qs('#kFile').files[0];
+      const existing=id?findKnowledgeItem(id):null;
+      if(file){
+        payload.upload={
+          fileName:file.name,
+          mimeType:file.type||'application/octet-stream',
+          sizeBytes:file.size,
+          base64:await fileToBase64(file)
+        };
+      }else if(existing?.assetKind!=='file'){
+        throw new Error('Pilih file.');
+      }
+    }
+
+    await api('saveKnowledge',payload);
+    closeModal();
+    showToast('Pengetahuan disimpan.');
+    await loadPage();
+  }catch(e){
+    showToast(e.message,true);
+  }
+}
+
+async function deleteKnowledge(id){
+  if(!confirm('Hapus item pengetahuan ini?'))return;
+  try{
+    await api('deleteKnowledge',{id});
+    closeModal();
+    showToast('Item pengetahuan dihapus.');
+    await loadPage();
+  }catch(e){
     showToast(e.message,true);
   }
 }
