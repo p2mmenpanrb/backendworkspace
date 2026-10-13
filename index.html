@@ -102,32 +102,20 @@ tr:last-child td{border-bottom:0}
 @media(max-width:1100px){.project-list-head,.project-row{grid-template-columns:minmax(220px,1.4fr) 135px 100px 135px 70px}.project-list-head>*:nth-child(6),.project-row>*:nth-child(6){display:none}.project-grid{grid-template-columns:1fr}}
 
 
-/* Minimal global loading progress */
+/* Circular global loading indicator */
 .global-progress{
-  position:fixed;
-  top:0;
-  left:0;
-  right:0;
-  height:3px;
-  z-index:500;
-  pointer-events:none;
-  opacity:0;
-  background:transparent;
-  transition:opacity .15s ease;
+  position:fixed;top:14px;right:16px;width:30px;height:30px;z-index:500;
+  pointer-events:none;opacity:0;display:grid;place-items:center;
+  border:1px solid #e4e4e7;border-radius:999px;background:rgba(255,255,255,.96);
+  box-shadow:0 4px 14px rgba(24,24,27,.10);transition:opacity .15s ease
 }
 .global-progress.show{opacity:1}
 .global-progress-bar{
-  width:0;
-  height:100%;
-  background:#18181b;
-  border-radius:0 999px 999px 0;
-  box-shadow:0 1px 5px rgba(24,24,27,.14);
-  transition:width .28s ease;
+  width:16px;height:16px;border:2px solid #e4e4e7;border-top-color:#18181b;
+  border-radius:50%;animation:global-spin .72s linear infinite
 }
-@media(prefers-reduced-motion:reduce){
-  .global-progress,
-  .global-progress-bar{transition:none}
-}
+@keyframes global-spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.global-progress-bar{animation-duration:1.5s}}
 
 
 /* Agenda day switcher */
@@ -879,6 +867,53 @@ tr:last-child td{border-bottom:0}
   .system-history-row{grid-template-columns:1fr}
 }
 
+
+/* v1.58 — compact Kelola Tugas rows + scorecards + pagination */
+.task-scorecards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:0 0 12px}
+.task-scorecard{border:1px solid var(--line);border-radius:9px;background:#fff;padding:11px 12px}
+.task-score-label{font-size:9px;color:var(--muted)}
+.task-score-value{font-size:19px;font-weight:780;margin-top:3px}
+.task-score-note{font-size:8px;color:#a1a1aa;margin-top:2px}
+.task-row-list{border:1px solid var(--line);border-radius:9px;background:#fff;overflow:hidden}
+.task-row-head,.task-list-row{
+  display:grid;
+  grid-template-columns:34px minmax(230px,1.55fr) 76px 110px minmax(145px,1fr) minmax(105px,.8fr) 96px 84px minmax(300px,auto);
+  gap:9px;align-items:center
+}
+.task-row-head{
+  min-height:36px;padding:0 10px;border-bottom:1px solid var(--line);
+  background:#fafafa;font-size:8px;font-weight:750;color:#71717a;
+  text-transform:uppercase;letter-spacing:.035em
+}
+.task-list-row{min-height:62px;padding:8px 10px;border-bottom:1px solid #f1f1f2;font-size:9px}
+.task-list-row:last-child{border-bottom:0}
+.task-list-no{color:#71717a;font-size:8.5px}
+.task-list-title{font-size:10px;font-weight:750;line-height:1.4}
+.task-list-context{font-size:8px;color:#71717a;line-height:1.4;margin-top:3px}
+.task-list-context button{
+  border:0;background:transparent;padding:0;font:inherit;color:#52525b;
+  cursor:pointer;text-decoration:underline;text-underline-offset:2px
+}
+.task-list-pic{font-size:8.5px;line-height:1.45}
+.task-list-actions{display:flex;gap:5px;align-items:center;justify-content:flex-end;flex-wrap:wrap}
+.task-list-actions .mini{white-space:nowrap}
+.pagination{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 2px 0}
+.pagination-info{font-size:8.5px;color:#71717a}
+.pagination-controls{display:flex;gap:5px;align-items:center}
+.page-btn{
+  min-width:28px;height:28px;border:1px solid var(--line);border-radius:6px;
+  background:#fff;font-size:8.5px;font-weight:650;cursor:pointer
+}
+.page-btn.active{background:#18181b;color:#fff;border-color:#18181b}
+.page-btn:disabled{opacity:.4;cursor:default}
+.task-calendar{color:#166534;border-color:#d8eadb;background:#f6fbf6}
+.task-email{color:#1d4ed8;border-color:#dbeafe;background:#f8fbff}
+@media(max-width:1180px){
+  .task-row-list{overflow-x:auto}
+  .task-row-head,.task-list-row{min-width:1140px}
+}
+@media(max-width:720px){.task-scorecards{grid-template-columns:1fr}}
+
 </style>
 </head>
 <body>
@@ -925,7 +960,7 @@ tr:last-child td{border-bottom:0}
 
 <script>
 /*
-  Netlify frontend v1.57 — Project Tahapan + unified Tugas workflow.
+  Netlify frontend v1.58 — row task list, calendar/email helpers, idempotent save, circular loading.
   Netlify frontend.
   Recommended production setup:
   - index.html is hosted by Netlify/GitHub
@@ -938,44 +973,19 @@ const API_ENDPOINT = '/api';
 
 
 let __activeRequests=0;
-let __progressTimer=null;
 
 function startGlobalProgress(){
   __activeRequests++;
-  if(__activeRequests!==1) return;
-
+  if(__activeRequests!==1)return;
   const shell=document.getElementById('globalProgress');
-  const bar=document.getElementById('globalProgressBar');
-  if(!shell||!bar) return;
-
-  clearTimeout(__progressTimer);
-  shell.classList.add('show');
-  bar.style.width='10%';
-
-  requestAnimationFrame(()=>{
-    bar.style.width='62%';
-  });
-
-  __progressTimer=setTimeout(()=>{
-    if(__activeRequests>0) bar.style.width='82%';
-  },650);
+  if(shell)shell.classList.add('show');
 }
 
 function finishGlobalProgress(){
   __activeRequests=Math.max(0,__activeRequests-1);
-  if(__activeRequests>0) return;
-
+  if(__activeRequests>0)return;
   const shell=document.getElementById('globalProgress');
-  const bar=document.getElementById('globalProgressBar');
-  if(!shell||!bar) return;
-
-  clearTimeout(__progressTimer);
-  bar.style.width='100%';
-
-  setTimeout(()=>{
-    shell.classList.remove('show');
-    bar.style.width='0';
-  },180);
+  if(shell)setTimeout(()=>shell.classList.remove('show'),120);
 }
 
 const __nativeFetch=window.fetch.bind(window);
@@ -1012,6 +1022,7 @@ const state={
   projectStageFocus:'',
   projectTaskFocus:'',
   recapPic:'',
+  taskListPage:1,
   projectTimeline:{q:'',type:'',limit:20}
 };
 
@@ -2046,9 +2057,10 @@ function renderProjectTaskRow(t){
       </div>
     </div>
     <div class="row-actions">
+      ${t.startDate?`<button class="mini task-calendar" onclick="openTaskCalendar('${esc(t.id)}')">+ Calendar</button>`:''}
       <button class="mini primary" onclick="openTaskUpdate('${esc(t.id)}')">Update</button>
       <button class="mini" onclick="showTaskDetail('${esc(t.id)}')">Detail</button>
-      <button class="mini" onclick="openTaskMatrixContext('${esc(t.projectId)}','${esc(t.stageId||'')}')">Kelola Tugas ↗</button>
+      <button class="mini danger" onclick="deleteTask('${esc(t.id)}')">Hapus</button>
     </div>
   </div>`;
 }
@@ -2308,38 +2320,49 @@ async function deleteProjectActivity(id){
     showToast(e.message,true);
   }
 }
-function renderTaskMatrix(){
-  const tasks=state.model.tasks||[];
+const TASK_PAGE_SIZE=10;
 
+function renderTaskMatrix(){
   qs('#page').innerHTML=
     topbar(
       'Kelola Tugas',
-      'Buat dan kelola penugasan. Project bersifat opsional; Tahapan mengikuti Project yang dipilih.',
+      'Buat dan kelola seluruh penugasan dalam daftar ringkas. Maksimal 10 tugas per halaman.',
       `<button class="btn primary" onclick="openTaskForm()">+ Buat Tugas</button>`
     )+
     `<div class="toolbar">
-      <input id="taskSearch" placeholder="Cari tugas..." oninput="filterTaskMatrix()">
-      <select id="taskPic" onchange="filterTaskMatrix()">
+      <input id="taskSearch" placeholder="Cari tugas..." oninput="resetTaskPageAndRender()">
+      <select id="taskPic" onchange="resetTaskPageAndRender()">
         <option value="">Semua PIC</option>
         ${(state.bootstrap?.pics||[]).map(x=>`<option>${esc(x)}</option>`).join('')}
       </select>
-      <select id="taskProgram" onchange="filterTaskMatrix()">
+      <select id="taskProgram" onchange="resetTaskPageAndRender()">
         <option value="">Semua Program</option>
         ${(state.bootstrap?.programs||[]).map(x=>`<option>${esc(x)}</option>`).join('')}
       </select>
-      <select id="taskProject" onchange="state.projectId=this.value;state.taskStageFilter='';syncTaskStageFilter();filterTaskMatrix()">
+      <select id="taskProject" onchange="state.projectId=this.value;state.taskStageFilter='';syncTaskStageFilter();resetTaskPageAndRender()">
         <option value="">Semua Project</option>
         ${(state.bootstrap?.projects||[]).map(x=>`<option value="${esc(x.id)}" ${state.projectId===x.id?'selected':''}>${esc(x.name)}</option>`).join('')}
       </select>
-      <select id="taskStage" onchange="state.taskStageFilter=this.value;filterTaskMatrix()">
+      <select id="taskStage" onchange="state.taskStageFilter=this.value;resetTaskPageAndRender()">
         <option value="">Semua Tahapan</option>
+      </select>
+      <select id="taskStatus" onchange="resetTaskPageAndRender()">
+        <option value="">Semua Status</option>
+        <option value="todo">Perlu Dikerjakan</option>
+        <option value="progress">Sedang Dikerjakan</option>
+        <option value="done">Selesai</option>
       </select>
       <button class="btn" onclick="resetTaskFilters()">Reset</button>
     </div>`+
-    `<div class="task-columns" id="taskColumns"></div>`;
+    `<div id="taskListArea"></div>`;
 
   syncTaskStageFilter();
-  renderTaskColumns(filteredTasks());
+  renderTaskList();
+}
+
+function resetTaskPageAndRender(){
+  state.taskListPage=1;
+  renderTaskList();
 }
 
 function filteredTasks(){
@@ -2349,79 +2372,252 @@ function filteredTasks(){
   const prog=qs('#taskProgram')?.value||'';
   const project=qs('#taskProject')?.value||'';
   const stage=qs('#taskStage')?.value||'';
+  const status=qs('#taskStatus')?.value||'';
 
-  return tasks.filter(t=>
-    (!q||(
-      String(t.title)+' '+
-      String(t.tag)+' '+
-      String(t.projectName||'')+' '+
-      String(t.stageName||'')
-    ).toLowerCase().includes(q)) &&
-    (!pic||(t.picList||[]).includes(pic)) &&
-    (!prog||t.program===prog) &&
-    (!project||t.projectId===project) &&
-    (!stage||t.stageId===stage)
-  );
-}
-
-function filterTaskMatrix(){
-  renderTaskColumns(filteredTasks());
+  return tasks
+    .filter(t=>
+      (!q||(
+        String(t.title)+' '+String(t.tag)+' '+String(t.projectName||'')+' '+
+        String(t.stageName||'')+' '+String(t.pic||'')+' '+String(t.picEmail||'')
+      ).toLowerCase().includes(q)) &&
+      (!pic||(t.picList||[]).includes(pic)) &&
+      (!prog||t.program===prog) &&
+      (!project||t.projectId===project) &&
+      (!stage||t.stageId===stage) &&
+      (!status||t.status===status)
+    )
+    .sort((a,b)=>{
+      const ad=String(a.startDate||a.createdAt||'');
+      const bd=String(b.startDate||b.createdAt||'');
+      return bd.localeCompare(ad);
+    });
 }
 
 function resetTaskFilters(){
   state.projectId='';
   state.taskStageFilter='';
-
-  if(qs('#taskSearch'))qs('#taskSearch').value='';
-  if(qs('#taskPic'))qs('#taskPic').value='';
-  if(qs('#taskProgram'))qs('#taskProgram').value='';
-  if(qs('#taskProject'))qs('#taskProject').value='';
-
+  state.taskListPage=1;
+  ['taskSearch','taskPic','taskProgram','taskProject','taskStatus'].forEach(id=>{
+    if(qs('#'+id))qs('#'+id).value='';
+  });
   syncTaskStageFilter();
-  renderTaskColumns(state.model.tasks||[]);
+  renderTaskList();
 }
 
-function renderTaskColumns(tasks){
-  const statuses=[
-    ['todo','Perlu Dikerjakan'],
-    ['progress','Sedang Dikerjakan'],
-    ['done','Selesai']
-  ];
+function renderTaskList(){
+  const host=qs('#taskListArea');
+  if(!host)return;
 
-  qs('#taskColumns').innerHTML=statuses.map(([key,label])=>{
-    const rows=tasks.filter(t=>t.status===key);
+  const tasks=filteredTasks();
+  const total=tasks.length;
+  const progress=tasks.filter(t=>t.status==='progress').length;
+  const done=tasks.filter(t=>t.status==='done').length;
 
-    return `<section class="task-column">
-      <div class="task-column-head">${label} · ${rows.length}</div>
-      ${rows.map(renderTaskCard).join('')||'<div class="empty">Kosong</div>'}
-    </section>`;
-  }).join('');
+  const totalPages=Math.max(1,Math.ceil(total/TASK_PAGE_SIZE));
+  state.taskListPage=Math.min(Math.max(1,state.taskListPage||1),totalPages);
+
+  const start=(state.taskListPage-1)*TASK_PAGE_SIZE;
+  const shown=tasks.slice(start,start+TASK_PAGE_SIZE);
+
+  host.innerHTML=
+    `<div class="task-scorecards">
+      <div class="task-scorecard">
+        <div class="task-score-label">Tugas</div>
+        <div class="task-score-value">${total}</div>
+        <div class="task-score-note">sesuai filter aktif</div>
+      </div>
+      <div class="task-scorecard">
+        <div class="task-score-label">Sedang Dikerjakan</div>
+        <div class="task-score-value">${progress}</div>
+        <div class="task-score-note">tugas aktif dalam proses</div>
+      </div>
+      <div class="task-scorecard">
+        <div class="task-score-label">Selesai</div>
+        <div class="task-score-value">${done}</div>
+        <div class="task-score-note">tugas telah diselesaikan</div>
+      </div>
+    </div>
+
+    <div class="task-row-list">
+      <div class="task-row-head">
+        <div>No.</div><div>Tugas</div><div>Program</div><div>Aktivitas</div>
+        <div>PIC</div><div>Pembuat</div><div>Waktu</div><div>Prioritas</div>
+        <div style="text-align:right">Aksi</div>
+      </div>
+      ${shown.length?shown.map((t,index)=>renderTaskListRow(t,start+index+1)).join(''):'<div class="empty">Tidak ada tugas sesuai filter.</div>'}
+    </div>
+    ${renderTaskPagination(total,totalPages)}`;
 }
 
-function renderTaskCard(t){
+function renderTaskListRow(t,no){
   const context=t.projectId
-    ? `<div class="task-context">
+    ? `<div class="task-list-context">
         <button onclick="openProjectContext('${esc(t.projectId)}','${esc(t.stageId||'')}','${esc(t.id)}')">${esc(t.projectName||'Project')}</button>
         ${t.stageId?`<span>›</span><button onclick="openProjectContext('${esc(t.projectId)}','${esc(t.stageId)}','${esc(t.id)}')">${esc(t.stageName||'Tahapan')}</button>`:''}
       </div>`
     : '';
 
-  return `<div class="task-card">
-    <div class="task-title">${esc(t.title)}</div>
-    <div class="sub">${esc(t.timeLabel||'Tanpa tanggal')}</div>
-    ${context}
-    <div class="task-meta">
-      <span class="pill">${esc(t.program||'')}</span>
-      <span class="pill">${esc(t.substansi||'')}</span>
-      <span class="pill ${priorityClass(t.priority)}">${esc(t.priority||'')}</span>
-      ${t.overdue?'<span class="pill high">Terlambat</span>':''}
+  const hasEmail=!!String(t.picEmail||'').trim();
+  const canCalendar=!!t.startDate;
+
+  return `<div class="task-list-row">
+    <div class="task-list-no">${no}</div>
+    <div>
+      <div class="task-list-title">${esc(t.title)}</div>
+      ${context}
+      ${t.overdue?'<div style="margin-top:4px"><span class="pill high">Terlambat</span></div>':''}
     </div>
-    <div class="sub" style="margin-top:6px">${esc((t.picList||[]).join(', '))}</div>
-    <div class="row-actions" style="margin-top:8px">
+    <div><span class="pill">${esc(t.program||'')}</span></div>
+    <div><span class="pill">${esc(t.substansi||'')}</span></div>
+    <div class="task-list-pic">
+      ${esc((t.picList||[]).join(', ')||'—')}
+      ${t.picEmail?`<div class="sub" style="margin-top:2px">${esc(t.picEmail)}</div>`:''}
+    </div>
+    <div>${esc(t.taskAssigner||'—')}</div>
+    <div>
+      ${esc(t.timeLabel||'Tanpa tanggal')}
+      <div style="margin-top:4px"><span class="pill ${esc(t.status)}">${esc(t.statusLabel)}</span></div>
+    </div>
+    <div><span class="pill ${priorityClass(t.priority)}">${esc(t.priority||'')}</span></div>
+    <div class="task-list-actions">
+      ${canCalendar?`<button class="mini task-calendar" onclick="openTaskCalendar('${esc(t.id)}')">+ Calendar</button>`:''}
+      ${hasEmail?`<button class="mini task-email" onclick="openTaskEmail('${esc(t.id)}')">Email</button>`:''}
       <button class="mini primary" onclick="openTaskUpdate('${esc(t.id)}')">Update</button>
       <button class="mini" onclick="showTaskDetail('${esc(t.id)}')">Detail</button>
+      <button class="mini danger" onclick="deleteTask('${esc(t.id)}')">Hapus</button>
     </div>
   </div>`;
+}
+
+function renderTaskPagination(total,totalPages){
+  if(total<=TASK_PAGE_SIZE)return '';
+
+  const current=state.taskListPage;
+  let first=Math.max(1,current-2);
+  let last=Math.min(totalPages,first+4);
+  first=Math.max(1,last-4);
+
+  const pages=[];
+  for(let p=first;p<=last;p++)pages.push(p);
+
+  const from=(current-1)*TASK_PAGE_SIZE+1;
+  const to=Math.min(total,current*TASK_PAGE_SIZE);
+
+  return `<div class="pagination">
+    <div class="pagination-info">Menampilkan ${from}–${to} dari ${total} tugas · 10 tugas per halaman</div>
+    <div class="pagination-controls">
+      <button class="page-btn" ${current<=1?'disabled':''} onclick="goTaskPage(${current-1})">‹</button>
+      ${pages.map(p=>`<button class="page-btn ${p===current?'active':''}" onclick="goTaskPage(${p})">${p}</button>`).join('')}
+      <button class="page-btn" ${current>=totalPages?'disabled':''} onclick="goTaskPage(${current+1})">›</button>
+    </div>
+  </div>`;
+}
+
+function goTaskPage(page){
+  state.taskListPage=page;
+  renderTaskList();
+  qs('#taskListArea')?.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function addDaysToDateKey(key,days){
+  const [y,m,d]=String(key||'').split('-').map(Number);
+  if(!y||!m||!d)return '';
+  const dt=new Date(Date.UTC(y,m-1,d));
+  dt.setUTCDate(dt.getUTCDate()+days);
+  return dt.toISOString().slice(0,10);
+}
+function compactCalendarDate(key){return String(key||'').replaceAll('-','')}
+function compactCalendarDateTime(key,time){
+  if(!key)return '';
+  return compactCalendarDate(key)+'T'+String(time||'00:00').replace(':','')+'00';
+}
+
+function taskCalendarUrl(t){
+  if(!t?.startDate)return '';
+
+  const params=new URLSearchParams();
+  params.set('action','TEMPLATE');
+  params.set('text',t.title||'Tugas');
+
+  const endDate=t.endDate||t.startDate;
+
+  if(t.startTime){
+    const start=compactCalendarDateTime(t.startDate,t.startTime);
+    let end='';
+
+    if(t.endTime){
+      end=compactCalendarDateTime(endDate,t.endTime);
+    }else{
+      const dt=new Date(`${t.startDate}T${t.startTime}:00`);
+      dt.setHours(dt.getHours()+1);
+      const y=dt.getFullYear();
+      const m=String(dt.getMonth()+1).padStart(2,'0');
+      const d=String(dt.getDate()).padStart(2,'0');
+      const hh=String(dt.getHours()).padStart(2,'0');
+      const mm=String(dt.getMinutes()).padStart(2,'0');
+      end=`${y}${m}${d}T${hh}${mm}00`;
+    }
+
+    params.set('dates',start+'/'+end);
+    params.set('ctz','Asia/Jakarta');
+  }else{
+    params.set(
+      'dates',
+      compactCalendarDate(t.startDate)+'/'+compactCalendarDate(addDaysToDateKey(endDate,1))
+    );
+  }
+
+  const details=[
+    t.description||'',
+    t.projectName?`Project: ${t.projectName}`:'',
+    t.stageName?`Tahapan: ${t.stageName}`:'',
+    (t.picList||[]).length?`PIC: ${t.picList.join(', ')}`:''
+  ].filter(Boolean).join('\n');
+
+  if(details)params.set('details',details);
+
+  const emails=String(t.picEmail||'')
+    .split(',')
+    .map(x=>x.trim())
+    .filter(Boolean);
+
+  if(emails.length)params.set('add',emails.join(','));
+
+  return 'https://calendar.google.com/calendar/render?'+params.toString();
+}
+
+function openTaskCalendar(id){
+  const t=findTaskInCurrentState(id);
+  if(!t)return showToast('Tugas tidak ditemukan.',true);
+  if(!t.startDate)return showToast('Tugas harus memiliki tanggal untuk dibuatkan Calendar.',true);
+
+  window.open(taskCalendarUrl(t),'_blank','noopener');
+}
+
+function openTaskEmail(id){
+  const t=findTaskInCurrentState(id);
+  if(!t)return;
+
+  const emails=String(t.picEmail||'').trim();
+  if(!emails)return showToast('Email PIC belum diisi.',true);
+
+  const subject=`[Tugas] ${t.title}`;
+  const body=[
+    `Tugas: ${t.title}`,
+    t.projectName?`Project: ${t.projectName}`:'',
+    t.stageName?`Tahapan: ${t.stageName}`:'',
+    `PIC: ${(t.picList||[]).join(', ')}`,
+    `Waktu: ${t.timeLabel||'Tanpa tanggal'}`,
+    '',
+    t.description||''
+  ].filter((x,i,a)=>x!==''||i===a.length-2).join('\n');
+
+  const url='https://mail.google.com/mail/?view=cm&fs=1'
+    +'&to='+encodeURIComponent(emails)
+    +'&su='+encodeURIComponent(subject)
+    +'&body='+encodeURIComponent(body);
+
+  window.open(url,'_blank','noopener');
 }
 
 function renderTaskRecap(){
@@ -2618,6 +2814,8 @@ async function openTaskForm(id='',prefillProjectId='',prefillStageId=''){
         substansi:d.activity,
         tag:d.tag,
         picList:d.picList||[],
+        picEmail:d.picEmail||'',
+        requestId:d.requestId||'',
         taskAssigner:d.taskAssigner,
         timeType:d.timeType||'none',
         startDate:d.startDate||'',
@@ -2646,6 +2844,7 @@ async function openTaskForm(id='',prefillProjectId='',prefillStageId=''){
     tag:'',
     picList:[],
     picEmail:'',
+    requestId:'',
     taskAssigner:'',
     timeType:'none',
     startDate:'',
@@ -2660,6 +2859,13 @@ async function openTaskForm(id='',prefillProjectId='',prefillStageId=''){
   };
 
   window.__taskFormStatus=x.status||'todo';
+  window.__taskRequestId=x.id
+    ? (x.requestId||'')
+    : (
+        (globalThis.crypto&&crypto.randomUUID)
+          ? crypto.randomUUID()
+          : 'task_'+Date.now()+'_'+Math.random().toString(36).slice(2)
+      );
 
   const body=`<div class="form-grid">
     <div class="field full">
@@ -2721,6 +2927,12 @@ async function openTaskForm(id='',prefillProjectId='',prefillStageId=''){
       <div class="pic-selector-note">Pilih satu atau lebih anggota tim yang menjadi PIC tugas.</div>
     </div>
 
+    <div class="field full">
+      <label>Email PIC</label>
+      <input id="fPicEmail" value="${esc(x.picEmail||'')}" placeholder="email1@instansi.go.id, email2@instansi.go.id">
+      <div class="helper">Opsional. Pisahkan beberapa alamat email dengan koma. Email ini otomatis dimasukkan sebagai tamu saat + Calendar digunakan.</div>
+    </div>
+
     <div class="field">
       <label>Jenis Waktu</label>
       <select id="fTimeType" onchange="toggleTaskDates()">
@@ -2766,6 +2978,13 @@ async function openTaskForm(id='',prefillProjectId='',prefillStageId=''){
     </div>
 
     <div class="field full">
+      <div style="border:1px solid var(--line);border-radius:8px;padding:9px 10px;background:#fafafa">
+        <strong style="font-size:9px">Email & Calendar dilakukan setelah tugas disimpan</strong>
+        <div class="helper" style="margin-top:3px">Gunakan tombol Email atau + Calendar pada Kelola Tugas. + Calendar membuka draft Google Calendar; Email PIC menjadi tamu undangan saat draft disimpan.</div>
+      </div>
+    </div>
+
+    <div class="field full">
       <label>Deskripsi</label>
       <textarea id="fDesc">${esc(x.description||'')}</textarea>
     </div>
@@ -2775,7 +2994,7 @@ async function openTaskForm(id='',prefillProjectId='',prefillStageId=''){
     x.id?'Edit Tugas':'Buat Tugas',
     body,
     `<button class="btn" onclick="closeModal()">Batal</button>
-     <button class="btn primary" onclick="saveTaskForm('${esc(x.id||'')}')">Simpan Tugas</button>`
+     <button id="taskSaveButton" class="btn primary" onclick="saveTaskForm('${esc(x.id||'')}')">Simpan Tugas</button>`
   );
 
   syncTaskStageOptions(x.stageId||prefillStageId||'');
@@ -2787,13 +3006,27 @@ function toggleTaskDates(){
   qsa('.task-date').forEach(el=>el.style.display=show?'block':'none');
 }
 
+let __taskSaveInFlight=false;
+
 async function saveTaskForm(id){
+  if(__taskSaveInFlight)return;
+
+  const button=qs('#taskSaveButton');
+  const originalText=button?.textContent||'Simpan Tugas';
+
+  __taskSaveInFlight=true;
+  if(button){
+    button.disabled=true;
+    button.textContent='Menyimpan…';
+  }
+
   try{
     const projectId=qs('#fProject').value||'';
     const stageId=projectId?(qs('#fStage')?.value||''):'';
 
     const payload={
       id,
+      requestId:id?'':(window.__taskRequestId||''),
       title:qs('#fTitle').value,
       program:qs('#fProgram').value,
       projectId,
@@ -2801,7 +3034,7 @@ async function saveTaskForm(id){
       substansi:qs('#fActivity').value,
       tag:qs('#fTag').value,
       pic:qsa('input[name="fPic"]:checked').map(x=>x.value),
-      picEmail:'',
+      picEmail:qs('#fPicEmail')?.value||'',
       taskAssigner:qs('#fAssigner').value,
       taskAssignerOption:qs('#fAssigner').value,
       timeType:qs('#fTimeType').value,
@@ -2816,9 +3049,12 @@ async function saveTaskForm(id){
       resultText:''
     };
 
-    await api('saveTask',payload);
+    const saved=await api('saveTask',payload);
+
     closeModal();
-    showToast('Tugas berhasil disimpan.');
+    showToast(saved?.idempotent
+      ? 'Tugas sudah tersimpan. Duplikasi dicegah.'
+      : 'Tugas berhasil disimpan.');
 
     if(state.page==='project'){
       state.projectStageFocus=stageId;
@@ -2827,6 +3063,12 @@ async function saveTaskForm(id){
     await loadPage();
   }catch(e){
     showToast(e.message,true);
+  }finally{
+    __taskSaveInFlight=false;
+    if(button&&button.isConnected){
+      button.disabled=false;
+      button.textContent=originalText;
+    }
   }
 }
 
@@ -3081,6 +3323,11 @@ async function showTaskDetail(id){
         </div>
 
         <div class="field">
+          <label>Email PIC</label>
+          <div class="task-detail-value">${esc(d.picEmail||'—')}</div>
+        </div>
+
+        <div class="field">
           <label>Jenis Aktivitas</label>
           <div class="task-detail-value">${esc(d.activity||'—')}</div>
         </div>
@@ -3137,7 +3384,8 @@ async function showTaskDetail(id){
           </div>
         </div>
       </div>`,
-      `<button class="btn" onclick="closeModal()">Tutup</button>
+      `<button class="btn danger" onclick="closeModal();deleteTask('${esc(d.id)}')">Hapus</button>
+       <button class="btn" onclick="closeModal()">Tutup</button>
        ${d.status!=='done'?`<button class="btn primary" onclick="closeModal();openTaskUpdate('${esc(d.id)}')">Update</button>`:''}`
     );
   }catch(e){
