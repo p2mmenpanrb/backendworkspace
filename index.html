@@ -1030,6 +1030,320 @@ tr:last-child td{border-bottom:0}
 .project-lazy-head-actions{display:flex;gap:5px;align-items:center}
 .project-info-card{margin-top:14px}
 
+
+/* v1.65 — Project UI refinement + automatic proportional Gantt */
+.project-stage-name{font-size:14px !important;line-height:1.35;font-weight:800}
+.project-stage-meta{font-size:11px !important;line-height:1.4;color:var(--muted);margin-top:4px}
+.project-task-title{font-size:12.5px !important;line-height:1.4;font-weight:750}
+.project-task-description{font-size:11px !important;line-height:1.45;color:var(--muted)}
+.project-health{font-size:12px !important}
+.project-back{font-size:12px !important}
+.project-info-card .card-title{font-size:16px}
+.project-info-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:18px;
+}
+.project-info-label{
+  font-size:11px;
+  line-height:1.3;
+  color:var(--muted);
+  margin-bottom:4px;
+}
+.project-info-value{
+  font-size:15px;
+  line-height:1.45;
+  font-weight:750;
+  color:var(--ink);
+}
+
+/* Refined lazy section headers — left aligned */
+.project-lazy-section summary{
+  display:grid !important;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  align-items:center;
+  justify-content:initial !important;
+  gap:10px;
+  min-height:54px;
+  padding:11px 14px !important;
+  font-weight:400 !important;
+}
+.project-lazy-section summary:before{
+  margin-right:0 !important;
+  font-size:18px !important;
+}
+.project-lazy-title-wrap{
+  min-width:0;
+  text-align:left;
+}
+.project-lazy-title{
+  display:block;
+  font-size:14px;
+  line-height:1.3;
+  font-weight:800;
+  color:var(--ink);
+}
+.project-lazy-help{
+  display:block;
+  margin-top:2px;
+  font-size:11px;
+  line-height:1.4;
+  color:var(--muted);
+}
+.project-lazy-head-actions{
+  justify-content:flex-end;
+}
+.project-lazy-summary-meta{
+  font-size:11px !important;
+}
+.project-lazy-body{
+  padding:0;
+}
+.project-lazy-body .linked-item,
+.project-lazy-body .source-item{
+  padding:12px 14px;
+}
+.project-lazy-body .linked-title{
+  font-size:12.5px;
+}
+
+/* Automatic Gantt */
+:root{
+  --gantt-label-w:340px;
+  --gantt-day-w:10px;
+  --gantt-row-h:54px;
+  --gantt-blue-stage:#1e3a8a;
+  --gantt-blue-active:#5b8def;
+  --gantt-blue-done:#c9dcfb;
+  --gantt-blue-late:#dbeafe;
+  --gantt-blue-late-border:#2563eb;
+  --gantt-grid:#edf2f7;
+}
+.gantt-toolbar{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:center;
+  flex-wrap:wrap;
+  margin-bottom:12px;
+}
+.gantt-segmented{
+  display:inline-flex;
+  gap:3px;
+  padding:3px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:#f8fafc;
+}
+.gantt-segmented button{
+  border:0;
+  background:transparent;
+  padding:6px 10px;
+  border-radius:5px;
+  color:#475569;
+  font-size:11px;
+  cursor:pointer;
+}
+.gantt-segmented button.active{
+  background:var(--gantt-blue-stage);
+  color:#fff;
+}
+.gantt-legend{
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.gantt-legend-item{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  font-size:11px;
+  color:#475569;
+}
+.gantt-legend-box{
+  width:18px;
+  height:9px;
+  border-radius:3px;
+}
+.gantt-stage-color{background:var(--gantt-blue-stage)}
+.gantt-active-color{background:var(--gantt-blue-active)}
+.gantt-done-color{background:var(--gantt-blue-done)}
+.gantt-late-color{
+  background:var(--gantt-blue-late);
+  border:1px solid var(--gantt-blue-late-border);
+}
+.gantt-scroll{
+  overflow-x:auto;
+  overflow-y:hidden;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:#fff;
+}
+.gantt-root{
+  width:max-content;
+  min-width:100%;
+}
+.gantt-header-row,
+.gantt-data-row{
+  display:flex;
+}
+.gantt-header-row{
+  height:64px;
+  border-bottom:1px solid var(--line);
+  background:#fbfdff;
+  position:sticky;
+  top:0;
+  z-index:5;
+}
+.gantt-left-head,
+.gantt-left-cell{
+  width:var(--gantt-label-w);
+  min-width:var(--gantt-label-w);
+  border-right:1px solid var(--line);
+}
+.gantt-left-head{
+  display:flex;
+  align-items:flex-start;
+  padding:12px 16px;
+  font-size:12px;
+  font-weight:800;
+  color:#334155;
+}
+.gantt-timeline-header,
+.gantt-timeline-cell{
+  position:relative;
+  flex:0 0 auto;
+}
+.gantt-month{
+  position:absolute;
+  top:0;
+  height:30px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-right:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+  color:#334155;
+  font-size:11px;
+  font-weight:800;
+  background:#fbfdff;
+}
+.gantt-week{
+  position:absolute;
+  top:30px;
+  height:34px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-right:1px solid var(--line);
+  color:#64748b;
+  font-size:10px;
+  font-weight:700;
+  background:#fbfdff;
+}
+.gantt-data-row{
+  min-height:var(--gantt-row-h);
+  border-bottom:1px solid var(--gantt-grid);
+}
+.gantt-data-row:last-child{border-bottom:0}
+.gantt-left-cell{
+  min-height:var(--gantt-row-h);
+  padding:10px 16px;
+  background:#fff;
+  text-align:left;
+}
+.gantt-row-stage .gantt-left-cell{
+  background:#fbfdff;
+}
+.gantt-stage-title{
+  font-size:13px;
+  line-height:1.35;
+  font-weight:800;
+  text-align:left;
+}
+.gantt-task-title{
+  font-size:12px;
+  line-height:1.35;
+  color:#334155;
+  text-align:left;
+  margin:0;
+}
+.gantt-meta{
+  margin-top:3px;
+  font-size:10px;
+  color:#94a3b8;
+  text-align:left;
+}
+.gantt-timeline-cell{
+  min-height:var(--gantt-row-h);
+  background-color:#fff;
+  background-image:
+    linear-gradient(to right, var(--gantt-grid) 1px, transparent 1px);
+  background-size:calc(var(--gantt-day-w) * 7) 100%;
+}
+.gantt-row-stage .gantt-timeline-cell{
+  background-color:#fbfdff;
+}
+.gantt-bar{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  height:14px;
+  min-width:var(--gantt-day-w);
+  border-radius:3px;
+}
+.gantt-bar.stage{
+  height:14px;
+  background:var(--gantt-blue-stage);
+}
+.gantt-bar.active{
+  height:12px;
+  background:var(--gantt-blue-active);
+}
+.gantt-bar.done{
+  height:12px;
+  background:var(--gantt-blue-done);
+}
+.gantt-bar.late{
+  height:12px;
+  background:var(--gantt-blue-late);
+  border:1px solid var(--gantt-blue-late-border);
+}
+.gantt-today-line{
+  position:absolute;
+  top:0;
+  bottom:0;
+  width:1px;
+  background:#7aa2f7;
+  z-index:2;
+  pointer-events:none;
+}
+.gantt-info{
+  margin-top:10px;
+  color:var(--muted);
+  font-size:11px;
+  line-height:1.45;
+}
+.gantt-empty{
+  padding:16px;
+  color:var(--muted);
+  font-size:11px;
+}
+@media(max-width:780px){
+  .project-info-grid{grid-template-columns:1fr}
+  .project-lazy-section summary{
+    grid-template-columns:auto minmax(0,1fr);
+  }
+  .project-lazy-head-actions{
+    grid-column:2;
+    justify-content:flex-start;
+  }
+  :root{
+    --gantt-label-w:285px;
+    --gantt-day-w:9px;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -1082,7 +1396,7 @@ tr:last-child td{border-bottom:0}
 
 <script>
 /*
-  Netlify frontend v1.63 — true on-demand Project documents, sources, and history.
+  Netlify frontend v1.65 — refined Project UI + automatic proportional Gantt.
   Netlify frontend.
   Recommended production setup:
   - index.html is hosted by Netlify/GitHub
@@ -2116,6 +2430,7 @@ function renderProjectDetail(d){
       </div>
     </div>`+
     `<div class="project-lazy-stack">
+      ${renderProjectGanttLazySection(p,stages,tasks)}
       ${renderProjectDocumentsLazySection(p.id)}
       ${renderProjectSourcesLazySection(p.id)}
       ${renderProjectSystemHistory(p.id)}
@@ -2123,12 +2438,20 @@ function renderProjectDetail(d){
     `<div class="card project-info-card">
       <div class="card-head"><div><div class="card-title">Informasi Project</div></div></div>
       <div class="card-body">
-        <div class="sub">Program Utama</div>
-        <strong>${esc(p.primaryProgram)}</strong>
-        <div class="sub" style="margin-top:10px">PIC</div>
-        <strong>${esc((p.picList||[]).join(', ')||'—')}</strong>
-        <div class="sub" style="margin-top:10px">Periode</div>
-        <strong>${esc(fmtDate(p.startDate))} → ${esc(fmtDate(p.targetDate))}</strong>
+        <div class="project-info-grid">
+          <div>
+            <div class="project-info-label">Program Utama</div>
+            <div class="project-info-value">${esc(p.primaryProgram||'—')}</div>
+          </div>
+          <div>
+            <div class="project-info-label">PIC</div>
+            <div class="project-info-value">${esc((p.picList||[]).join(', ')||'—')}</div>
+          </div>
+          <div>
+            <div class="project-info-label">Periode</div>
+            <div class="project-info-value">${esc(fmtDate(p.startDate))} → ${esc(fmtDate(p.targetDate))}</div>
+          </div>
+        </div>
       </div>
     </div>`;
 
@@ -2146,12 +2469,272 @@ function renderProjectDetail(d){
   },30);
 }
 
+
+function renderProjectGanttLazySection(project,stages,tasks){
+  return `<details class="project-lazy-section" id="projectGanttSection" ontoggle="renderProjectGanttOnOpen(this)">
+    <summary>
+      <span class="project-lazy-title-wrap">
+        <span class="project-lazy-title">Timeline / Gantt Project</span>
+        <span class="project-lazy-help">Dibentuk otomatis dari tanggal Tahapan dan Tugas. Dirender hanya ketika bagian ini dibuka.</span>
+      </span>
+      <span class="project-lazy-summary-meta">tanpa API tambahan</span>
+    </summary>
+    <div class="project-lazy-body" id="projectGanttBody">
+      <div class="project-secondary-loading">Timeline dirender ketika bagian ini dibuka.</div>
+    </div>
+  </details>`;
+}
+
+function renderProjectGanttOnOpen(details){
+  if(!details.open)return;
+
+  const d=window.__projectDetail;
+  if(!d?.project)return;
+
+  const body=qs('#projectGanttBody');
+  if(!body)return;
+
+  body.innerHTML=buildProjectGantt(d.project,d.stages||[],d.tasks||[],'all');
+}
+
+function buildProjectGantt(project,stages,tasks,mode='all'){
+  const DAY_WIDTH=10;
+  const MS_DAY=24*60*60*1000;
+
+  const toDate=value=>{
+    if(!value)return null;
+    const d=new Date(String(value).slice(0,10)+'T00:00:00');
+    return Number.isNaN(d.getTime())?null:d;
+  };
+
+  const iso=d=>{
+    const y=d.getFullYear();
+    const m=String(d.getMonth()+1).padStart(2,'0');
+    const day=String(d.getDate()).padStart(2,'0');
+    return `${y}-${m}-${day}`;
+  };
+
+  const rows=[];
+
+  (stages||[])
+    .slice()
+    .sort((a,b)=>(Number(a.order)||0)-(Number(b.order)||0))
+    .forEach((stage,index)=>{
+      const start=toDate(stage.startDate);
+      const end=toDate(stage.targetDate||stage.startDate);
+
+      if(start&&end){
+        rows.push({
+          type:'stage',
+          title:`${String(index+1).padStart(2,'0')} ${stage.name||'Tahapan'}`,
+          start:iso(start),
+          end:iso(end),
+          status:'stage'
+        });
+      }
+
+      (tasks||[])
+        .filter(t=>String(t.stageId||'')===String(stage.id||''))
+        .forEach(t=>{
+          const ts=toDate(t.startDate);
+          const te=toDate(t.endDate||t.startDate);
+
+          if(!ts||!te)return;
+
+          rows.push({
+            type:'task',
+            title:t.title||'Tugas',
+            start:iso(ts),
+            end:iso(te),
+            status:t.status==='done'?'done':(t.overdue?'late':'active')
+          });
+        });
+    });
+
+  // Project tasks without a Tahapan are still included when dated.
+  (tasks||[])
+    .filter(t=>!t.stageId)
+    .forEach(t=>{
+      const ts=toDate(t.startDate);
+      const te=toDate(t.endDate||t.startDate);
+      if(!ts||!te)return;
+
+      rows.push({
+        type:'task',
+        title:t.title||'Tugas',
+        start:iso(ts),
+        end:iso(te),
+        status:t.status==='done'?'done':(t.overdue?'late':'active')
+      });
+    });
+
+  if(!rows.length){
+    return `<div class="gantt-empty">Belum ada Tahapan atau Tugas bertanggal yang dapat ditampilkan pada Gantt.</div>`;
+  }
+
+  const allDates=[];
+  rows.forEach(r=>{
+    allDates.push(toDate(r.start),toDate(r.end));
+  });
+
+  const projectStart=toDate(project.startDate);
+  const projectEnd=toDate(project.targetDate);
+
+  if(projectStart)allDates.push(projectStart);
+  if(projectEnd)allDates.push(projectEnd);
+
+  const validDates=allDates.filter(Boolean);
+  let minDate=new Date(Math.min(...validDates.map(d=>d.getTime())));
+  let maxDate=new Date(Math.max(...validDates.map(d=>d.getTime())));
+
+  if(maxDate<minDate){
+    maxDate=new Date(minDate);
+  }
+
+  const dayIndex=d=>Math.round((d-minDate)/MS_DAY);
+  const durationDays=(s,e)=>Math.round((toDate(e)-toDate(s))/MS_DAY)+1;
+  const totalDays=dayIndex(maxDate)+1;
+  const timelineWidth=Math.max(totalDays*DAY_WIDTH,560);
+
+  const fmtShort=d=>d.toLocaleDateString('id-ID',{day:'numeric',month:'short'});
+  const fmtRange=(s,e)=>{
+    const a=toDate(s),b=toDate(e);
+    return s===e?fmtShort(a):`${fmtShort(a)} – ${fmtShort(b)}`;
+  };
+  const statusLabel=status=>{
+    if(status==='done')return'Selesai';
+    if(status==='late')return'Perlu Update';
+    return'Berjalan';
+  };
+
+  const getMonths=()=>{
+    const result=[];
+    let cursor=new Date(minDate.getFullYear(),minDate.getMonth(),1);
+
+    while(cursor<=maxDate){
+      const next=new Date(cursor.getFullYear(),cursor.getMonth()+1,1);
+      const visibleStart=new Date(Math.max(cursor,minDate));
+      const visibleEnd=new Date(Math.min(new Date(next-MS_DAY),maxDate));
+
+      const left=dayIndex(visibleStart)*DAY_WIDTH;
+      const width=(Math.round((visibleEnd-visibleStart)/MS_DAY)+1)*DAY_WIDTH;
+
+      result.push({
+        left,
+        width,
+        label:visibleStart.toLocaleDateString('id-ID',{month:'short',year:'numeric'})
+      });
+
+      cursor=next;
+    }
+
+    return result;
+  };
+
+  const getWeeks=()=>{
+    const result=[];
+    let cursor=new Date(minDate);
+    let index=1;
+
+    while(cursor<=maxDate){
+      const end=new Date(Math.min(cursor.getTime()+6*MS_DAY,maxDate.getTime()));
+      const left=dayIndex(cursor)*DAY_WIDTH;
+      const width=(Math.round((end-cursor)/MS_DAY)+1)*DAY_WIDTH;
+
+      result.push({left,width,label:`M${index}`});
+
+      cursor=new Date(cursor.getTime()+7*MS_DAY);
+      index++;
+    }
+
+    return result;
+  };
+
+  const selectedRows=mode==='stage'
+    ? rows.filter(r=>r.type==='stage')
+    : rows;
+
+  const months=getMonths();
+  const weeks=getWeeks();
+
+  let table=`<div class="gantt-header-row">
+    <div class="gantt-left-head">Timeline Project</div>
+    <div class="gantt-timeline-header" style="width:${timelineWidth}px">
+      ${months.map(m=>`<div class="gantt-month" style="left:${m.left}px;width:${m.width}px">${esc(m.label)}</div>`).join('')}
+      ${weeks.map(w=>`<div class="gantt-week" style="left:${w.left}px;width:${w.width}px">${esc(w.label)}</div>`).join('')}
+    </div>
+  </div>`;
+
+  selectedRows.forEach(r=>{
+    const start=toDate(r.start);
+    const left=dayIndex(start)*DAY_WIDTH;
+    const width=durationDays(r.start,r.end)*DAY_WIDTH;
+    const rowClass=r.type==='stage'?'gantt-row-stage':'';
+    const titleClass=r.type==='stage'?'gantt-stage-title':'gantt-task-title';
+    const barClass=r.type==='stage'?'stage':r.status;
+    const range=fmtRange(r.start,r.end);
+    const meta=r.type==='stage'
+      ?range
+      :`${statusLabel(r.status)} · ${range}`;
+
+    table+=`<div class="gantt-data-row ${rowClass}">
+      <div class="gantt-left-cell">
+        <div class="${titleClass}">${esc(r.title)}</div>
+        <div class="gantt-meta">${esc(meta)}</div>
+      </div>
+      <div class="gantt-timeline-cell" style="width:${timelineWidth}px">
+        <div class="gantt-bar ${barClass}" style="left:${left}px;width:${width}px"></div>
+      </div>
+    </div>`;
+  });
+
+  return `<div style="padding:12px 14px">
+    <div class="gantt-toolbar">
+      <div class="gantt-segmented">
+        <button class="${mode==='all'?'active':''}" onclick="rerenderProjectGantt('all')">Tahapan + Tugas</button>
+        <button class="${mode==='stage'?'active':''}" onclick="rerenderProjectGantt('stage')">Tahapan Saja</button>
+      </div>
+
+      <div class="gantt-legend">
+        <span class="gantt-legend-item"><span class="gantt-legend-box gantt-stage-color"></span>Tahapan</span>
+        <span class="gantt-legend-item"><span class="gantt-legend-box gantt-active-color"></span>Tugas aktif</span>
+        <span class="gantt-legend-item"><span class="gantt-legend-box gantt-done-color"></span>Selesai</span>
+        <span class="gantt-legend-item"><span class="gantt-legend-box gantt-late-color"></span>Perlu Update</span>
+      </div>
+    </div>
+
+    <div class="gantt-scroll">
+      <div class="gantt-root">${table}</div>
+    </div>
+
+    <div class="gantt-info">
+      Skala proporsional berdasarkan hari. Header menggunakan minggu; tanggal aktual ditampilkan pada label kiri.
+    </div>
+  </div>`;
+}
+
+function rerenderProjectGantt(mode){
+  const d=window.__projectDetail;
+  const body=qs('#projectGanttBody');
+  if(!d?.project||!body)return;
+
+  body.innerHTML=buildProjectGantt(
+    d.project,
+    d.stages||[],
+    d.tasks||[],
+    mode
+  );
+}
+
 function renderProjectDocumentsLazySection(projectId){
   const cache=projectLazyCache(projectId).documents;
   const meta=cache.loaded?`· ${cache.total} dokumen`:'· klik untuk memuat';
   return `<details class="project-lazy-section" id="projectDocumentsSection" ontoggle="loadProjectDocumentsOnOpen(this,'${esc(projectId)}')">
     <summary>
-      <span class="project-lazy-summary-main">Dokumen Terhubung</span>
+      <span class="project-lazy-title-wrap">
+        <span class="project-lazy-title">Dokumen Terhubung</span>
+        <span class="project-lazy-help">Dokumen Project dan hasil Tugas. Dimuat hanya ketika bagian ini dibuka.</span>
+      </span>
       <span class="project-lazy-head-actions">
         <span id="projectDocumentsSummary" class="project-lazy-summary-meta">${meta}</span>
         <button class="mini" onclick="event.preventDefault();event.stopPropagation();navigateFiltered('documents','${esc(projectId)}')">Dokumen ↗</button>
@@ -2168,7 +2751,10 @@ function renderProjectSourcesLazySection(projectId){
   const meta=cache.loaded?`· ${cache.total} link`:'· klik untuk memuat';
   return `<details class="project-lazy-section" id="projectSourcesSection" ontoggle="loadProjectSourcesOnOpen(this,'${esc(projectId)}')">
     <summary>
-      <span class="project-lazy-summary-main">Sumber & Link Tambahan</span>
+      <span class="project-lazy-title-wrap">
+        <span class="project-lazy-title">Sumber & Link Tambahan</span>
+        <span class="project-lazy-help">Referensi dan link hasil Tugas. Dimuat hanya ketika bagian ini dibuka.</span>
+      </span>
       <span class="project-lazy-head-actions">
         <span id="projectSourcesSummary" class="project-lazy-summary-meta">${meta}</span>
         <button class="mini" onclick="event.preventDefault();event.stopPropagation();openProjectSourceForm('${esc(projectId)}')">+ Tambah</button>
@@ -2368,7 +2954,10 @@ function renderProjectSystemHistory(projectId){
   const meta=cache.loaded?`· ${cache.total} log`:'· klik untuk memuat';
   return `<details class="project-lazy-section" id="projectSystemHistory" ontoggle="loadProjectHistoryOnOpen(this,'${esc(projectId)}')">
     <summary>
-      <span class="project-lazy-summary-main">Riwayat Sistem</span>
+      <span class="project-lazy-title-wrap">
+        <span class="project-lazy-title">Riwayat Sistem</span>
+        <span class="project-lazy-help">Audit log otomatis. Dimuat hanya ketika bagian ini dibuka.</span>
+      </span>
       <span id="projectHistorySummary" class="project-lazy-summary-meta">${meta}</span>
     </summary>
     <div class="project-lazy-body" id="projectHistoryBody">
