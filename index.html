@@ -101,9 +101,42 @@ tr:last-child td{border-bottom:0}
 .helper{font-size:10px;color:var(--muted);line-height:1.45;margin-top:4px}
 @media(max-width:1100px){.project-list-head,.project-row{grid-template-columns:minmax(220px,1.4fr) 135px 100px 135px 70px}.project-list-head>*:nth-child(6),.project-row>*:nth-child(6){display:none}.project-grid{grid-template-columns:1fr}}
 
+
+/* Minimal global loading progress */
+.global-progress{
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  height:3px;
+  z-index:500;
+  pointer-events:none;
+  opacity:0;
+  background:transparent;
+  transition:opacity .15s ease;
+}
+.global-progress.show{opacity:1}
+.global-progress-bar{
+  width:0;
+  height:100%;
+  background:#18181b;
+  border-radius:0 999px 999px 0;
+  box-shadow:0 1px 5px rgba(24,24,27,.14);
+  transition:width .28s ease;
+}
+@media(prefers-reduced-motion:reduce){
+  .global-progress,
+  .global-progress-bar{transition:none}
+}
+
 </style>
 </head>
 <body>
+
+<div id="globalProgress" class="global-progress" aria-hidden="true">
+  <div id="globalProgressBar" class="global-progress-bar"></div>
+</div>
+
 <div class="app">
   <aside class="sidebar">
     <div class="brand-wrap"><div class="brand-mark">IW</div><div class="brand-copy">Rekap Kerja Asdep PPP<small>Project, tugas, dokumen, dan tindak lanjut tim</small></div></div>
@@ -127,6 +160,7 @@ tr:last-child td{border-bottom:0}
 
 <script>
 /*
+  Netlify frontend v1.42 — minimalist global loading progress.
   Netlify frontend.
   Recommended production setup:
   - index.html is hosted by Netlify/GitHub
@@ -136,6 +170,59 @@ tr:last-child td{border-bottom:0}
   If you already have your own proxy endpoint, change API_ENDPOINT below.
 */
 const API_ENDPOINT = '/api';
+
+
+let __activeRequests=0;
+let __progressTimer=null;
+
+function startGlobalProgress(){
+  __activeRequests++;
+  if(__activeRequests!==1) return;
+
+  const shell=document.getElementById('globalProgress');
+  const bar=document.getElementById('globalProgressBar');
+  if(!shell||!bar) return;
+
+  clearTimeout(__progressTimer);
+  shell.classList.add('show');
+  bar.style.width='10%';
+
+  requestAnimationFrame(()=>{
+    bar.style.width='62%';
+  });
+
+  __progressTimer=setTimeout(()=>{
+    if(__activeRequests>0) bar.style.width='82%';
+  },650);
+}
+
+function finishGlobalProgress(){
+  __activeRequests=Math.max(0,__activeRequests-1);
+  if(__activeRequests>0) return;
+
+  const shell=document.getElementById('globalProgress');
+  const bar=document.getElementById('globalProgressBar');
+  if(!shell||!bar) return;
+
+  clearTimeout(__progressTimer);
+  bar.style.width='100%';
+
+  setTimeout(()=>{
+    shell.classList.remove('show');
+    bar.style.width='0';
+  },180);
+}
+
+const __nativeFetch=window.fetch.bind(window);
+window.fetch=async function(){
+  startGlobalProgress();
+  try{
+    return await __nativeFetch(...arguments);
+  }finally{
+    finishGlobalProgress();
+  }
+};
+
 
 const PAGES=[
   ['workload','Ringkasan Pekerjaan','Monitoring'],
