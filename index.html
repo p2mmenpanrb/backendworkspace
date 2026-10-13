@@ -930,36 +930,59 @@ tr:last-child td{border-bottom:0}
 }
 
 
-/* v1.58 — compact Kelola Tugas rows + scorecards + pagination */
-.task-scorecards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:0 0 12px}
+/* v1.64 — Kelola Tugas grouped sections + independent pagination */
+.task-scorecards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:0 0 14px}
 .task-scorecard{border:1px solid var(--line);border-radius:9px;background:#fff;padding:11px 12px}
 .task-score-label{font-size:9px;color:var(--muted)}
 .task-score-value{font-size:19px;font-weight:780;margin-top:3px}
 .task-score-note{font-size:8px;color:#a1a1aa;margin-top:2px}
-.task-row-list{border:1px solid var(--line);border-radius:9px;background:#fff;overflow:hidden}
+.task-scorecard.needs-update{border-color:#fecaca;background:#fffafa}
+.task-scorecard.needs-update .task-score-value{color:#b91c1c}
+.task-sections{display:grid;gap:14px}
+.task-section{border:1px solid var(--line);border-radius:10px;background:#fff;overflow:hidden}
+.task-section-head{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:11px 12px;border-bottom:1px solid var(--line);background:#fafafa
+}
+.task-section-title{font-size:11px;font-weight:780}
+.task-section-note{font-size:8.5px;color:#71717a;margin-top:2px}
+.task-section-count{
+  display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:24px;
+  padding:0 7px;border:1px solid var(--line);border-radius:999px;background:#fff;
+  font-size:8.5px;font-weight:700;color:#52525b
+}
+.task-section.update .task-section-head{background:#fffafa}
+.task-section.update .task-section-count{border-color:#fecaca;color:#b91c1c;background:#fff}
+.task-row-list{background:#fff;overflow:hidden}
 .task-row-head,.task-list-row{
   display:grid;
-  grid-template-columns:34px minmax(230px,1.55fr) 76px 110px minmax(145px,1fr) minmax(105px,.8fr) 96px 84px minmax(300px,auto);
-  gap:9px;align-items:center
+  grid-template-columns:42px minmax(340px,1fr) 145px minmax(150px,.72fr) minmax(300px,auto);
+  gap:12px;align-items:center
 }
 .task-row-head{
-  min-height:36px;padding:0 10px;border-bottom:1px solid var(--line);
-  background:#fafafa;font-size:8px;font-weight:750;color:#71717a;
+  min-height:35px;padding:0 12px;border-bottom:1px solid var(--line);
+  background:#fff;font-size:8px;font-weight:750;color:#71717a;
   text-transform:uppercase;letter-spacing:.035em
 }
-.task-list-row{min-height:62px;padding:8px 10px;border-bottom:1px solid #f1f1f2;font-size:9px}
+.task-list-row{min-height:62px;padding:9px 12px;border-bottom:1px solid #f1f1f2;font-size:9px}
 .task-list-row:last-child{border-bottom:0}
 .task-list-no{color:#71717a;font-size:8.5px}
-.task-list-title{font-size:10px;font-weight:750;line-height:1.4}
-.task-list-context{font-size:8px;color:#71717a;line-height:1.4;margin-top:3px}
+.task-list-title{font-size:10.5px;font-weight:750;line-height:1.4}
+.task-list-meta{display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin-top:5px}
+.task-list-context{font-size:8px;color:#71717a;line-height:1.4;margin-top:4px}
 .task-list-context button{
   border:0;background:transparent;padding:0;font:inherit;color:#52525b;
   cursor:pointer;text-decoration:underline;text-underline-offset:2px
 }
-.task-list-pic{font-size:8.5px;line-height:1.45}
+.task-list-target{font-size:9px;line-height:1.45}
+.task-list-target.overdue{color:#b91c1c;font-weight:700}
+.task-list-pic{font-size:8.8px;line-height:1.45}
 .task-list-actions{display:flex;gap:5px;align-items:center;justify-content:flex-end;flex-wrap:wrap}
 .task-list-actions .mini{white-space:nowrap}
-.pagination{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 2px 0}
+.task-section-pagination{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:9px 12px 10px;border-top:1px solid #f1f1f2;background:#fff
+}
 .pagination-info{font-size:8.5px;color:#71717a}
 .pagination-controls{display:flex;gap:5px;align-items:center}
 .page-btn{
@@ -972,8 +995,9 @@ tr:last-child td{border-bottom:0}
 .task-email{color:#1d4ed8;border-color:#dbeafe;background:#f8fbff}
 @media(max-width:1180px){
   .task-row-list{overflow-x:auto}
-  .task-row-head,.task-list-row{min-width:1140px}
+  .task-row-head,.task-list-row{min-width:980px}
 }
+@media(max-width:900px){.task-scorecards{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:720px){.task-scorecards{grid-template-columns:1fr}}
 
 
@@ -983,6 +1007,28 @@ tr:last-child td{border-bottom:0}
   color:#a1a1aa;
   text-align:center;
 }
+
+
+/* v1.63 — true lazy Project sections */
+.project-lazy-stack{display:grid;gap:9px;margin-top:14px}
+.project-lazy-section{
+  border:1px solid var(--line);border-radius:10px;background:#fff;overflow:hidden
+}
+.project-lazy-section summary{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:11px 13px;cursor:pointer;list-style:none;font-size:10px;font-weight:750
+}
+.project-lazy-section summary::-webkit-details-marker{display:none}
+.project-lazy-section summary:before{
+  content:'›';display:inline-block;margin-right:7px;color:#71717a;font-size:14px;
+  transform:rotate(0deg);transition:transform .12s ease
+}
+.project-lazy-section[open] summary:before{transform:rotate(90deg)}
+.project-lazy-summary-main{display:flex;align-items:center;min-width:0}
+.project-lazy-summary-meta{font-size:8.5px;font-weight:500;color:#a1a1aa;white-space:nowrap}
+.project-lazy-body{border-top:1px solid #f2f2f3}
+.project-lazy-head-actions{display:flex;gap:5px;align-items:center}
+.project-info-card{margin-top:14px}
 
 </style>
 </head>
@@ -1036,7 +1082,7 @@ tr:last-child td{border-bottom:0}
 
 <script>
 /*
-  Netlify frontend v1.62 — fresh Project asset sync + no-store staged reads.
+  Netlify frontend v1.63 — true on-demand Project documents, sources, and history.
   Netlify frontend.
   Recommended production setup:
   - index.html is hosted by Netlify/GitHub
@@ -1147,6 +1193,7 @@ const state={
   projectTaskFocus:'',
   recapPic:'',
   taskListPage:1,
+  taskSectionPages:{todo:1,progress:1,done:1,update:1},
   projectTimeline:{q:'',type:'',limit:20}
 };
 
@@ -1167,6 +1214,8 @@ async function api(action,payload={}){
     'getPage',
     'taskDetail',
     'projectAssets',
+    'projectDocuments',
+    'projectSources',
     'projectHistory'
   ]);
 
@@ -1966,7 +2015,7 @@ function renderProject(){
   const m=state.model||{}, projects=m.projects||[], detail=m.projectDetail;
   if(detail){renderProjectDetail(detail);return}
   qs('#page').innerHTML=topbar('Project','Hub untuk mengorganisasi tugas, dokumen, dan sumber berdasarkan Tahapan Project.',`<button class="btn primary" onclick="openProjectForm()">+ Project Baru</button>`)+
-  `<div class="stats">${stat('Total Project',projects.length)}${stat('Project Aktif',projects.filter(p=>p.status==='Aktif').length)}${stat('Tugas Terhubung',projects.reduce((s,p)=>s+(p.taskCount||0),0))}${stat('Dokumen Terhubung',projects.reduce((s,p)=>s+(p.documentCount||0),0))}</div>`+
+  `<div class="stats">${stat('Total Project',projects.length)}${stat('Project Aktif',projects.filter(p=>p.status==='Aktif').length)}${stat('Tugas Terhubung',projects.reduce((s,p)=>s+(p.taskCount||0),0))}${stat('Tahapan',projects.reduce((s,p)=>s+(p.stageCount||0),0))}</div>`+
   `<div class="toolbar"><input id="projectSearch" placeholder="Cari project..." oninput="filterProjects()"><select id="projectProgram" onchange="filterProjects()"><option value="">Semua Program Utama</option>${(state.bootstrap?.programs||[]).map(x=>`<option>${esc(x)}</option>`).join('')}</select><select id="projectStatus" onchange="filterProjects()"><option value="">Semua Status</option>${(state.bootstrap?.projectStatuses||[]).map(x=>`<option>${esc(x)}</option>`).join('')}</select><button class="btn" onclick="resetProjectFilters()">Reset</button></div>`+
   `<div class="card"><div class="project-list-head"><div>Project</div><div>Program Utama</div><div>Status</div><div>PIC</div><div>Tugas</div><div>Aksi</div></div><div id="projectRows"></div></div>`;
   window.__projects=projects;renderProjectRows(projects);
@@ -1974,7 +2023,7 @@ function renderProject(){
 function filteredProjects(){const q=(qs('#projectSearch')?.value||'').toLowerCase(),p=qs('#projectProgram')?.value||'',s=qs('#projectStatus')?.value||'';return (window.__projects||[]).filter(x=>(!q||(x.name+' '+x.description+' '+x.pic).toLowerCase().includes(q))&&(!p||x.primaryProgram===p)&&(!s||x.status===s))}
 function filterProjects(){renderProjectRows(filteredProjects())}
 function resetProjectFilters(){qs('#projectSearch').value='';qs('#projectProgram').value='';qs('#projectStatus').value='';renderProjectRows(window.__projects||[])}
-function renderProjectRows(projects){qs('#projectRows').innerHTML=projects.length?projects.map(p=>`<div class="project-row"><div><div class="project-name">${esc(p.name)}</div><div class="project-desc">${esc(p.description||'')}</div></div><div><span class="pill">${esc(p.primaryProgram)}</span></div><div><span class="pill ${p.status==='Aktif'?'green':p.status==='Selesai'?'blue':'amber'}">${esc(p.status)}</span></div><div class="sub">${esc((p.picList||[]).join(', ')||'—')}</div><div><strong>${p.taskCount||0}</strong><div class="sub">${p.documentCount||0} dokumen</div></div><div><button class="mini" onclick="openProject('${esc(p.id)}')">Buka</button></div></div>`).join(''):'<div class="empty">Belum ada Project.</div>'}
+function renderProjectRows(projects){qs('#projectRows').innerHTML=projects.length?projects.map(p=>`<div class="project-row"><div><div class="project-name">${esc(p.name)}</div><div class="project-desc">${esc(p.description||'')}</div></div><div><span class="pill">${esc(p.primaryProgram)}</span></div><div><span class="pill ${p.status==='Aktif'?'green':p.status==='Selesai'?'blue':'amber'}">${esc(p.status)}</span></div><div class="sub">${esc((p.picList||[]).join(', ')||'—')}</div><div><strong>${p.taskCount||0}</strong><div class="sub">${p.stageCount||0} tahapan</div></div><div><button class="mini" onclick="openProject('${esc(p.id)}')">Buka</button></div></div>`).join(''):'<div class="empty">Belum ada Project.</div>'}
 function openProject(id){
   return loadPage({
     targetPage:'project',
@@ -1991,15 +2040,38 @@ function backToProjects(){
     historyMode:'push'
   });
 }
+function projectLazyCache(projectId){
+  window.__projectLazyCache=window.__projectLazyCache||{};
+  if(!window.__projectLazyCache[projectId]){
+    window.__projectLazyCache[projectId]={
+      documents:{loaded:false,loading:false,rows:[],total:0},
+      sources:{loaded:false,loading:false,rows:[],total:0},
+      history:{loaded:false,loading:false,rows:[],total:0}
+    };
+  }
+  return window.__projectLazyCache[projectId];
+}
+
+function invalidateProjectLazyCache(projectId,sections=['documents','sources','history']){
+  if(!projectId||!window.__projectLazyCache?.[projectId])return;
+  const cache=window.__projectLazyCache[projectId];
+  sections.forEach(section=>{
+    if(cache[section]){
+      cache[section].loaded=false;
+      cache[section].loading=false;
+      cache[section].rows=[];
+      cache[section].total=0;
+    }
+  });
+}
+
 function renderProjectDetail(d){
   const p=d.project;
   const tasks=d.tasks||[];
   const stages=d.stages||[];
-  const assetsLoaded=!!d.assetsLoaded;
-  const docs=d.documents||[];
-  const sources=d.sources||[];
 
   window.__projectDetail=d;
+  projectLazyCache(p.id);
 
   const activeStageId=
     state.projectStageFocus ||
@@ -2023,11 +2095,7 @@ function renderProjectDetail(d){
       ${stat('Tahapan',stages.length,'fase pekerjaan')}
       ${stat('Tugas',tasks.length,'terhubung')}
       ${stat('Tugas Aktif',tasks.filter(t=>t.status!=='done').length,'masih berjalan')}
-      <div class="stat">
-        <div class="stat-label">Dokumen</div>
-        <div class="stat-value" id="projectDocumentCount">${assetsLoaded?docs.length:'…'}</div>
-        <div class="stat-note">terhubung</div>
-      </div>
+      ${stat('Tugas Selesai',tasks.filter(t=>t.status==='done').length,'selesai')}
     </div>`+
     `<div class="project-health">
       <span><strong>${p.overdueTaskCount||0}</strong> tugas terlambat</span>
@@ -2047,52 +2115,22 @@ function renderProjectDetail(d){
         </div>
       </div>
     </div>`+
-    `<div class="project-grid" style="margin-top:14px">
-      <div class="card">
-        <div class="card-head">
-          <div>
-            <div class="card-title">Dokumen Terhubung</div>
-            <div class="card-note">Dokumen Project dan hasil Tugas yang otomatis masuk ke Inventaris Dokumen.</div>
-          </div>
-          <button class="mini" onclick="navigateFiltered('documents','${esc(p.id)}')">Dokumen ↗</button>
-        </div>
-        <div id="projectDocumentBody">
-          ${assetsLoaded
-            ? renderProjectDocumentsList(docs)
-            : '<div class="project-secondary-loading">Memuat dokumen…</div>'}
-        </div>
-      </div>
-
-      <div>
-        <div class="card">
-          <div class="card-head">
-            <div>
-              <div class="card-title">Sumber & Link Tambahan</div>
-              <div class="card-note">Link Project, termasuk link hasil Tugas yang tersinkron otomatis.</div>
-            </div>
-            <button class="mini" onclick="openProjectSourceForm('${esc(p.id)}')">+ Tambah</button>
-          </div>
-          <div id="projectSourceBody">
-            ${assetsLoaded
-              ? renderProjectSourcesList(sources)
-              : '<div class="project-secondary-loading">Memuat sumber & link…</div>'}
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-head"><div><div class="card-title">Informasi Project</div></div></div>
-          <div class="card-body">
-            <div class="sub">Program Utama</div>
-            <strong>${esc(p.primaryProgram)}</strong>
-            <div class="sub" style="margin-top:10px">PIC</div>
-            <strong>${esc((p.picList||[]).join(', ')||'—')}</strong>
-            <div class="sub" style="margin-top:10px">Periode</div>
-            <strong>${esc(fmtDate(p.startDate))} → ${esc(fmtDate(p.targetDate))}</strong>
-          </div>
-        </div>
-      </div>
+    `<div class="project-lazy-stack">
+      ${renderProjectDocumentsLazySection(p.id)}
+      ${renderProjectSourcesLazySection(p.id)}
+      ${renderProjectSystemHistory(p.id)}
     </div>`+
-    renderProjectSystemHistory(p.id);
+    `<div class="card project-info-card">
+      <div class="card-head"><div><div class="card-title">Informasi Project</div></div></div>
+      <div class="card-body">
+        <div class="sub">Program Utama</div>
+        <strong>${esc(p.primaryProgram)}</strong>
+        <div class="sub" style="margin-top:10px">PIC</div>
+        <strong>${esc((p.picList||[]).join(', ')||'—')}</strong>
+        <div class="sub" style="margin-top:10px">Periode</div>
+        <strong>${esc(fmtDate(p.startDate))} → ${esc(fmtDate(p.targetDate))}</strong>
+      </div>
+    </div>`;
 
   setTimeout(()=>{
     if(state.projectTaskFocus){
@@ -2104,13 +2142,106 @@ function renderProjectDetail(d){
       }
       state.projectTaskFocus='';
     }
-
     state.projectStageFocus='';
-
-    if(!assetsLoaded){
-      loadProjectAssets(p.id);
-    }
   },30);
+}
+
+function renderProjectDocumentsLazySection(projectId){
+  const cache=projectLazyCache(projectId).documents;
+  const meta=cache.loaded?`· ${cache.total} dokumen`:'· klik untuk memuat';
+  return `<details class="project-lazy-section" id="projectDocumentsSection" ontoggle="loadProjectDocumentsOnOpen(this,'${esc(projectId)}')">
+    <summary>
+      <span class="project-lazy-summary-main">Dokumen Terhubung</span>
+      <span class="project-lazy-head-actions">
+        <span id="projectDocumentsSummary" class="project-lazy-summary-meta">${meta}</span>
+        <button class="mini" onclick="event.preventDefault();event.stopPropagation();navigateFiltered('documents','${esc(projectId)}')">Dokumen ↗</button>
+      </span>
+    </summary>
+    <div class="project-lazy-body" id="projectDocumentsBody">
+      ${cache.loaded?renderProjectDocumentsList(cache.rows):'<div class="project-secondary-loading">Dokumen baru dimuat ketika bagian ini dibuka.</div>'}
+    </div>
+  </details>`;
+}
+
+function renderProjectSourcesLazySection(projectId){
+  const cache=projectLazyCache(projectId).sources;
+  const meta=cache.loaded?`· ${cache.total} link`:'· klik untuk memuat';
+  return `<details class="project-lazy-section" id="projectSourcesSection" ontoggle="loadProjectSourcesOnOpen(this,'${esc(projectId)}')">
+    <summary>
+      <span class="project-lazy-summary-main">Sumber & Link Tambahan</span>
+      <span class="project-lazy-head-actions">
+        <span id="projectSourcesSummary" class="project-lazy-summary-meta">${meta}</span>
+        <button class="mini" onclick="event.preventDefault();event.stopPropagation();openProjectSourceForm('${esc(projectId)}')">+ Tambah</button>
+      </span>
+    </summary>
+    <div class="project-lazy-body" id="projectSourcesBody">
+      ${cache.loaded?renderProjectSourcesList(cache.rows):'<div class="project-secondary-loading">Sumber & link baru dimuat ketika bagian ini dibuka.</div>'}
+    </div>
+  </details>`;
+}
+
+async function loadProjectDocumentsOnOpen(details,projectId){
+  if(!details.open)return;
+  const cache=projectLazyCache(projectId).documents;
+  const body=qs('#projectDocumentsBody');
+  const summary=qs('#projectDocumentsSummary');
+
+  if(cache.loaded){
+    if(body)body.innerHTML=renderProjectDocumentsList(cache.rows);
+    if(summary)summary.textContent=`· ${cache.total} dokumen`;
+    return;
+  }
+
+  if(cache.loading)return;
+  cache.loading=true;
+  if(body)body.innerHTML='<div class="project-secondary-loading">Memuat dokumen…</div>';
+
+  try{
+    const result=await api('projectDocuments',{projectId});
+    cache.rows=result.rows||[];
+    cache.total=result.total||0;
+    cache.loaded=true;
+    cache.loading=false;
+
+    if(state.page!=='project'||String(state.projectId)!==String(projectId))return;
+    if(body)body.innerHTML=renderProjectDocumentsList(cache.rows);
+    if(summary)summary.textContent=`· ${cache.total} dokumen`;
+  }catch(e){
+    cache.loading=false;
+    if(body)body.innerHTML=`<div class="empty">Dokumen belum dapat dimuat. <button class="mini" onclick="loadProjectDocumentsOnOpen(qs('#projectDocumentsSection'),'${esc(projectId)}')">Coba lagi</button></div>`;
+  }
+}
+
+async function loadProjectSourcesOnOpen(details,projectId){
+  if(!details.open)return;
+  const cache=projectLazyCache(projectId).sources;
+  const body=qs('#projectSourcesBody');
+  const summary=qs('#projectSourcesSummary');
+
+  if(cache.loaded){
+    if(body)body.innerHTML=renderProjectSourcesList(cache.rows);
+    if(summary)summary.textContent=`· ${cache.total} link`;
+    return;
+  }
+
+  if(cache.loading)return;
+  cache.loading=true;
+  if(body)body.innerHTML='<div class="project-secondary-loading">Memuat sumber & link…</div>';
+
+  try{
+    const result=await api('projectSources',{projectId});
+    cache.rows=result.rows||[];
+    cache.total=result.total||0;
+    cache.loaded=true;
+    cache.loading=false;
+
+    if(state.page!=='project'||String(state.projectId)!==String(projectId))return;
+    if(body)body.innerHTML=renderProjectSourcesList(cache.rows);
+    if(summary)summary.textContent=`· ${cache.total} link`;
+  }catch(e){
+    cache.loading=false;
+    if(body)body.innerHTML=`<div class="empty">Sumber belum dapat dimuat. <button class="mini" onclick="loadProjectSourcesOnOpen(qs('#projectSourcesSection'),'${esc(projectId)}')">Coba lagi</button></div>`;
+  }
 }
 
 function renderProjectDocumentsList(docs){
@@ -2140,44 +2271,6 @@ function renderProjectSourcesList(sources){
         </div>
       </div>`).join('')
     : '<div class="empty">Belum ada sumber tambahan.</div>';
-}
-
-async function loadProjectAssets(projectId){
-  try{
-    const assets=await api('projectAssets',{projectId});
-
-    if(
-      state.page!=='project' ||
-      String(state.projectId)!==String(projectId)
-    ){
-      return;
-    }
-
-    if(window.__projectDetail){
-      window.__projectDetail.documents=assets.documents||[];
-      window.__projectDetail.sources=assets.sources||[];
-      window.__projectDetail.assetsLoaded=true;
-    }
-
-    const docCount=qs('#projectDocumentCount');
-    const docBody=qs('#projectDocumentBody');
-    const sourceBody=qs('#projectSourceBody');
-
-    if(docCount)docCount.textContent=assets.documentCount||0;
-    if(docBody)docBody.innerHTML=renderProjectDocumentsList(assets.documents||[]);
-    if(sourceBody)sourceBody.innerHTML=renderProjectSourcesList(assets.sources||[]);
-  }catch(e){
-    const docBody=qs('#projectDocumentBody');
-    const sourceBody=qs('#projectSourceBody');
-
-    if(docBody){
-      docBody.innerHTML='<div class="empty">Dokumen belum dapat dimuat. <button class="mini" onclick="loadProjectAssets(\''+esc(projectId)+'\')">Coba lagi</button></div>';
-    }
-
-    if(sourceBody){
-      sourceBody.innerHTML='<div class="empty">Sumber belum dapat dimuat.</div>';
-    }
-  }
 }
 
 function renderProjectStages(project,stages,tasks,activeStageId){
@@ -2271,73 +2364,65 @@ function toggleProjectStage(id){
 }
 
 function renderProjectSystemHistory(projectId){
-  return `<details class="system-history-compact" id="projectSystemHistory" ontoggle="loadProjectHistoryOnOpen(this,'${esc(projectId)}')">
+  const cache=projectLazyCache(projectId).history;
+  const meta=cache.loaded?`· ${cache.total} log`:'· klik untuk memuat';
+  return `<details class="project-lazy-section" id="projectSystemHistory" ontoggle="loadProjectHistoryOnOpen(this,'${esc(projectId)}')">
     <summary>
-      Riwayat Sistem
-      <span id="projectHistorySummary" class="sub">· klik untuk memuat</span>
+      <span class="project-lazy-summary-main">Riwayat Sistem</span>
+      <span id="projectHistorySummary" class="project-lazy-summary-meta">${meta}</span>
     </summary>
-    <div id="projectHistoryBody">
-      <div class="project-secondary-loading">Riwayat baru dimuat ketika bagian ini dibuka.</div>
+    <div class="project-lazy-body" id="projectHistoryBody">
+      ${cache.loaded?renderProjectHistoryRows(cache.rows):'<div class="project-secondary-loading">Riwayat baru dimuat ketika bagian ini dibuka.</div>'}
     </div>
   </details>`;
 }
 
+function renderProjectHistoryRows(history){
+  return history.length
+    ? history.map(x=>`<div class="system-history-row">
+        <div class="system-history-date">${esc(dateTimeLabel(x.createdAt))}</div>
+        <div>
+          <div class="system-history-title">${esc(x.title)}</div>
+          <div class="system-history-text">${esc(x.details||'')}</div>
+        </div>
+        <div>
+          ${((x.linksList||[]).find(l=>/^https?:\/\//i.test(String(l||''))))
+            ? `<a class="mini" target="_blank" rel="noopener" href="${esc((x.linksList||[]).find(l=>/^https?:\/\//i.test(String(l||''))))}">Buka ↗</a>`
+            : ''}
+        </div>
+      </div>`).join('')
+    : '<div class="empty">Belum ada riwayat sistem.</div>';
+}
+
 async function loadProjectHistoryOnOpen(details,projectId){
   if(!details.open)return;
-  if(details.dataset.loaded==='1'||details.dataset.loading==='1')return;
-
-  details.dataset.loading='1';
-
+  const cache=projectLazyCache(projectId).history;
   const body=qs('#projectHistoryBody');
   const summary=qs('#projectHistorySummary');
 
-  if(body){
-    body.innerHTML='<div class="project-secondary-loading">Memuat riwayat sistem…</div>';
+  if(cache.loaded){
+    if(body)body.innerHTML=renderProjectHistoryRows(cache.rows);
+    if(summary)summary.textContent=`· ${cache.total} log`;
+    return;
   }
 
+  if(cache.loading)return;
+  cache.loading=true;
+  if(body)body.innerHTML='<div class="project-secondary-loading">Memuat riwayat sistem…</div>';
+
   try{
-    const result=await api('projectHistory',{
-      projectId,
-      limit:50
-    });
+    const result=await api('projectHistory',{projectId,limit:50});
+    cache.rows=result.rows||[];
+    cache.total=result.total||0;
+    cache.loaded=true;
+    cache.loading=false;
 
-    if(
-      state.page!=='project' ||
-      String(state.projectId)!==String(projectId)
-    ){
-      return;
-    }
-
-    const history=result.rows||[];
-
-    if(summary){
-      summary.textContent=`· ${result.total||0} log`;
-    }
-
-    if(body){
-      body.innerHTML=history.length
-        ? history.map(x=>`<div class="system-history-row">
-            <div class="system-history-date">${esc(dateTimeLabel(x.createdAt))}</div>
-            <div>
-              <div class="system-history-title">${esc(x.title)}</div>
-              <div class="system-history-text">${esc(x.details||'')}</div>
-            </div>
-            <div>
-              ${((x.linksList||[]).find(l=>/^https?:\/\//i.test(String(l||''))))
-                ? `<a class="mini" target="_blank" rel="noopener" href="${esc((x.linksList||[]).find(l=>/^https?:\/\//i.test(String(l||''))))}">Buka ↗</a>`
-                : ''}
-            </div>
-          </div>`).join('')
-        : '<div class="empty">Belum ada riwayat sistem.</div>';
-    }
-
-    details.dataset.loaded='1';
+    if(state.page!=='project'||String(state.projectId)!==String(projectId))return;
+    if(body)body.innerHTML=renderProjectHistoryRows(cache.rows);
+    if(summary)summary.textContent=`· ${cache.total} log`;
   }catch(e){
-    if(body){
-      body.innerHTML=`<div class="empty">Riwayat belum dapat dimuat. <button class="mini" onclick="delete this.closest('details').dataset.loading;loadProjectHistoryOnOpen(this.closest('details'),'${esc(projectId)}')">Coba lagi</button></div>`;
-    }
-  }finally{
-    details.dataset.loading='0';
+    cache.loading=false;
+    if(body)body.innerHTML=`<div class="empty">Riwayat belum dapat dimuat. <button class="mini" onclick="loadProjectHistoryOnOpen(qs('#projectSystemHistory'),'${esc(projectId)}')">Coba lagi</button></div>`;
   }
 }
 
@@ -2492,8 +2577,8 @@ async function deleteProjectStage(id){
 function openProjectForm(p={}){const x=p||{};openModal(x.id?'Edit Project':'Project Baru',`<div class="form-grid"><div class="field full"><label>Nama Project *</label><input id="prName" value="${esc(x.name||'')}"></div><div class="field"><label>Program Utama *</label><select id="prProgram"><option value="">Pilih</option>${(state.bootstrap?.programs||[]).map(v=>`<option ${x.primaryProgram===v?'selected':''}>${esc(v)}</option>`).join('')}</select><div class="helper">Program Utama hanya klasifikasi Project. Tugas/Dokumen dapat berasal dari Program lain.</div></div><div class="field"><label>Status</label><select id="prStatus">${(state.bootstrap?.projectStatuses||[]).map(v=>`<option ${x.status===v?'selected':''}>${esc(v)}</option>`).join('')}</select></div><div class="field"><label>Tanggal Mulai</label><input type="date" id="prStart" value="${esc(x.startDate||'')}"></div><div class="field"><label>Target Selesai</label><input type="date" id="prTarget" value="${esc(x.targetDate||'')}"></div><div class="field full"><label>PIC</label><div class="pic-selector">${(state.bootstrap?.pics||[]).map(v=>`<label class="pic-option"><input type="checkbox" name="prPic" value="${esc(v)}" ${(x.picList||[]).includes(v)?'checked':''}><span>${esc(v)}</span></label>`).join('')}</div><div class="pic-selector-note">Pilih anggota tim yang menjadi PIC utama Project.</div></div><div class="field full"><label>Deskripsi</label><textarea id="prDesc">${esc(x.description||'')}</textarea></div></div>`,`<button class="btn" onclick="closeModal()">Batal</button><button class="btn primary" onclick="saveProject('${esc(x.id||'')}')">Simpan Project</button>`)}
 async function saveProject(id){try{const r=await api('saveProject',{id,name:qs('#prName').value,primaryProgram:qs('#prProgram').value,status:qs('#prStatus').value,startDate:qs('#prStart').value,targetDate:qs('#prTarget').value,picList:qsa('input[name="prPic"]:checked').map(x=>x.value),description:qs('#prDesc').value});closeModal();state.bootstrap=await api('bootstrap');showToast('Project disimpan.');if(state.projectId||r.id)openProject(r.id);else await loadPage()}catch(e){showToast(e.message,true)}}
 function openProjectSourceForm(projectId){openModal('Tambah Sumber / Link',`<div class="form-grid"><div class="field"><label>Jenis *</label><select id="srcType"><option>Spreadsheet</option><option>Dokumen</option><option>Folder</option><option>Form</option><option>Website</option><option>Dashboard</option><option>Link</option></select></div><div class="field"><label>Nama *</label><input id="srcName"></div><div class="field full"><label>URL *</label><input id="srcUrl" placeholder="https://..."></div><div class="field full"><label>Keterangan</label><textarea id="srcNotes"></textarea></div><div class="field full"><div class="helper">Sumber/link akan tampil di Project dan otomatis dicatat juga pada Inventaris Dokumen menggunakan Program Utama Project dan Jenis sebagai tag.</div></div></div>`,`<button class="btn" onclick="closeModal()">Batal</button><button class="btn primary" onclick="saveProjectSource('${esc(projectId)}')">Tambah</button>`)}
-async function saveProjectSource(projectId){try{await api('saveProjectSource',{projectId,type:qs('#srcType').value,name:qs('#srcName').value,url:qs('#srcUrl').value,notes:qs('#srcNotes').value});closeModal();showToast('Sumber ditambahkan.');await loadPage({projectId});await loadProjectAssets(projectId)}catch(e){showToast(e.message,true)}}
-async function deleteProjectSource(id){if(!confirm('Hapus sumber ini?'))return;try{await api('deleteProjectSource',{id});showToast('Sumber dihapus.');await loadPage({projectId:state.projectId})}catch(e){showToast(e.message,true)}}
+async function saveProjectSource(projectId){try{await api('saveProjectSource',{projectId,type:qs('#srcType').value,name:qs('#srcName').value,url:qs('#srcUrl').value,notes:qs('#srcNotes').value});invalidateProjectLazyCache(projectId,['sources','documents','history']);closeModal();showToast('Sumber ditambahkan.');await loadPage({projectId})}catch(e){showToast(e.message,true)}}
+async function deleteProjectSource(id){if(!confirm('Hapus sumber ini?'))return;try{const projectId=state.projectId||'';await api('deleteProjectSource',{id});if(projectId)invalidateProjectLazyCache(projectId,['sources','history']);showToast('Sumber dihapus.');await loadPage({projectId})}catch(e){showToast(e.message,true)}}
 function activityTodayValue(){
   const d=new Date();
   const pad=n=>String(n).padStart(2,'0');
@@ -2577,31 +2662,25 @@ function renderTaskMatrix(){
   qs('#page').innerHTML=
     topbar(
       'Kelola Tugas',
-      'Buat dan kelola seluruh penugasan dalam daftar ringkas. Maksimal 10 tugas per halaman.',
+      'Tugas dikelompokkan berdasarkan kondisi kerja. Setiap bagian menampilkan maksimal 10 tugas per halaman.',
       `<button class="btn primary" onclick="openTaskForm()">+ Buat Tugas</button>`
     )+
     `<div class="toolbar">
-      <input id="taskSearch" placeholder="Cari tugas..." oninput="resetTaskPageAndRender()">
-      <select id="taskPic" onchange="resetTaskPageAndRender()">
+      <input id="taskSearch" placeholder="Cari tugas..." oninput="resetTaskPagesAndRender()">
+      <select id="taskPic" onchange="resetTaskPagesAndRender()">
         <option value="">Semua PIC</option>
         ${(state.bootstrap?.pics||[]).map(x=>`<option>${esc(x)}</option>`).join('')}
       </select>
-      <select id="taskProgram" onchange="resetTaskPageAndRender()">
+      <select id="taskProgram" onchange="resetTaskPagesAndRender()">
         <option value="">Semua Program</option>
         ${(state.bootstrap?.programs||[]).map(x=>`<option>${esc(x)}</option>`).join('')}
       </select>
-      <select id="taskProject" onchange="state.projectId=this.value;state.taskStageFilter='';syncTaskStageFilter();resetTaskPageAndRender()">
+      <select id="taskProject" onchange="state.projectId=this.value;state.taskStageFilter='';syncTaskStageFilter();resetTaskPagesAndRender()">
         <option value="">Semua Project</option>
         ${(state.bootstrap?.projects||[]).map(x=>`<option value="${esc(x.id)}" ${state.projectId===x.id?'selected':''}>${esc(x.name)}</option>`).join('')}
       </select>
-      <select id="taskStage" onchange="state.taskStageFilter=this.value;resetTaskPageAndRender()">
+      <select id="taskStage" onchange="state.taskStageFilter=this.value;resetTaskPagesAndRender()">
         <option value="">Semua Tahapan</option>
-      </select>
-      <select id="taskStatus" onchange="resetTaskPageAndRender()">
-        <option value="">Semua Status</option>
-        <option value="todo">Perlu Dikerjakan</option>
-        <option value="progress">Sedang Dikerjakan</option>
-        <option value="done">Selesai</option>
       </select>
       <button class="btn" onclick="resetTaskFilters()">Reset</button>
     </div>`+
@@ -2611,8 +2690,12 @@ function renderTaskMatrix(){
   renderTaskList();
 }
 
-function resetTaskPageAndRender(){
-  state.taskListPage=1;
+function resetTaskPages(){
+  state.taskSectionPages={todo:1,progress:1,done:1,update:1};
+}
+
+function resetTaskPagesAndRender(){
+  resetTaskPages();
   renderTaskList();
 }
 
@@ -2623,23 +2706,22 @@ function filteredTasks(){
   const prog=qs('#taskProgram')?.value||'';
   const project=qs('#taskProject')?.value||'';
   const stage=qs('#taskStage')?.value||'';
-  const status=qs('#taskStatus')?.value||'';
 
   return tasks
     .filter(t=>
       (!q||(
         String(t.title)+' '+String(t.tag)+' '+String(t.projectName||'')+' '+
-        String(t.stageName||'')+' '+String(t.pic||'')+' '+String(t.picEmail||'')
+        String(t.stageName||'')+' '+String(t.pic||'')+' '+String(t.picEmail||'')+' '+
+        String(t.program||'')+' '+String(t.priority||'')
       ).toLowerCase().includes(q)) &&
       (!pic||(t.picList||[]).includes(pic)) &&
       (!prog||t.program===prog) &&
       (!project||t.projectId===project) &&
-      (!stage||t.stageId===stage) &&
-      (!status||t.status===status)
+      (!stage||t.stageId===stage)
     )
     .sort((a,b)=>{
-      const ad=String(a.startDate||a.createdAt||'');
-      const bd=String(b.startDate||b.createdAt||'');
+      const ad=String(a.endDate||a.startDate||a.createdAt||'');
+      const bd=String(b.endDate||b.startDate||b.createdAt||'');
       return bd.localeCompare(ad);
     });
 }
@@ -2647,12 +2729,23 @@ function filteredTasks(){
 function resetTaskFilters(){
   state.projectId='';
   state.taskStageFilter='';
-  state.taskListPage=1;
-  ['taskSearch','taskPic','taskProgram','taskProject','taskStatus'].forEach(id=>{
+  resetTaskPages();
+
+  ['taskSearch','taskPic','taskProgram','taskProject'].forEach(id=>{
     if(qs('#'+id))qs('#'+id).value='';
   });
+
   syncTaskStageFilter();
   renderTaskList();
+}
+
+function taskSectionGroups(tasks){
+  const update=tasks.filter(t=>t.status!=='done'&&t.overdue);
+  const todo=tasks.filter(t=>t.status==='todo'&&!t.overdue);
+  const progress=tasks.filter(t=>t.status==='progress'&&!t.overdue);
+  const done=tasks.filter(t=>t.status==='done');
+
+  return {todo,progress,done,update};
 }
 
 function renderTaskList(){
@@ -2660,47 +2753,69 @@ function renderTaskList(){
   if(!host)return;
 
   const tasks=filteredTasks();
-  const total=tasks.length;
-  const progress=tasks.filter(t=>t.status==='progress').length;
-  const done=tasks.filter(t=>t.status==='done').length;
-
-  const totalPages=Math.max(1,Math.ceil(total/TASK_PAGE_SIZE));
-  state.taskListPage=Math.min(Math.max(1,state.taskListPage||1),totalPages);
-
-  const start=(state.taskListPage-1)*TASK_PAGE_SIZE;
-  const shown=tasks.slice(start,start+TASK_PAGE_SIZE);
+  const groups=taskSectionGroups(tasks);
 
   host.innerHTML=
     `<div class="task-scorecards">
-      <div class="task-scorecard">
-        <div class="task-score-label">Tugas</div>
-        <div class="task-score-value">${total}</div>
-        <div class="task-score-note">sesuai filter aktif</div>
+      ${taskScorecard('Perlu Dikerjakan',groups.todo.length,'belum mulai')}
+      ${taskScorecard('Sedang Dikerjakan',groups.progress.length,'sedang dalam proses')}
+      ${taskScorecard('Sudah Selesai',groups.done.length,'tugas telah diselesaikan')}
+      ${taskScorecard('Perlu Update',groups.update.length,'melewati target penyelesaian',true)}
+    </div>
+
+    <div class="task-sections">
+      ${renderTaskSection('todo','Perlu Dikerjakan','Tugas yang belum mulai dikerjakan.',groups.todo)}
+      ${renderTaskSection('progress','Sedang Dikerjakan','Tugas yang sedang dalam proses.',groups.progress)}
+      ${renderTaskSection('update','Perlu Update','Tugas belum selesai dan telah melewati target.',groups.update,true)}
+      ${renderTaskSection('done','Sudah Selesai','Tugas yang telah diselesaikan.',groups.done)}
+    </div>`;
+}
+
+function taskScorecard(label,value,note,needsUpdate=false){
+  return `<div class="task-scorecard ${needsUpdate?'needs-update':''}">
+    <div class="task-score-label">${esc(label)}</div>
+    <div class="task-score-value">${value}</div>
+    <div class="task-score-note">${esc(note)}</div>
+  </div>`;
+}
+
+function renderTaskSection(key,title,note,tasks,needsUpdate=false){
+  const total=tasks.length;
+  const totalPages=Math.max(1,Math.ceil(total/TASK_PAGE_SIZE));
+  const pages=state.taskSectionPages||{};
+  const current=Math.min(Math.max(1,Number(pages[key]||1)),totalPages);
+  state.taskSectionPages[key]=current;
+
+  const start=(current-1)*TASK_PAGE_SIZE;
+  const shown=tasks.slice(start,start+TASK_PAGE_SIZE);
+
+  return `<section class="task-section ${needsUpdate?'update':''}" id="task-section-${key}">
+    <div class="task-section-head">
+      <div>
+        <div class="task-section-title">${esc(title)}</div>
+        <div class="task-section-note">${esc(note)}</div>
       </div>
-      <div class="task-scorecard">
-        <div class="task-score-label">Sedang Dikerjakan</div>
-        <div class="task-score-value">${progress}</div>
-        <div class="task-score-note">tugas aktif dalam proses</div>
-      </div>
-      <div class="task-scorecard">
-        <div class="task-score-label">Selesai</div>
-        <div class="task-score-value">${done}</div>
-        <div class="task-score-note">tugas telah diselesaikan</div>
-      </div>
+      <span class="task-section-count">${total}</span>
     </div>
 
     <div class="task-row-list">
       <div class="task-row-head">
-        <div>No.</div><div>Tugas</div><div>Program</div><div>Aktivitas</div>
-        <div>PIC</div><div>Pembuat</div><div>Waktu</div><div>Prioritas</div>
+        <div>No.</div>
+        <div>Tugas</div>
+        <div>Target</div>
+        <div>PIC</div>
         <div style="text-align:right">Aksi</div>
       </div>
-      ${shown.length?shown.map((t,index)=>renderTaskListRow(t,start+index+1)).join(''):'<div class="empty">Tidak ada tugas sesuai filter.</div>'}
+      ${shown.length
+        ? shown.map((t,index)=>renderTaskListRow(t,start+index+1,key)).join('')
+        : '<div class="empty">Tidak ada tugas pada bagian ini.</div>'}
     </div>
-    ${renderTaskPagination(total,totalPages)}`;
+
+    ${renderTaskSectionPagination(key,total,totalPages,current)}
+  </section>`;
 }
 
-function renderTaskListRow(t,no){
+function renderTaskListRow(t,no,sectionKey){
   const context=t.projectId
     ? `<div class="task-list-context">
         <button onclick="openProjectContext('${esc(t.projectId)}','${esc(t.stageId||'')}','${esc(t.id)}')">${esc(t.projectName||'Project')}</button>
@@ -2710,26 +2825,32 @@ function renderTaskListRow(t,no){
 
   const hasEmail=!!String(t.picEmail||'').trim();
   const canCalendar=!!t.startDate;
+  const target=t.endDate||t.startDate||'';
 
   return `<div class="task-list-row">
     <div class="task-list-no">${no}</div>
+
     <div>
       <div class="task-list-title">${esc(t.title)}</div>
+      <div class="task-list-meta">
+        ${t.program?`<span class="pill">${esc(t.program)}</span>`:''}
+        ${t.priority?`<span class="pill ${priorityClass(t.priority)}">${esc(t.priority)}</span>`:''}
+        ${sectionKey==='update'?'<span class="pill high">Perlu Update</span>':''}
+      </div>
       ${context}
-      ${t.overdue?'<div style="margin-top:4px"><span class="pill high">Terlambat</span></div>':''}
     </div>
-    <div><span class="pill">${esc(t.program||'')}</span></div>
-    <div><span class="pill">${esc(t.substansi||'')}</span></div>
+
+    <div class="task-list-target ${sectionKey==='update'?'overdue':''}">
+      ${target?esc(fmtDate(target)):'Tanpa target'}
+      ${t.timeType==='period'&&t.startDate&&t.endDate&&t.startDate!==t.endDate
+        ? `<div class="sub" style="margin-top:2px">Mulai ${esc(fmtDate(t.startDate))}</div>`
+        : ''}
+    </div>
+
     <div class="task-list-pic">
       ${esc((t.picList||[]).join(', ')||'—')}
-      ${t.picEmail?`<div class="sub" style="margin-top:2px">${esc(t.picEmail)}</div>`:''}
     </div>
-    <div>${esc(t.taskAssigner||'—')}</div>
-    <div>
-      ${esc(t.timeLabel||'Tanpa tanggal')}
-      <div style="margin-top:4px"><span class="pill ${esc(t.status)}">${esc(t.statusLabel)}</span></div>
-    </div>
-    <div><span class="pill ${priorityClass(t.priority)}">${esc(t.priority||'')}</span></div>
+
     <div class="task-list-actions">
       ${canCalendar?`<button class="mini task-calendar" onclick="openTaskCalendar('${esc(t.id)}')">+ Calendar</button>`:''}
       ${hasEmail?`<button class="mini task-email" onclick="openTaskEmail('${esc(t.id)}')">Email</button>`:''}
@@ -2740,10 +2861,9 @@ function renderTaskListRow(t,no){
   </div>`;
 }
 
-function renderTaskPagination(total,totalPages){
+function renderTaskSectionPagination(key,total,totalPages,current){
   if(total<=TASK_PAGE_SIZE)return '';
 
-  const current=state.taskListPage;
   let first=Math.max(1,current-2);
   let last=Math.min(totalPages,first+4);
   first=Math.max(1,last-4);
@@ -2754,20 +2874,24 @@ function renderTaskPagination(total,totalPages){
   const from=(current-1)*TASK_PAGE_SIZE+1;
   const to=Math.min(total,current*TASK_PAGE_SIZE);
 
-  return `<div class="pagination">
+  return `<div class="task-section-pagination">
     <div class="pagination-info">Menampilkan ${from}–${to} dari ${total} tugas · 10 tugas per halaman</div>
     <div class="pagination-controls">
-      <button class="page-btn" ${current<=1?'disabled':''} onclick="goTaskPage(${current-1})">‹</button>
-      ${pages.map(p=>`<button class="page-btn ${p===current?'active':''}" onclick="goTaskPage(${p})">${p}</button>`).join('')}
-      <button class="page-btn" ${current>=totalPages?'disabled':''} onclick="goTaskPage(${current+1})">›</button>
+      <button class="page-btn" ${current<=1?'disabled':''} onclick="goTaskSectionPage('${key}',${current-1})">‹</button>
+      ${pages.map(p=>`<button class="page-btn ${p===current?'active':''}" onclick="goTaskSectionPage('${key}',${p})">${p}</button>`).join('')}
+      <button class="page-btn" ${current>=totalPages?'disabled':''} onclick="goTaskSectionPage('${key}',${current+1})">›</button>
     </div>
   </div>`;
 }
 
-function goTaskPage(page){
-  state.taskListPage=page;
+function goTaskSectionPage(key,page){
+  if(!state.taskSectionPages)resetTaskPages();
+  state.taskSectionPages[key]=page;
   renderTaskList();
-  qs('#taskListArea')?.scrollIntoView({behavior:'smooth',block:'start'});
+
+  setTimeout(()=>{
+    qs('#task-section-'+CSS.escape(String(key)))?.scrollIntoView({behavior:'smooth',block:'start'});
+  },20);
 }
 
 function addDaysToDateKey(key,days){
@@ -3468,6 +3592,8 @@ function renderCompleteAttachmentMode(mode){
 }
 
 async function submitComplete(id,recap){
+  const taskBeforeComplete=findTaskInCurrentState(id);
+  const completedProjectId=taskBeforeComplete?.projectId||'';
   const resultText=qs('#completeResult')?.value.trim()||'';
 
   if(!resultText){
@@ -3520,6 +3646,10 @@ async function submitComplete(id,recap){
 
     await api('completeTask',{id,resultText});
 
+    if(completedProjectId){
+      invalidateProjectLazyCache(completedProjectId,['documents','sources','history']);
+    }
+
     closeModal();
     showToast('Tugas diselesaikan.');
     await loadPage();
@@ -3528,7 +3658,6 @@ async function submitComplete(id,recap){
       state.page==='project' &&
       state.projectId
     ){
-      await loadProjectAssets(state.projectId);
     }
   }catch(e){
     showToast(e.message,true);
@@ -3663,9 +3792,9 @@ function editTaskFromDetail(id){
 function attachmentList(items,managed=false){return items&&items.length?items.map(a=>`<div style="display:flex;justify-content:space-between;gap:8px;margin:4px 0"><span>${a.driveUrl?`<a target="_blank" rel="noopener" href="${esc(a.driveUrl)}">${esc(a.fileName)}</a>`:esc(a.fileName)}</span>${managed?`<button class="mini danger" onclick="deleteAttachment('${esc(a.id)}')">Hapus</button>`:''}</div>`).join(''):'—'}
 
 function openAttachmentForm(taskId,type){openModal('Tambah Lampiran',`<div class="form-grid"><div class="field full"><label>Jenis Lampiran</label><select id="attMode"><option value="link">Link</option><option value="file">Upload File</option></select></div><div class="field full"><label>Judul / Nama File</label><input id="attName"></div><div class="field full"><label>URL (untuk Link)</label><input id="attUrl" placeholder="https://..."></div><div class="field full"><label>File (maks. 8 MB)</label><input id="attFile" type="file"></div></div>`,`<button class="btn" onclick="closeModal()">Batal</button><button class="btn primary" onclick="saveAttachment('${esc(taskId)}','${esc(type)}')">Simpan</button>`)}
-async function saveAttachment(taskId,type){try{const mode=qs('#attMode').value;if(mode==='link'){await api('createLinkAttachment',{taskId,attachmentType:type,title:qs('#attName').value,url:qs('#attUrl').value})}else{const f=qs('#attFile').files[0];if(!f)throw new Error('Pilih file.');const data=await fileToBase64(f);await api('uploadAttachment',{taskId,attachmentType:type,fileName:qs('#attName').value||f.name,mimeType:f.type||'application/octet-stream',sizeBytes:f.size,base64:data})}closeModal();showToast('Lampiran ditambahkan.');await showTaskDetail(taskId)}catch(e){showToast(e.message,true)}}
+async function saveAttachment(taskId,type){try{const task=findTaskInCurrentState(taskId);const mode=qs('#attMode').value;if(mode==='link'){await api('createLinkAttachment',{taskId,attachmentType:type,title:qs('#attName').value,url:qs('#attUrl').value})}else{const f=qs('#attFile').files[0];if(!f)throw new Error('Pilih file.');const data=await fileToBase64(f);await api('uploadAttachment',{taskId,attachmentType:type,fileName:qs('#attName').value||f.name,mimeType:f.type||'application/octet-stream',sizeBytes:f.size,base64:data})}if(type==='result'&&task?.projectId)invalidateProjectLazyCache(task.projectId,['documents','sources','history']);closeModal();showToast('Lampiran ditambahkan.');await showTaskDetail(taskId)}catch(e){showToast(e.message,true)}}
 function fileToBase64(file){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result||'').split(',').pop());r.onerror=()=>reject(new Error('Gagal membaca file.'));r.readAsDataURL(file)})}
-async function createResultDoc(taskId){try{await api('createResultDoc',{taskId});showToast('Google Docs hasil dibuat.');await showTaskDetail(taskId)}catch(e){showToast(e.message,true)}}
+async function createResultDoc(taskId){try{const task=findTaskInCurrentState(taskId);await api('createResultDoc',{taskId});if(task?.projectId)invalidateProjectLazyCache(task.projectId,['documents','history']);showToast('Google Docs hasil dibuat.');await showTaskDetail(taskId)}catch(e){showToast(e.message,true)}}
 async function deleteAttachment(id){if(!confirm('Hapus lampiran ini?'))return;try{await api('deleteAttachment',{id});closeModal();showToast('Lampiran dihapus.')}catch(e){showToast(e.message,true)}}
 
 function openLeaveForm(x={}){openModal(x.id?'Edit Cuti':'Catat Cuti',`<div class="form-grid"><div class="field full"><label>Anggota Tim *</label><select id="leavePic"><option value="">Pilih</option>${(state.bootstrap?.pics||[]).map(v=>`<option ${x.pic===v?'selected':''}>${esc(v)}</option>`).join('')}</select></div><div class="field"><label>Tanggal Mulai *</label><input id="leaveStart" type="date" value="${esc(x.startDate||'')}"></div><div class="field"><label>Tanggal Selesai *</label><input id="leaveEnd" type="date" value="${esc(x.endDate||'')}"></div><div class="field full"><label>Catatan</label><textarea id="leaveNote">${esc(x.note||'')}</textarea></div></div>`,`<button class="btn" onclick="closeModal()">Batal</button><button class="btn primary" onclick="saveLeave('${esc(x.id||'')}')">Simpan</button>`)}
@@ -3673,8 +3802,8 @@ async function saveLeave(id){try{await api('saveLeave',{id,pic:qs('#leavePic').v
 async function deleteLeave(id){if(!confirm('Hapus data cuti?'))return;try{await api('deleteLeave',{id});showToast('Cuti dihapus.');await loadPage()}catch(e){showToast(e.message,true)}}
 
 function openDocumentForm(d={}){openModal(d.id?'Edit Dokumen':'Tambah Dokumen',`<div class="form-grid"><div class="field full"><label>Nama Dokumen *</label><input id="dName" value="${esc(d.name||'')}"></div><div class="field"><label>Program *</label><select id="dProgram">${(state.bootstrap?.programs||[]).map(v=>`<option ${d.program===v?'selected':''}>${esc(v)}</option>`).join('')}</select></div><div class="field"><label>Project</label><select id="dProject">${projectOptions(d.projectId||state.projectId||'')}</select><div class="helper">Opsional. Dokumen tetap berada di Inventaris dan otomatis muncul pada Project.</div></div><div class="field"><label>Tag *</label><input id="dTag" value="${esc(d.tag||'')}"></div><div class="field"><label>Label Link</label><input id="dLabel" value="${esc(d.linkLabel||'')}"></div><div class="field"><label>URL</label><input id="dUrl" value="${esc(d.url||'')}"></div><div class="field full"><label>Keterangan</label><textarea id="dNotes">${esc(d.notes||'')}</textarea></div></div>`,`<button class="btn" onclick="closeModal()">Batal</button><button class="btn primary" onclick="saveDocument('${esc(d.id||'')}')">Simpan</button>`)}
-async function saveDocument(id){try{await api('saveDocument',{id,name:qs('#dName').value,program:qs('#dProgram').value,projectId:qs('#dProject').value,tag:qs('#dTag').value,linkLabel:qs('#dLabel').value,url:qs('#dUrl').value,notes:qs('#dNotes').value});closeModal();showToast('Dokumen disimpan.');await loadPage()}catch(e){showToast(e.message,true)}}
-async function deleteDocument(id){if(!confirm('Hapus dokumen ini?'))return;try{await api('deleteDocument',{id});showToast('Dokumen dihapus.');await loadPage()}catch(e){showToast(e.message,true)}}
+async function saveDocument(id){try{const projectId=qs('#dProject').value||'';await api('saveDocument',{id,name:qs('#dName').value,program:qs('#dProgram').value,projectId,tag:qs('#dTag').value,linkLabel:qs('#dLabel').value,url:qs('#dUrl').value,notes:qs('#dNotes').value});if(projectId)invalidateProjectLazyCache(projectId,['documents','history']);closeModal();showToast('Dokumen disimpan.');await loadPage()}catch(e){showToast(e.message,true)}}
+async function deleteDocument(id){if(!confirm('Hapus dokumen ini?'))return;try{const projectId=state.page==='project'?state.projectId:'';await api('deleteDocument',{id});if(projectId)invalidateProjectLazyCache(projectId,['documents','history']);showToast('Dokumen dihapus.');await loadPage()}catch(e){showToast(e.message,true)}}
 
 function openPicForm(p={}){openModal(p.id?'Edit PIC':'Tambah PIC',`<div class="form-grid"><div class="field full"><label>Nama Instansi *</label><input id="pInst" value="${esc(p.namaInstansi||'')}"></div><div class="field"><label>Kategori *</label><select id="pCat">${['Kabupaten','Kota','Provinsi','Kementerian/Lembaga'].map(v=>`<option ${p.kategoriInstansi===v?'selected':''}>${v}</option>`).join('')}</select></div><div class="field"><label>PIC Yanlik</label><select id="pYan"><option value="">Pilih</option>${(state.bootstrap?.pics||[]).map(v=>`<option ${p.namaPicYanlik===v?'selected':''}>${esc(v)}</option>`).join('')}</select></div><div class="field"><label>Nama PIC Instansi</label><input id="pName" value="${esc(p.namaPicInstansi||'')}"></div><div class="field"><label>Nomor HP</label><input id="pPhone" value="${esc(p.nomorHandphonePicInstansi||'')}"></div></div>`,`<button class="btn" onclick="closeModal()">Batal</button><button class="btn primary" onclick="savePic('${esc(p.id||'')}')">Simpan</button>`)}
 async function savePic(id){try{await api('savePic',{id,namaInstansi:qs('#pInst').value,kategoriInstansi:qs('#pCat').value,namaPicYanlik:qs('#pYan').value,namaPicInstansi:qs('#pName').value,nomorHandphonePicInstansi:qs('#pPhone').value});closeModal();showToast('PIC disimpan.');await loadPage()}catch(e){showToast(e.message,true)}}
