@@ -706,6 +706,179 @@ tr:last-child td{border-bottom:0}
   }
 }
 
+
+/* v1.56 — Project architecture: Aktivitas umbrella + Riwayat Sistem */
+.project-tabs{
+  display:inline-flex;gap:4px;padding:4px;margin:14px 0;
+  border:1px solid var(--line);border-radius:9px;background:#fafafa
+}
+.project-tabs button{
+  border:0;background:transparent;border-radius:7px;padding:7px 11px;
+  font-size:10.5px;font-weight:650;color:#71717a;cursor:pointer
+}
+.project-tabs button.active{background:#18181b;color:#fff}
+.activity-list{display:grid;gap:10px}
+.activity-card{border:1px solid var(--line);border-radius:10px;background:#fff;overflow:hidden}
+.activity-card-main{
+  display:grid;grid-template-columns:96px minmax(0,1fr) auto;gap:14px;
+  align-items:start;padding:14px 15px
+}
+.activity-date{font-size:10px;line-height:1.45;color:#71717a}
+.activity-type{
+  display:inline-flex;align-items:center;margin-bottom:6px;padding:3px 7px;
+  border:1px solid #e4e4e7;border-radius:999px;font-size:9px;color:#52525b;background:#fff
+}
+.activity-title{font-size:12.5px;line-height:1.45;font-weight:750;color:#18181b}
+.activity-note{margin-top:4px;font-size:10px;line-height:1.5;color:#71717a}
+.activity-owner{margin-top:7px;font-size:9.5px;color:#71717a}
+.activity-metrics{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+.activity-metric{
+  display:inline-flex;align-items:center;gap:4px;padding:4px 7px;
+  border:1px solid #e4e4e7;border-radius:6px;background:#fafafa;font-size:9px;color:#52525b
+}
+.activity-actions{display:flex;gap:5px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.activity-card-system{
+  background:#fcfcfd;border-top:1px solid #f0f0f1;padding:8px 15px;
+  font-size:9px;line-height:1.45;color:#a1a1aa
+}
+.activity-detail-section{margin-top:14px}
+.activity-detail-section-title{
+  margin-bottom:7px;font-size:10px;font-weight:750;text-transform:uppercase;
+  letter-spacing:.04em;color:#71717a
+}
+.activity-linked-list{display:grid;gap:6px}
+.activity-linked-row{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:10px;
+  padding:9px 10px;border:1px solid #e7e7e9;border-radius:8px;background:#fff
+}
+.activity-linked-main{min-width:0}
+.activity-linked-name{font-size:10.5px;line-height:1.4;font-weight:650;color:#18181b}
+.activity-linked-meta{margin-top:2px;font-size:9px;line-height:1.4;color:#71717a}
+.system-history-list{display:grid}
+.system-history-row{
+  display:grid;grid-template-columns:130px minmax(0,1fr) auto;gap:12px;
+  align-items:start;padding:12px 2px;border-bottom:1px solid #f1f1f2
+}
+.system-history-row:last-child{border-bottom:0}
+.system-history-date{font-size:9.5px;color:#71717a;line-height:1.5}
+.system-history-title{font-size:10.5px;font-weight:700;color:#18181b}
+.system-history-text{margin-top:3px;font-size:9.5px;line-height:1.45;color:#71717a}
+.system-history-meta{margin-top:4px;font-size:8.5px;color:#a1a1aa}
+.activity-empty{padding:28px 16px;text-align:center;font-size:10px;color:#a1a1aa}
+@media(max-width:760px){
+  .activity-card-main{grid-template-columns:1fr}
+  .activity-actions{justify-content:flex-start}
+  .system-history-row{grid-template-columns:1fr}
+}
+
+
+/* v1.57 — Project → Tahapan → Tugas */
+.project-stage-list{display:grid;gap:11px;margin-top:12px}
+.project-stage{
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:#fff;
+  overflow:hidden;
+}
+.project-stage-head{
+  display:grid;
+  grid-template-columns:38px minmax(0,1fr) auto;
+  align-items:center;
+  gap:10px;
+  padding:12px 13px;
+}
+.project-stage-no{
+  width:29px;height:29px;display:grid;place-items:center;
+  border-radius:7px;background:#f4f4f5;font-size:9px;font-weight:800
+}
+.project-stage-name{font-size:11.5px;font-weight:800}
+.project-stage-meta{font-size:9px;color:var(--muted);margin-top:3px}
+.project-stage-counts{display:flex;align-items:center;justify-content:flex-end;gap:5px;flex-wrap:wrap}
+.project-stage-body{border-top:1px solid #f1f1f2;padding:8px 13px 12px}
+.project-task-row{
+  display:grid;grid-template-columns:minmax(0,1fr) auto;
+  gap:10px;align-items:start;padding:10px 0;border-bottom:1px solid #f2f2f3
+}
+.project-task-row:last-child{border-bottom:0}
+.project-task-title{font-size:10.5px;font-weight:750}
+.project-task-description{font-size:9px;color:var(--muted);line-height:1.45;margin-top:3px}
+.project-task-highlight{outline:2px solid #18181b;outline-offset:-2px;border-radius:7px}
+.system-history-compact{margin-top:14px;border:1px solid var(--line);border-radius:10px;background:#fff}
+.system-history-compact summary{padding:11px 13px;font-size:9.5px;font-weight:750;cursor:pointer}
+.system-history-row{
+  display:grid;grid-template-columns:130px minmax(0,1fr) auto;
+  gap:10px;padding:9px 13px;border-top:1px solid #f3f3f4
+}
+.system-history-date{font-size:8.5px;color:var(--muted)}
+.system-history-title{font-size:9.5px;font-weight:700}
+.system-history-text{font-size:8.5px;color:var(--muted);margin-top:2px;line-height:1.4}
+
+.task-context{
+  display:flex;gap:4px;align-items:center;flex-wrap:wrap;margin-top:6px;
+  font-size:8.5px;color:#52525b
+}
+.task-context button{
+  border:0;background:transparent;padding:0;font:inherit;color:#52525b;
+  text-decoration:underline;text-underline-offset:2px;cursor:pointer
+}
+.task-update-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.task-update-option{
+  text-align:left;border:1px solid var(--line);background:#fff;border-radius:9px;
+  padding:11px 10px;cursor:pointer
+}
+.task-update-option:hover{background:#fafafa}
+.task-update-option.active{border-color:#18181b;box-shadow:0 0 0 1px #18181b inset}
+.task-update-name{font-size:10px;font-weight:750}
+.task-update-note{font-size:8.5px;color:var(--muted);line-height:1.35;margin-top:3px}
+
+.task-detail-edit-row{display:flex;justify-content:flex-end;margin-bottom:7px}
+.task-detail-edit{
+  width:30px;height:30px;display:grid;place-items:center;
+  border:1px solid var(--line);border-radius:7px;background:#fff;cursor:pointer
+}
+.task-detail-value{
+  min-height:35px;border:1px solid var(--line);border-radius:7px;
+  background:#fafafa;padding:8px 9px;font-size:10px;line-height:1.45
+}
+.task-detail-value.long{min-height:68px}
+
+.my-task-list{border:1px solid var(--line);border-radius:9px;background:#fff;overflow:hidden}
+.my-task-row{
+  display:grid;grid-template-columns:145px minmax(0,1fr) 58px 134px;
+  align-items:center;gap:10px;padding:8px 11px;border-bottom:1px solid #f1f1f2
+}
+.my-task-row:last-child{border-bottom:0}
+.my-task-when{font-size:8.5px;color:var(--muted);line-height:1.4}
+.my-task-title{font-size:10px;font-weight:750}
+.my-task-meta{font-size:8.5px;color:var(--muted);margin-top:3px}
+.my-task-status{
+  width:100%;height:28px;border:1px solid var(--line);border-radius:6px;
+  padding:0 6px;background:#fff;font-size:8.2px
+}
+.my-task-status.progress{background:#fffdf3;border-color:#ead58a}
+.my-task-status.done{background:#f7faf7;border-color:#cfdccc}
+
+.complete-task-name{font-size:9.5px;color:var(--muted);margin:-3px 0 14px}
+.complete-attachments{
+  border:1px dashed #d4d4d8;border-radius:8px;padding:10px;margin-top:6px
+}
+.complete-tabs{display:flex;gap:5px;margin-bottom:9px}
+.complete-tab{
+  border:1px solid var(--line);background:#fff;border-radius:6px;
+  padding:5px 8px;font-size:8.5px;font-weight:700;cursor:pointer
+}
+.complete-tab.active{background:#18181b;color:#fff;border-color:#18181b}
+.complete-required{font-size:8px;color:#b42318;margin-top:4px}
+
+@media(max-width:760px){
+  .project-stage-head{grid-template-columns:38px minmax(0,1fr)}
+  .project-stage-counts{grid-column:2;justify-content:flex-start}
+  .project-task-row{grid-template-columns:1fr}
+  .task-update-grid{grid-template-columns:1fr}
+  .my-task-row{grid-template-columns:1fr}
+  .system-history-row{grid-template-columns:1fr}
+}
+
 </style>
 </head>
 <body>
@@ -752,7 +925,7 @@ tr:last-child td{border-bottom:0}
 
 <script>
 /*
-  Netlify frontend v1.54 — editable historical Project timeline dates and direct links.
+  Netlify frontend v1.57 — Project Tahapan + unified Tugas workflow.
   Netlify frontend.
   Recommended production setup:
   - index.html is hosted by Netlify/GitHub
@@ -835,6 +1008,10 @@ const state={
   week:'',
   trendFilters:{period:'year',program:'',activity:''},
   projectId:new URLSearchParams(location.search).get('project')||'',
+  taskStageFilter:'',
+  projectStageFocus:'',
+  projectTaskFocus:'',
+  recapPic:'',
   projectTimeline:{q:'',type:'',limit:20}
 };
 
@@ -1093,6 +1270,80 @@ function projectOptions(selected=''){
   if(inactive.length)out+='<optgroup label="Project Selesai / Ditunda">'+inactive.map(p=>`<option value="${esc(p.id)}" ${selected===p.id?'selected':''}>${esc(p.name)} (${esc(p.status)})</option>`).join('')+'</optgroup>';
   return out;
 }
+
+function stageOptions(projectId='',selected=''){
+  if(!projectId)return '<option value="">Tanpa Tahapan</option>';
+
+  const items=(state.bootstrap?.projectStages||[])
+    .filter(x=>String(x.projectId||'')===String(projectId))
+    .sort((a,b)=>(Number(a.order)||0)-(Number(b.order)||0));
+
+  let out='<option value="">Tanpa Tahapan</option>';
+  out+=items.map(x=>`<option value="${esc(x.id)}" ${selected===x.id?'selected':''}>${esc(x.name)}</option>`).join('');
+  return out;
+}
+
+function stageNameById(id){
+  return (state.bootstrap?.projectStages||[])
+    .find(x=>String(x.id)===String(id))?.name||'';
+}
+
+function syncTaskStageOptions(selected=''){
+  const projectId=qs('#fProject')?.value||'';
+  const field=qs('#fStageField');
+  const select=qs('#fStage');
+
+  if(!select)return;
+
+  if(!projectId){
+    select.innerHTML='<option value="">Tanpa Tahapan</option>';
+    if(field)field.style.display='none';
+    return;
+  }
+
+  if(field)field.style.display='block';
+  select.innerHTML=stageOptions(projectId,selected);
+}
+
+function syncTaskStageFilter(){
+  const projectId=qs('#taskProject')?.value||'';
+  const select=qs('#taskStage');
+  if(!select)return;
+
+  const stages=(state.bootstrap?.projectStages||[])
+    .filter(x=>projectId && String(x.projectId||'')===String(projectId))
+    .sort((a,b)=>(Number(a.order)||0)-(Number(b.order)||0));
+
+  select.innerHTML='<option value="">Semua Tahapan</option>'+
+    stages.map(x=>`<option value="${esc(x.id)}">${esc(x.name)}</option>`).join('');
+
+  if(
+    state.taskStageFilter &&
+    stages.some(x=>String(x.id)===String(state.taskStageFilter))
+  ){
+    select.value=state.taskStageFilter;
+  }else{
+    state.taskStageFilter='';
+  }
+}
+
+function syncRecapStageFilter(){
+  const projectId=qs('#recapProject')?.value||'';
+  const select=qs('#recapStage');
+  if(!select)return;
+
+  const stages=(state.bootstrap?.projectStages||[])
+    .filter(x=>projectId && String(x.projectId||'')===String(projectId))
+    .sort((a,b)=>(Number(a.order)||0)-(Number(b.order)||0));
+
+  const current=select.value||'';
+  select.innerHTML='<option value="">Semua Tahapan</option>'+
+    stages.map(x=>`<option value="${esc(x.id)}">${esc(x.name)}</option>`).join('');
+
+  if(stages.some(x=>x.id===current))select.value=current;
+}
+
+
 function projectLink(id,name){return id?`<button class="project-link" onclick="openProject('${esc(id)}')">${esc(name||'Project')}</button>`:'—'}
 function dateTimeLabel(v){if(!v)return'—';const d=new Date(v);return isNaN(d)?esc(v):d.toLocaleString('id-ID',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})}
 
@@ -1570,7 +1821,7 @@ function renderTrendTeamHeatmap(tasks,keys){
 function renderProject(){
   const m=state.model||{}, projects=m.projects||[], detail=m.projectDetail;
   if(detail){renderProjectDetail(detail);return}
-  qs('#page').innerHTML=topbar('Project','Hub lintas tugas, dokumen, sumber, dan aktivitas untuk menelusuri riwayat pekerjaan.',`<button class="btn primary" onclick="openProjectForm()">+ Project Baru</button>`)+
+  qs('#page').innerHTML=topbar('Project','Hub untuk mengorganisasi tugas, dokumen, dan sumber berdasarkan Tahapan Project.',`<button class="btn primary" onclick="openProjectForm()">+ Project Baru</button>`)+
   `<div class="stats">${stat('Total Project',projects.length)}${stat('Project Aktif',projects.filter(p=>p.status==='Aktif').length)}${stat('Tugas Terhubung',projects.reduce((s,p)=>s+(p.taskCount||0),0))}${stat('Dokumen Terhubung',projects.reduce((s,p)=>s+(p.documentCount||0),0))}</div>`+
   `<div class="toolbar"><input id="projectSearch" placeholder="Cari project..." oninput="filterProjects()"><select id="projectProgram" onchange="filterProjects()"><option value="">Semua Program Utama</option>${(state.bootstrap?.programs||[]).map(x=>`<option>${esc(x)}</option>`).join('')}</select><select id="projectStatus" onchange="filterProjects()"><option value="">Semua Status</option>${(state.bootstrap?.projectStatuses||[]).map(x=>`<option>${esc(x)}</option>`).join('')}</select><button class="btn" onclick="resetProjectFilters()">Reset</button></div>`+
   `<div class="card"><div class="project-list-head"><div>Project</div><div>Program Utama</div><div>Status</div><div>PIC</div><div>Tugas</div><div>Aksi</div></div><div id="projectRows"></div></div>`;
@@ -1597,18 +1848,259 @@ function backToProjects(){
   });
 }
 function renderProjectDetail(d){
-  const p=d.project,tasks=d.tasks||[],docs=d.documents||[],sources=d.sources||[],acts=d.activities||[];
-  window.__projectDetail=d;window.__projectActivities=acts;state.projectTimeline={q:'',type:'',limit:20};
-  qs('#page').innerHTML=topbar(p.name,esc(p.description||''),`<div class="row-actions"><button class="btn" onclick="openProjectForm(window.__projectDetail.project)">Edit Project</button><button class="btn" onclick="openDocumentForm({projectId:'${esc(p.id)}'})">+ Dokumen</button><button class="btn" onclick="openTaskForm('', '${esc(p.id)}')">+ Tugas</button><button class="btn primary" onclick="openProjectActivityForm('${esc(p.id)}')">+ Aktivitas</button></div>`)+
-  `<div class="project-back" onclick="backToProjects()">‹ Kembali ke daftar Project</div>`+
-  `<div class="project-summary">${stat('Tugas',tasks.length,'terhubung')}${stat('Dokumen',docs.length,'terhubung')}${stat('Sumber / Link',sources.length,'tambahan')}${stat('Aktivitas',acts.length,'riwayat')}</div>`+
-  `<div class="project-health"><span><strong>${p.activeTaskCount||0}</strong> tugas aktif</span><span>·</span><span><strong>${p.overdueTaskCount||0}</strong> terlambat</span><span>·</span><span>Update <strong>${esc(dateTimeLabel(p.updatedAt))}</strong></span><span>·</span><span>Target <strong>${esc(fmtDate(p.targetDate))}</strong></span></div>`+
-  `<div class="project-grid"><div class="card"><div class="card-head"><div><div class="card-title">Tugas Terhubung</div><div class="card-note">Tugas dari Kelola Tugas.</div></div><button class="mini" onclick="navigateFiltered('taskmatrix','${esc(p.id)}')">Kelola Tugas ↗</button></div>${tasks.length?tasks.map(t=>`<div class="linked-item"><div class="linked-title">${esc(t.title)}</div><div class="task-meta"><span class="pill">${esc(t.statusLabel)}</span><span class="pill ${priorityClass(t.priority)}">${esc(t.priority)}</span><span class="pill">${esc(t.timeLabel||'Tanpa tanggal')}</span>${t.overdue?'<span class="pill high">Terlambat</span>':''}</div><div class="sub" style="margin-top:5px">PIC: ${esc((t.picList||[]).join(', '))} · Program: ${esc(t.program)}</div><div class="row-actions" style="margin-top:7px"><button class="mini" onclick="showTaskDetail('${esc(t.id)}')">Detail</button></div></div>`).join(''):'<div class="empty">Belum ada tugas terhubung.</div>'}</div>`+
-  `<div class="card"><div class="card-head"><div><div class="card-title">Dokumen Terhubung</div><div class="card-note">Dokumen dari Inventaris Dokumen.</div></div><button class="mini" onclick="navigateFiltered('documents','${esc(p.id)}')">Dokumen ↗</button></div>${docs.length?docs.map(x=>`<div class="linked-item"><div class="linked-title">${esc(x.name)}</div><div class="task-meta"><span class="pill">${esc(x.program)}</span><span class="pill">${esc(x.tag)}</span></div><div class="row-actions" style="margin-top:7px">${x.url?`<a class="mini primary" target="_blank" rel="noopener" href="${esc(x.url)}">Buka Dokumen ↗</a>`:''}<button class="mini" onclick='openDocumentForm(${JSON.stringify(x)})'>Edit</button></div></div>`).join(''):'<div class="empty">Belum ada dokumen terhubung.</div>'}</div></div>`+
-  `<div class="project-grid"><div class="card"><div class="card-head"><div><div class="card-title">Riwayat Project</div><div class="card-note">Aktivitas otomatis dan catatan manual.</div></div><div class="timeline-tools"><input id="timelineSearch" placeholder="Cari riwayat..." oninput="filterProjectTimeline()"><select id="timelineType" onchange="filterProjectTimeline()"><option value="">Semua Aktivitas</option><option value="task">Tugas</option><option value="document">Dokumen</option><option value="meeting">Pertemuan</option><option value="decision">Keputusan</option><option value="output">Output / Milestone</option><option value="note">Catatan</option><option value="source">Sumber</option></select></div></div><div id="timelineRows"></div><div id="timelineMore" style="padding:10px;text-align:center"></div></div>`+
-  `<div><div class="card"><div class="card-head"><div><div class="card-title">Sumber & Link Tambahan</div><div class="card-note">Referensi ringan di luar Inventaris Dokumen.</div></div><button class="mini" onclick="openProjectSourceForm('${esc(p.id)}')">+ Tambah</button></div>${sources.length?sources.map(s=>`<div class="source-item"><div class="linked-title">${esc(s.name)}</div><div class="sub">${esc(s.type)} · ${esc(s.notes||'')}</div><div class="row-actions" style="margin-top:7px"><a class="mini" target="_blank" rel="noopener" href="${esc(s.url)}">Buka ↗</a><button class="mini danger" onclick="deleteProjectSource('${esc(s.id)}')">Hapus</button></div></div>`).join(''):'<div class="empty">Belum ada sumber tambahan.</div>'}</div><div class="card"><div class="card-head"><div><div class="card-title">Informasi Project</div></div></div><div class="card-body"><div class="sub">Program Utama</div><strong>${esc(p.primaryProgram)}</strong><div class="sub" style="margin-top:10px">PIC</div><strong>${esc((p.picList||[]).join(', ')||'—')}</strong><div class="sub" style="margin-top:10px">Periode</div><strong>${esc(fmtDate(p.startDate))} → ${esc(fmtDate(p.targetDate))}</strong></div></div></div></div>`;
-  renderProjectTimeline();
+  const p=d.project;
+  const tasks=d.tasks||[];
+  const docs=d.documents||[];
+  const sources=d.sources||[];
+  const stages=d.stages||[];
+  const history=d.systemHistory||[];
+
+  window.__projectDetail=d;
+
+  const activeStageId=
+    state.projectStageFocus ||
+    stages.find(s=>tasks.some(t=>t.stageId===s.id&&t.status!=='done'))?.id ||
+    stages[0]?.id ||
+    '';
+
+  qs('#page').innerHTML=
+    topbar(
+      p.name,
+      esc(p.description||''),
+      `<div class="row-actions">
+        <button class="btn" onclick="openProjectForm(window.__projectDetail.project)">Edit Project</button>
+        <button class="btn" onclick="openProjectStageForm('${esc(p.id)}')">+ Tahapan</button>
+        <button class="btn primary" onclick="openTaskForm('', '${esc(p.id)}', '${esc(activeStageId)}')">+ Tugas</button>
+        <button class="btn" onclick="openDocumentForm({projectId:'${esc(p.id)}'})">+ Dokumen</button>
+      </div>`
+    )+
+    `<div class="project-back" onclick="backToProjects()">‹ Kembali ke daftar Project</div>`+
+    `<div class="project-summary">
+      ${stat('Tahapan',stages.length,'fase pekerjaan')}
+      ${stat('Tugas',tasks.length,'terhubung')}
+      ${stat('Tugas Aktif',tasks.filter(t=>t.status!=='done').length,'masih berjalan')}
+      ${stat('Dokumen',docs.length,'terhubung')}
+    </div>`+
+    `<div class="project-health">
+      <span><strong>${p.overdueTaskCount||0}</strong> tugas terlambat</span>
+      <span>·</span>
+      <span>Target <strong>${esc(fmtDate(p.targetDate))}</strong></span>
+    </div>`+
+    `<div class="card">
+      <div class="card-head">
+        <div>
+          <div class="card-title">Tahapan Project</div>
+          <div class="card-note">Tahapan membagi fase besar. Tugas tetap merupakan Tugas yang sama dengan Kelola Tugas.</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="project-stage-list">
+          ${renderProjectStages(p,stages,tasks,activeStageId)}
+        </div>
+      </div>
+    </div>`+
+    `<div class="project-grid" style="margin-top:14px">
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="card-title">Dokumen Terhubung</div>
+            <div class="card-note">Dokumen yang terhubung langsung ke Project.</div>
+          </div>
+          <button class="mini" onclick="navigateFiltered('documents','${esc(p.id)}')">Dokumen ↗</button>
+        </div>
+        ${docs.length?docs.map(x=>`<div class="linked-item">
+          <div class="linked-title">${esc(x.name)}</div>
+          <div class="task-meta">
+            <span class="pill">${esc(x.program||'')}</span>
+            <span class="pill">${esc(x.tag||'')}</span>
+          </div>
+          <div class="row-actions" style="margin-top:7px">
+            ${x.url?`<a class="mini primary" target="_blank" rel="noopener" href="${esc(x.url)}">Buka Dokumen ↗</a>`:''}
+            <button class="mini" onclick='openDocumentForm(${JSON.stringify(x)})'>Edit</button>
+          </div>
+        </div>`).join(''):'<div class="empty">Belum ada dokumen terhubung.</div>'}
+      </div>
+
+      <div>
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <div class="card-title">Sumber & Link Tambahan</div>
+              <div class="card-note">Referensi pendukung Project.</div>
+            </div>
+            <button class="mini" onclick="openProjectSourceForm('${esc(p.id)}')">+ Tambah</button>
+          </div>
+          ${sources.length?sources.map(s=>`<div class="source-item">
+            <div class="linked-title">${esc(s.name)}</div>
+            <div class="sub">${esc(s.type)} · ${esc(s.notes||'')}</div>
+            <div class="row-actions" style="margin-top:7px">
+              <a class="mini" target="_blank" rel="noopener" href="${esc(s.url)}">Buka ↗</a>
+              <button class="mini danger" onclick="deleteProjectSource('${esc(s.id)}')">Hapus</button>
+            </div>
+          </div>`).join(''):'<div class="empty">Belum ada sumber tambahan.</div>'}
+        </div>
+
+        <div class="card">
+          <div class="card-head"><div><div class="card-title">Informasi Project</div></div></div>
+          <div class="card-body">
+            <div class="sub">Program Utama</div>
+            <strong>${esc(p.primaryProgram)}</strong>
+            <div class="sub" style="margin-top:10px">PIC</div>
+            <strong>${esc((p.picList||[]).join(', ')||'—')}</strong>
+            <div class="sub" style="margin-top:10px">Periode</div>
+            <strong>${esc(fmtDate(p.startDate))} → ${esc(fmtDate(p.targetDate))}</strong>
+          </div>
+        </div>
+      </div>
+    </div>`+
+    renderProjectSystemHistory(history);
+
+  setTimeout(()=>{
+    if(state.projectTaskFocus){
+      const row=qs('#project-task-'+CSS.escape(state.projectTaskFocus));
+      if(row){
+        row.classList.add('project-task-highlight');
+        row.scrollIntoView({behavior:'smooth',block:'center'});
+        setTimeout(()=>row.classList.remove('project-task-highlight'),1600);
+      }
+      state.projectTaskFocus='';
+    }
+    state.projectStageFocus='';
+  },30);
 }
+
+function renderProjectStages(project,stages,tasks,activeStageId){
+  const rows=stages.map((stage,index)=>{
+    const stageTasks=tasks.filter(t=>String(t.stageId||'')===String(stage.id));
+    const done=stageTasks.filter(t=>t.status==='done').length;
+    const active=stageTasks.length-done;
+    const expanded=String(stage.id)===String(activeStageId);
+
+    return `<section class="project-stage">
+      <div class="project-stage-head">
+        <div class="project-stage-no">${String(index+1).padStart(2,'0')}</div>
+        <div style="cursor:pointer" onclick="toggleProjectStage('${esc(stage.id)}')">
+          <div class="project-stage-name">${esc(stage.name)}</div>
+          <div class="project-stage-meta">
+            ${stage.startDate?esc(fmtDate(stage.startDate)):'Tanpa tanggal mulai'}
+            ${stage.targetDate?' → '+esc(fmtDate(stage.targetDate)):''}
+            ${stage.description?' · '+esc(stage.description):''}
+          </div>
+        </div>
+        <div class="project-stage-counts">
+          <span class="pill">${stageTasks.length} Tugas</span>
+          <span class="pill">${done} Selesai</span>
+          ${active?`<span class="pill">${active} Aktif</span>`:''}
+          <button class="mini" onclick="openProjectStageForm('${esc(project.id)}','${esc(stage.id)}')">Edit</button>
+        </div>
+      </div>
+
+      <div class="project-stage-body" id="project-stage-body-${esc(stage.id)}" style="${expanded?'':'display:none'}">
+        ${stageTasks.length?stageTasks.map(renderProjectTaskRow).join(''):'<div class="empty">Belum ada Tugas pada Tahapan ini.</div>'}
+        <div style="margin-top:8px">
+          <button class="mini" onclick="openTaskForm('', '${esc(project.id)}', '${esc(stage.id)}')">+ Tugas pada Tahapan ini</button>
+        </div>
+      </div>
+    </section>`;
+  });
+
+  const noStageTasks=tasks.filter(t=>!t.stageId);
+  if(noStageTasks.length){
+    rows.push(`<section class="project-stage">
+      <div class="project-stage-head">
+        <div class="project-stage-no">—</div>
+        <div style="cursor:pointer" onclick="toggleProjectStage('none')">
+          <div class="project-stage-name">Tanpa Tahapan</div>
+          <div class="project-stage-meta">Tugas Project yang belum dikelompokkan ke Tahapan.</div>
+        </div>
+        <div class="project-stage-counts">
+          <span class="pill">${noStageTasks.length} Tugas</span>
+        </div>
+      </div>
+      <div class="project-stage-body" id="project-stage-body-none">
+        ${noStageTasks.map(renderProjectTaskRow).join('')}
+      </div>
+    </section>`);
+  }
+
+  if(!rows.length){
+    return `<div class="empty">
+      Belum ada Tahapan. Tambahkan Tahapan untuk mengelompokkan Tugas pada Project ini.
+    </div>`;
+  }
+
+  return rows.join('');
+}
+
+function renderProjectTaskRow(t){
+  return `<div class="project-task-row" id="project-task-${esc(t.id)}">
+    <div>
+      <div class="project-task-title">${esc(t.title)}</div>
+      <div class="project-task-description">${esc(t.description||'')}</div>
+      <div class="task-meta" style="margin-top:6px">
+        <span class="pill">${esc((t.picList||[]).join(', ')||'—')}</span>
+        <span class="pill">${esc(t.statusLabel)}</span>
+        <span class="pill ${priorityClass(t.priority)}">${esc(t.priority)}</span>
+        ${t.timeLabel?`<span class="pill">${esc(t.timeLabel)}</span>`:''}
+        ${t.overdue?'<span class="pill high">Terlambat</span>':''}
+      </div>
+    </div>
+    <div class="row-actions">
+      <button class="mini primary" onclick="openTaskUpdate('${esc(t.id)}')">Update</button>
+      <button class="mini" onclick="showTaskDetail('${esc(t.id)}')">Detail</button>
+      <button class="mini" onclick="openTaskMatrixContext('${esc(t.projectId)}','${esc(t.stageId||'')}')">Kelola Tugas ↗</button>
+    </div>
+  </div>`;
+}
+
+function toggleProjectStage(id){
+  const el=qs('#project-stage-body-'+CSS.escape(String(id)));
+  if(el)el.style.display=el.style.display==='none'?'block':'none';
+}
+
+function renderProjectSystemHistory(history){
+  return `<details class="system-history-compact">
+    <summary>Riwayat Sistem · ${history.length} log</summary>
+    <div>
+      ${history.length?history.map(x=>`<div class="system-history-row">
+        <div class="system-history-date">${esc(dateTimeLabel(x.createdAt))}</div>
+        <div>
+          <div class="system-history-title">${esc(x.title)}</div>
+          <div class="system-history-text">${esc(x.details||'')}</div>
+        </div>
+        <div>
+          ${((x.linksList||[]).find(l=>/^https?:\/\//i.test(String(l||''))))
+            ? `<a class="mini" target="_blank" rel="noopener" href="${esc((x.linksList||[]).find(l=>/^https?:\/\//i.test(String(l||''))))}">Buka ↗</a>`
+            : ''}
+        </div>
+      </div>`).join(''):'<div class="empty">Belum ada riwayat sistem.</div>'}
+    </div>
+  </details>`;
+}
+
+function openProjectContext(projectId,stageId='',taskId=''){
+  state.projectStageFocus=stageId||'';
+  state.projectTaskFocus=taskId||'';
+
+  return loadPage({
+    targetPage:'project',
+    targetProjectId:projectId,
+    commitNavigation:true,
+    historyMode:'push'
+  });
+}
+
+function openTaskMatrixContext(projectId='',stageId=''){
+  state.taskStageFilter=stageId||'';
+
+  return loadPage({
+    targetPage:'taskmatrix',
+    targetProjectId:projectId||'',
+    commitNavigation:true,
+    historyMode:'push'
+  });
+}
+
 function navigateFiltered(page,projectId){
   return loadPage({
     targetPage:page,
@@ -1669,6 +2161,71 @@ function renderProjectTimeline(){
   qs('#timelineMore').innerHTML=a.length>state.projectTimeline.limit?'<button class="btn" onclick="state.projectTimeline.limit+=20;renderProjectTimeline()">Muat Riwayat Sebelumnya</button>':'';
 }
 function projectActivityLabel(t){return({task:'Tugas',document:'Dokumen',meeting:'Pertemuan',decision:'Keputusan',output:'Output / Milestone',note:'Catatan',source:'Sumber'})[t]||t}
+function openProjectStageForm(projectId,stageId=''){
+  const stage=(window.__projectDetail?.stages||[]).find(x=>String(x.id)===String(stageId))||
+    (state.bootstrap?.projectStages||[]).find(x=>String(x.id)===String(stageId))||
+    {};
+
+  openModal(
+    stage.id?'Edit Tahapan':'Tambah Tahapan',
+    `<div class="form-grid">
+      <div class="field full">
+        <label>Nama Tahapan *</label>
+        <input id="stageName" value="${esc(stage.name||'')}" placeholder="Contoh: Konfirmasi Instansi">
+      </div>
+      <div class="field">
+        <label>Tanggal Mulai</label>
+        <input id="stageStart" type="date" value="${esc(stage.startDate||'')}">
+      </div>
+      <div class="field">
+        <label>Target Selesai</label>
+        <input id="stageTarget" type="date" value="${esc(stage.targetDate||'')}">
+      </div>
+      <div class="field full">
+        <label>Keterangan</label>
+        <textarea id="stageDescription">${esc(stage.description||'')}</textarea>
+      </div>
+    </div>`,
+    `${stage.id?`<button class="btn danger" onclick="deleteProjectStage('${esc(stage.id)}')">Hapus</button>`:''}
+     <button class="btn" onclick="closeModal()">Batal</button>
+     <button class="btn primary" onclick="saveProjectStage('${esc(projectId)}','${esc(stage.id||'')}')">Simpan Tahapan</button>`
+  );
+}
+
+async function saveProjectStage(projectId,id=''){
+  try{
+    await api('saveProjectStage',{
+      id,
+      projectId,
+      name:qs('#stageName').value,
+      startDate:qs('#stageStart').value,
+      targetDate:qs('#stageTarget').value,
+      description:qs('#stageDescription').value
+    });
+
+    closeModal();
+    state.bootstrap=await api('bootstrap');
+    showToast('Tahapan disimpan.');
+    await loadPage({projectId});
+  }catch(e){
+    showToast(e.message,true);
+  }
+}
+
+async function deleteProjectStage(id){
+  if(!confirm('Hapus Tahapan ini?'))return;
+
+  try{
+    await api('deleteProjectStage',{id});
+    closeModal();
+    state.bootstrap=await api('bootstrap');
+    showToast('Tahapan dihapus.');
+    await loadPage({projectId:state.projectId});
+  }catch(e){
+    showToast(e.message,true);
+  }
+}
+
 function openProjectForm(p={}){const x=p||{};openModal(x.id?'Edit Project':'Project Baru',`<div class="form-grid"><div class="field full"><label>Nama Project *</label><input id="prName" value="${esc(x.name||'')}"></div><div class="field"><label>Program Utama *</label><select id="prProgram"><option value="">Pilih</option>${(state.bootstrap?.programs||[]).map(v=>`<option ${x.primaryProgram===v?'selected':''}>${esc(v)}</option>`).join('')}</select><div class="helper">Program Utama hanya klasifikasi Project. Tugas/Dokumen dapat berasal dari Program lain.</div></div><div class="field"><label>Status</label><select id="prStatus">${(state.bootstrap?.projectStatuses||[]).map(v=>`<option ${x.status===v?'selected':''}>${esc(v)}</option>`).join('')}</select></div><div class="field"><label>Tanggal Mulai</label><input type="date" id="prStart" value="${esc(x.startDate||'')}"></div><div class="field"><label>Target Selesai</label><input type="date" id="prTarget" value="${esc(x.targetDate||'')}"></div><div class="field full"><label>PIC</label><div class="pic-selector">${(state.bootstrap?.pics||[]).map(v=>`<label class="pic-option"><input type="checkbox" name="prPic" value="${esc(v)}" ${(x.picList||[]).includes(v)?'checked':''}><span>${esc(v)}</span></label>`).join('')}</div><div class="pic-selector-note">Pilih anggota tim yang menjadi PIC utama Project.</div></div><div class="field full"><label>Deskripsi</label><textarea id="prDesc">${esc(x.description||'')}</textarea></div></div>`,`<button class="btn" onclick="closeModal()">Batal</button><button class="btn primary" onclick="saveProject('${esc(x.id||'')}')">Simpan Project</button>`)}
 async function saveProject(id){try{const r=await api('saveProject',{id,name:qs('#prName').value,primaryProgram:qs('#prProgram').value,status:qs('#prStatus').value,startDate:qs('#prStart').value,targetDate:qs('#prTarget').value,picList:qsa('input[name="prPic"]:checked').map(x=>x.value),description:qs('#prDesc').value});closeModal();state.bootstrap=await api('bootstrap');showToast('Project disimpan.');if(state.projectId||r.id)openProject(r.id);else await loadPage()}catch(e){showToast(e.message,true)}}
 function openProjectSourceForm(projectId){openModal('Tambah Sumber / Link',`<div class="form-grid"><div class="field"><label>Jenis *</label><select id="srcType"><option>Spreadsheet</option><option>Dokumen</option><option>Folder</option><option>Form</option><option>Website</option><option>Dashboard</option><option>Link</option></select></div><div class="field"><label>Nama *</label><input id="srcName"></div><div class="field full"><label>URL *</label><input id="srcUrl" placeholder="https://..."></div><div class="field full"><label>Keterangan</label><textarea id="srcNotes"></textarea></div></div>`,`<button class="btn" onclick="closeModal()">Batal</button><button class="btn primary" onclick="saveProjectSource('${esc(projectId)}')">Tambah</button>`)}
@@ -1734,7 +2291,8 @@ async function saveProjectActivity(projectId,id=''){
       upload
     });
     closeModal();
-    showToast(id?'Riwayat diperbarui.':(file?'Aktivitas dan dokumen ditambahkan.':'Aktivitas ditambahkan.'));
+    state.bootstrap=await api('bootstrap');
+    showToast(id?'Aktivitas diperbarui.':(file?'Aktivitas dan dokumen ditambahkan.':'Aktivitas ditambahkan.'));
     await loadPage({projectId});
   }catch(e){
     showToast(e.message,true);
@@ -1752,38 +2310,225 @@ async function deleteProjectActivity(id){
 }
 function renderTaskMatrix(){
   const tasks=state.model.tasks||[];
-  qs('#page').innerHTML=topbar('Kelola Tugas','Kelola seluruh tugas berdasarkan status.',`<button class="btn primary" onclick="openTaskForm()">+ Buat Tugas</button>`)+
-  `<div class="toolbar"><input id="taskSearch" placeholder="Cari tugas..." oninput="filterTaskMatrix()"><select id="taskPic" onchange="filterTaskMatrix()"><option value="">Semua PIC</option>${(state.bootstrap?.pics||[]).map(x=>`<option>${esc(x)}</option>`).join('')}</select><select id="taskProgram" onchange="filterTaskMatrix()"><option value="">Semua Program</option>${(state.bootstrap?.programs||[]).map(x=>`<option>${esc(x)}</option>`).join('')}</select><select id="taskProject" onchange="filterTaskMatrix()"><option value="">Semua Project</option>${(state.bootstrap?.projects||[]).map(x=>`<option value="${esc(x.id)}" ${state.projectId===x.id?'selected':''}>${esc(x.name)}</option>`).join('')}</select><button class="btn" onclick="resetTaskFilters()">Reset</button></div>`+
-  `<div class="task-columns" id="taskColumns"></div>`;
-  renderTaskColumns(tasks);
-  if(state.projectId) filterTaskMatrix();
+
+  qs('#page').innerHTML=
+    topbar(
+      'Kelola Tugas',
+      'Buat dan kelola penugasan. Project bersifat opsional; Tahapan mengikuti Project yang dipilih.',
+      `<button class="btn primary" onclick="openTaskForm()">+ Buat Tugas</button>`
+    )+
+    `<div class="toolbar">
+      <input id="taskSearch" placeholder="Cari tugas..." oninput="filterTaskMatrix()">
+      <select id="taskPic" onchange="filterTaskMatrix()">
+        <option value="">Semua PIC</option>
+        ${(state.bootstrap?.pics||[]).map(x=>`<option>${esc(x)}</option>`).join('')}
+      </select>
+      <select id="taskProgram" onchange="filterTaskMatrix()">
+        <option value="">Semua Program</option>
+        ${(state.bootstrap?.programs||[]).map(x=>`<option>${esc(x)}</option>`).join('')}
+      </select>
+      <select id="taskProject" onchange="state.projectId=this.value;state.taskStageFilter='';syncTaskStageFilter();filterTaskMatrix()">
+        <option value="">Semua Project</option>
+        ${(state.bootstrap?.projects||[]).map(x=>`<option value="${esc(x.id)}" ${state.projectId===x.id?'selected':''}>${esc(x.name)}</option>`).join('')}
+      </select>
+      <select id="taskStage" onchange="state.taskStageFilter=this.value;filterTaskMatrix()">
+        <option value="">Semua Tahapan</option>
+      </select>
+      <button class="btn" onclick="resetTaskFilters()">Reset</button>
+    </div>`+
+    `<div class="task-columns" id="taskColumns"></div>`;
+
+  syncTaskStageFilter();
+  renderTaskColumns(filteredTasks());
 }
 
 function filteredTasks(){
-  const tasks=state.model.tasks||[], q=(qs('#taskSearch')?.value||'').toLowerCase(), pic=qs('#taskPic')?.value||'', prog=qs('#taskProgram')?.value||'', project=qs('#taskProject')?.value||'';
-  return tasks.filter(t=>(!q||(String(t.title)+' '+String(t.tag)+' '+String(t.projectName||'')).toLowerCase().includes(q))&&(!pic||(t.picList||[]).includes(pic))&&(!prog||t.program===prog)&&(!project||t.projectId===project));
+  const tasks=state.model.tasks||[];
+  const q=(qs('#taskSearch')?.value||'').toLowerCase();
+  const pic=qs('#taskPic')?.value||'';
+  const prog=qs('#taskProgram')?.value||'';
+  const project=qs('#taskProject')?.value||'';
+  const stage=qs('#taskStage')?.value||'';
+
+  return tasks.filter(t=>
+    (!q||(
+      String(t.title)+' '+
+      String(t.tag)+' '+
+      String(t.projectName||'')+' '+
+      String(t.stageName||'')
+    ).toLowerCase().includes(q)) &&
+    (!pic||(t.picList||[]).includes(pic)) &&
+    (!prog||t.program===prog) &&
+    (!project||t.projectId===project) &&
+    (!stage||t.stageId===stage)
+  );
 }
-function filterTaskMatrix(){renderTaskColumns(filteredTasks())}
-function resetTaskFilters(){state.projectId='';if(qs('#taskSearch'))qs('#taskSearch').value='';if(qs('#taskPic'))qs('#taskPic').value='';if(qs('#taskProgram'))qs('#taskProgram').value='';if(qs('#taskProject'))qs('#taskProject').value='';renderTaskColumns(state.model.tasks||[])}
+
+function filterTaskMatrix(){
+  renderTaskColumns(filteredTasks());
+}
+
+function resetTaskFilters(){
+  state.projectId='';
+  state.taskStageFilter='';
+
+  if(qs('#taskSearch'))qs('#taskSearch').value='';
+  if(qs('#taskPic'))qs('#taskPic').value='';
+  if(qs('#taskProgram'))qs('#taskProgram').value='';
+  if(qs('#taskProject'))qs('#taskProject').value='';
+
+  syncTaskStageFilter();
+  renderTaskColumns(state.model.tasks||[]);
+}
+
 function renderTaskColumns(tasks){
-  const statuses=[['todo','Perlu Dikerjakan'],['progress','Sedang Dikerjakan'],['done','Selesai']];
-  qs('#taskColumns').innerHTML=statuses.map(([key,label])=>`<section class="task-column"><div class="task-column-head">${label} · ${tasks.filter(t=>t.status===key).length}</div>${tasks.filter(t=>t.status===key).map(renderTaskCard).join('')||'<div class="empty">Kosong</div>'}</section>`).join('');
+  const statuses=[
+    ['todo','Perlu Dikerjakan'],
+    ['progress','Sedang Dikerjakan'],
+    ['done','Selesai']
+  ];
+
+  qs('#taskColumns').innerHTML=statuses.map(([key,label])=>{
+    const rows=tasks.filter(t=>t.status===key);
+
+    return `<section class="task-column">
+      <div class="task-column-head">${label} · ${rows.length}</div>
+      ${rows.map(renderTaskCard).join('')||'<div class="empty">Kosong</div>'}
+    </section>`;
+  }).join('');
 }
+
 function renderTaskCard(t){
-  return `<div class="task-card"><div class="task-title">${esc(t.title)}</div><div class="sub">${esc(t.timeLabel||'Tanpa tanggal')}</div><div class="task-meta"><span class="pill">${esc(t.program||'')}</span>${t.projectId?`<button class="project-link" onclick="openProject('${esc(t.projectId)}')">${esc(t.projectName||'Project')}</button>`:''}<span class="pill">${esc(t.substansi||'')}</span><span class="pill ${priorityClass(t.priority)}">${esc(t.priority||'')}</span>${t.overdue?'<span class="pill high">Terlambat</span>':''}</div><div class="sub" style="margin-top:6px">${esc((t.picList||[]).join(', '))}</div><div class="row-actions" style="margin-top:8px"><button class="mini" onclick="showTaskDetail('${esc(t.id)}')">Detail</button><button class="mini" onclick="openTaskForm('${esc(t.id)}')">Edit</button>${t.status==='todo'?`<button class="mini" onclick="setTaskStatus('${esc(t.id)}','progress')">Mulai</button>`:''}${t.status!=='done'?`<button class="mini primary" onclick="completeTask('${esc(t.id)}')">Selesai</button>`:''}<button class="mini danger" onclick="deleteTask('${esc(t.id)}')">Hapus</button></div></div>`;
+  const context=t.projectId
+    ? `<div class="task-context">
+        <button onclick="openProjectContext('${esc(t.projectId)}','${esc(t.stageId||'')}','${esc(t.id)}')">${esc(t.projectName||'Project')}</button>
+        ${t.stageId?`<span>›</span><button onclick="openProjectContext('${esc(t.projectId)}','${esc(t.stageId)}','${esc(t.id)}')">${esc(t.stageName||'Tahapan')}</button>`:''}
+      </div>`
+    : '';
+
+  return `<div class="task-card">
+    <div class="task-title">${esc(t.title)}</div>
+    <div class="sub">${esc(t.timeLabel||'Tanpa tanggal')}</div>
+    ${context}
+    <div class="task-meta">
+      <span class="pill">${esc(t.program||'')}</span>
+      <span class="pill">${esc(t.substansi||'')}</span>
+      <span class="pill ${priorityClass(t.priority)}">${esc(t.priority||'')}</span>
+      ${t.overdue?'<span class="pill high">Terlambat</span>':''}
+    </div>
+    <div class="sub" style="margin-top:6px">${esc((t.picList||[]).join(', '))}</div>
+    <div class="row-actions" style="margin-top:8px">
+      <button class="mini primary" onclick="openTaskUpdate('${esc(t.id)}')">Update</button>
+      <button class="mini" onclick="showTaskDetail('${esc(t.id)}')">Detail</button>
+    </div>
+  </div>`;
 }
 
 function renderTaskRecap(){
   const tasks=j(state.model.taskRecap?.tasksJson);
-  qs('#page').innerHTML=topbar('Tugas Saya','Ringkasan pekerjaan per anggota tim.')+
-  `<div class="toolbar"><select id="recapPic" onchange="renderSelectedRecap()"><option value="">Pilih Nama Anda</option>${(state.bootstrap?.pics||[]).map(x=>`<option>${esc(x)}</option>`).join('')}</select><div></div><div></div><button class="btn" onclick="navigate('taskmatrix')">Kelola Tugas</button></div><div id="recapContent"><div class="empty">Pilih nama untuk melihat tugas.</div></div>`;
   window.__recapTasks=tasks;
+
+  qs('#page').innerHTML=
+    topbar('Tugas Saya','Tampilan ringkas untuk memperbarui status dan hasil penugasan pribadi.')+
+    `<div class="toolbar">
+      <select id="recapPic" onchange="state.recapPic=this.value;renderSelectedRecap()">
+        <option value="">Pilih Nama Anda</option>
+        ${(state.bootstrap?.pics||[]).map(x=>`<option ${state.recapPic===x?'selected':''}>${esc(x)}</option>`).join('')}
+      </select>
+      <select id="recapProject" onchange="syncRecapStageFilter();renderSelectedRecap()">
+        <option value="">Semua Project</option>
+        ${(state.bootstrap?.projects||[]).map(x=>`<option value="${esc(x.id)}">${esc(x.name)}</option>`).join('')}
+      </select>
+      <select id="recapStage" onchange="renderSelectedRecap()">
+        <option value="">Semua Tahapan</option>
+      </select>
+      <select id="recapStatus" onchange="renderSelectedRecap()">
+        <option value="">Semua Status</option>
+        <option value="todo">Perlu Dikerjakan</option>
+        <option value="progress">Sedang Dikerjakan</option>
+        <option value="done">Selesai</option>
+      </select>
+      <button class="btn" onclick="navigate('taskmatrix')">Kelola Tugas</button>
+    </div>
+    <div id="recapContent"><div class="empty">Pilih nama untuk melihat tugas.</div></div>`;
+
+  syncRecapStageFilter();
+
+  if(state.recapPic){
+    renderSelectedRecap();
+  }
 }
+
 function renderSelectedRecap(){
-  const pic=qs('#recapPic').value, tasks=(window.__recapTasks||[]).filter(t=>(t.picList||[]).includes(pic));
-  if(!pic){qs('#recapContent').innerHTML='<div class="empty">Pilih nama untuk melihat tugas.</div>';return}
-  const todo=tasks.filter(t=>t.status==='todo').length, progress=tasks.filter(t=>t.status==='progress').length, done=tasks.filter(t=>t.status==='done').length;
-  qs('#recapContent').innerHTML=`<div class="stats">${stat('Total',tasks.length)}${stat('Perlu Dikerjakan',todo)}${stat('Sedang Dikerjakan',progress)}${stat('Selesai',done)}</div><div class="card"><div class="card-head"><div><div class="card-title">Riwayat Penugasan</div></div></div><div class="table-wrap"><table><thead><tr><th>Tugas</th><th>Waktu</th><th>Prioritas</th><th>Status</th><th>Aksi</th></tr></thead><tbody>${tasks.map(t=>`<tr><td><strong>${esc(t.title)}</strong><div class="sub">${esc(t.program)} · ${esc(t.substansi)}${t.projectName?' · '+esc(t.projectName):''}</div></td><td>${esc(t.timeLabel||'—')}</td><td>${esc(t.priority)}</td><td><span class="pill ${esc(t.status)}">${esc(statusLabel(t.status))}</span></td><td><div class="row-actions"><button class="mini" onclick="showTaskDetail('${esc(t.id)}')">Detail</button>${t.status==='todo'?`<button class="mini" onclick="setTaskStatus('${esc(t.id)}','progress',true)">Mulai</button>`:''}${t.status!=='done'?`<button class="mini primary" onclick="completeTask('${esc(t.id)}',true)">Selesai</button>`:''}</div></td></tr>`).join('')}</tbody></table></div></div>`;
+  const pic=qs('#recapPic')?.value||state.recapPic||'';
+  state.recapPic=pic;
+
+  if(!pic){
+    qs('#recapContent').innerHTML='<div class="empty">Pilih nama untuk melihat tugas.</div>';
+    return;
+  }
+
+  const project=qs('#recapProject')?.value||'';
+  const stage=qs('#recapStage')?.value||'';
+  const status=qs('#recapStatus')?.value||'';
+
+  const tasks=(window.__recapTasks||[])
+    .filter(t=>
+      (t.picList||[]).includes(pic) &&
+      (!project||t.projectId===project) &&
+      (!stage||t.stageId===stage) &&
+      (!status||t.status===status)
+    )
+    .sort((a,b)=>String(b.startDate||b.createdAt||'').localeCompare(String(a.startDate||a.createdAt||'')));
+
+  qs('#recapContent').innerHTML=
+    `<div class="my-task-list">
+      ${tasks.length?tasks.map(t=>{
+        const context=t.projectId
+          ? `<div class="task-context">
+              <button onclick="openProjectContext('${esc(t.projectId)}','${esc(t.stageId||'')}','${esc(t.id)}')">${esc(t.projectName||'Project')}</button>
+              ${t.stageId?`<span>›</span><button onclick="openProjectContext('${esc(t.projectId)}','${esc(t.stageId)}','${esc(t.id)}')">${esc(t.stageName||'Tahapan')}</button>`:''}
+            </div>`
+          : '';
+
+        return `<div class="my-task-row">
+          <div class="my-task-when">${esc(t.timeLabel||'Tanpa tanggal')}</div>
+          <div>
+            <div class="my-task-title">${esc(t.title)}</div>
+            <div class="my-task-meta">${esc(t.program)} · ${esc(t.substansi)} · ${esc(t.priority)}</div>
+            ${context}
+          </div>
+          <button class="mini" onclick="showTaskDetail('${esc(t.id)}')">Detail</button>
+          <select class="my-task-status ${esc(t.status)}" onchange="changeRecapStatus('${esc(t.id)}',this)">
+            <option value="todo" ${t.status==='todo'?'selected':''}>Perlu Dikerjakan</option>
+            <option value="progress" ${t.status==='progress'?'selected':''}>Sedang Dikerjakan</option>
+            <option value="done" ${t.status==='done'?'selected':''}>Selesai</option>
+          </select>
+        </div>`;
+      }).join(''):'<div class="empty">Tidak ada tugas.</div>'}
+    </div>`;
+}
+
+async function changeRecapStatus(id,select){
+  const task=(window.__recapTasks||[]).find(t=>t.id===id);
+  if(!task)return;
+
+  const next=select.value;
+
+  if(next==='done'&&task.status!=='done'){
+    select.value=task.status;
+    completeTask(id,true);
+    return;
+  }
+
+  try{
+    await api('updateTaskStatus',{id,status:next});
+    showToast('Status diperbarui.');
+    await loadPage();
+  }catch(e){
+    select.value=task.status;
+    showToast(e.message,true);
+  }
 }
 
 function renderDocuments(){
@@ -1849,42 +2594,562 @@ function closeModal(){qs('#modalBackdrop').classList.remove('show');qs('#modalBo
 qs('#modalBackdrop').addEventListener('click',e=>{if(e.target.id==='modalBackdrop')closeModal()});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
 
-function openTaskForm(id='',prefillProjectId=''){
-  const t=id?(state.model?.tasks||[]).find(x=>x.id===id):null;
-  const x=t||{id:'',title:'',program:'',projectId:prefillProjectId||state.projectId||'',substansi:'',tag:'',picList:[],picEmail:'',taskAssigner:'',timeType:'none',startDate:'',endDate:'',startTime:'',endTime:'',dayMode:'workdays',priority:'Sedang',status:'todo',description:'',resultText:''};
+function findTaskInCurrentState(id){
+  return (
+    (state.model?.tasks||[]).find(x=>x.id===id) ||
+    (state.model?.projectDetail?.tasks||[]).find(x=>x.id===id) ||
+    (window.__recapTasks||[]).find(x=>x.id===id) ||
+    null
+  );
+}
+
+async function openTaskForm(id='',prefillProjectId='',prefillStageId=''){
+  let t=id?findTaskInCurrentState(id):null;
+
+  if(id&&!t){
+    try{
+      const d=await api('taskDetail',{taskId:id});
+      t={
+        id:d.id,
+        title:d.title,
+        program:d.program,
+        projectId:d.projectId,
+        stageId:d.stageId,
+        substansi:d.activity,
+        tag:d.tag,
+        picList:d.picList||[],
+        taskAssigner:d.taskAssigner,
+        timeType:d.timeType||'none',
+        startDate:d.startDate||'',
+        endDate:d.endDate||'',
+        startTime:d.startTime||'',
+        endTime:d.endTime||'',
+        dayMode:d.dayMode||'workdays',
+        priority:d.priority,
+        status:d.status,
+        description:d.description,
+        resultText:d.resultText
+      };
+    }catch(e){
+      showToast(e.message,true);
+      return;
+    }
+  }
+
+  const x=t||{
+    id:'',
+    title:'',
+    program:'',
+    projectId:prefillProjectId||state.projectId||'',
+    stageId:prefillStageId||'',
+    substansi:'',
+    tag:'',
+    picList:[],
+    picEmail:'',
+    taskAssigner:'',
+    timeType:'none',
+    startDate:'',
+    endDate:'',
+    startTime:'',
+    endTime:'',
+    dayMode:'workdays',
+    priority:'Sedang',
+    status:'todo',
+    description:'',
+    resultText:''
+  };
+
+  window.__taskFormStatus=x.status||'todo';
+
   const body=`<div class="form-grid">
-    <div class="field full"><label>Judul Tugas *</label><input id="fTitle" value="${esc(x.title)}"></div>
-    <div class="field"><label>Program *</label><select id="fProgram"><option value="">Pilih</option>${(state.bootstrap?.programs||[]).map(v=>`<option ${x.program===v?'selected':''}>${esc(v)}</option>`).join('')}</select></div>
-    <div class="field"><label>Aktivitas *</label><select id="fActivity"><option value="">Pilih</option>${(state.bootstrap?.activities||[]).map(v=>`<option ${x.substansi===v?'selected':''}>${esc(v)}</option>`).join('')}</select></div>
-    <div class="field full"><label>Project</label><select id="fProject">${projectOptions(x.projectId||prefillProjectId||state.projectId||'')}</select><div class="helper">Opsional. Project menghubungkan tugas dengan dokumen, sumber, dan riwayat kerja.</div></div>
-    <div class="field"><label>Tag *</label><input id="fTag" value="${esc(x.tag||'')}"></div>
-    <div class="field"><label>Pembuat Tugas</label><select id="fAssigner"><option value="">Pilih</option>${(state.bootstrap?.pics||[]).map(v=>`<option ${x.taskAssigner===v?'selected':''}>${esc(v)}</option>`).join('')}</select></div>
-    <div class="field full"><label>PIC *</label><div class="pic-selector">${(state.bootstrap?.pics||[]).map(v=>`<label class="pic-option"><input type="checkbox" name="fPic" value="${esc(v)}" ${(x.picList||[]).includes(v)?'checked':''}><span>${esc(v)}</span></label>`).join('')}</div><div class="pic-selector-note">Pilih satu atau lebih anggota tim yang menjadi PIC tugas.</div></div>
-    <div class="field"><label>Jenis Waktu</label><select id="fTimeType" onchange="toggleTaskDates()"><option value="none" ${x.timeType==='none'?'selected':''}>Tanpa Tanggal</option><option value="date" ${x.timeType==='date'?'selected':''}>Tanggal</option><option value="period" ${x.timeType==='period'?'selected':''}>Periode</option></select></div>
-    <div class="field"><label>Hari Pelaksanaan</label><select id="fDayMode"><option value="workdays" ${x.dayMode!=='all_days'?'selected':''}>Hari Kerja</option><option value="all_days" ${x.dayMode==='all_days'?'selected':''}>Semua Hari</option></select></div>
-    <div class="field task-date"><label>Tanggal Mulai</label><input type="date" id="fStartDate" value="${esc(x.startDate||'')}"></div>
-    <div class="field task-date"><label>Tanggal Selesai</label><input type="date" id="fEndDate" value="${esc(x.endDate||'')}"></div>
-    <div class="field task-date"><label>Jam Mulai</label><input type="time" id="fStartTime" value="${esc(x.startTime||'')}"></div>
-    <div class="field task-date"><label>Jam Selesai</label><input type="time" id="fEndTime" value="${esc(x.endTime||'')}"></div>
-    <div class="field"><label>Prioritas</label><select id="fPriority">${['Rendah','Sedang','Tinggi'].map(v=>`<option ${x.priority===v?'selected':''}>${v}</option>`).join('')}</select></div>
-    <div class="field"><label>Status</label><select id="fStatus"><option value="todo" ${x.status==='todo'?'selected':''}>Perlu Dikerjakan</option><option value="progress" ${x.status==='progress'?'selected':''}>Sedang Dikerjakan</option><option value="done" ${x.status==='done'?'selected':''}>Selesai</option></select></div>
-    <div class="field full"><label>Deskripsi</label><textarea id="fDesc">${esc(x.description||'')}</textarea></div>
+    <div class="field full">
+      <label>Judul Tugas *</label>
+      <input id="fTitle" value="${esc(x.title)}">
+    </div>
+
+    <div class="field">
+      <label>Program *</label>
+      <select id="fProgram">
+        <option value="">Pilih</option>
+        ${(state.bootstrap?.programs||[]).map(v=>`<option ${x.program===v?'selected':''}>${esc(v)}</option>`).join('')}
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Jenis Aktivitas *</label>
+      <select id="fActivity">
+        <option value="">Pilih</option>
+        ${(state.bootstrap?.activities||[]).map(v=>`<option ${x.substansi===v?'selected':''}>${esc(v)}</option>`).join('')}
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Project</label>
+      <select id="fProject" onchange="syncTaskStageOptions()">
+        ${projectOptions(x.projectId||prefillProjectId||state.projectId||'')}
+      </select>
+      <div class="helper">Opsional. Tugas dapat berdiri sendiri tanpa Project.</div>
+    </div>
+
+    <div class="field" id="fStageField">
+      <label>Tahapan</label>
+      <select id="fStage"></select>
+      <div class="helper">Tahapan hanya menampilkan fase yang sudah dibuat pada Project terpilih.</div>
+    </div>
+
+    <div class="field">
+      <label>Tag *</label>
+      <input id="fTag" value="${esc(x.tag||'')}">
+    </div>
+
+    <div class="field">
+      <label>Pembuat Tugas</label>
+      <select id="fAssigner">
+        <option value="">Pilih</option>
+        ${(state.bootstrap?.pics||[]).map(v=>`<option ${x.taskAssigner===v?'selected':''}>${esc(v)}</option>`).join('')}
+      </select>
+    </div>
+
+    <div class="field full">
+      <label>PIC *</label>
+      <div class="pic-selector">
+        ${(state.bootstrap?.pics||[]).map(v=>`<label class="pic-option">
+          <input type="checkbox" name="fPic" value="${esc(v)}" ${(x.picList||[]).includes(v)?'checked':''}>
+          <span>${esc(v)}</span>
+        </label>`).join('')}
+      </div>
+      <div class="pic-selector-note">Pilih satu atau lebih anggota tim yang menjadi PIC tugas.</div>
+    </div>
+
+    <div class="field">
+      <label>Jenis Waktu</label>
+      <select id="fTimeType" onchange="toggleTaskDates()">
+        <option value="none" ${x.timeType==='none'?'selected':''}>Tanpa Tanggal</option>
+        <option value="date" ${x.timeType==='date'?'selected':''}>Tanggal</option>
+        <option value="period" ${x.timeType==='period'?'selected':''}>Periode</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Hari Pelaksanaan</label>
+      <select id="fDayMode">
+        <option value="workdays" ${x.dayMode!=='all_days'?'selected':''}>Hari Kerja</option>
+        <option value="all_days" ${x.dayMode==='all_days'?'selected':''}>Semua Hari</option>
+      </select>
+    </div>
+
+    <div class="field task-date">
+      <label>Tanggal Mulai</label>
+      <input type="date" id="fStartDate" value="${esc(x.startDate||'')}">
+    </div>
+
+    <div class="field task-date">
+      <label>Tanggal Selesai</label>
+      <input type="date" id="fEndDate" value="${esc(x.endDate||'')}">
+    </div>
+
+    <div class="field task-date">
+      <label>Jam Mulai</label>
+      <input type="time" id="fStartTime" value="${esc(x.startTime||'')}">
+    </div>
+
+    <div class="field task-date">
+      <label>Jam Selesai</label>
+      <input type="time" id="fEndTime" value="${esc(x.endTime||'')}">
+    </div>
+
+    <div class="field">
+      <label>Prioritas</label>
+      <select id="fPriority">
+        ${['Rendah','Sedang','Tinggi'].map(v=>`<option ${x.priority===v?'selected':''}>${v}</option>`).join('')}
+      </select>
+    </div>
+
+    <div class="field full">
+      <label>Deskripsi</label>
+      <textarea id="fDesc">${esc(x.description||'')}</textarea>
+    </div>
   </div>`;
-  openModal(x.id?'Edit Tugas':'Buat Tugas',body,`<button class="btn" onclick="closeModal()">Batal</button><button class="btn primary" onclick="saveTaskForm('${esc(x.id||'')}')">Simpan Tugas</button>`);
+
+  openModal(
+    x.id?'Edit Tugas':'Buat Tugas',
+    body,
+    `<button class="btn" onclick="closeModal()">Batal</button>
+     <button class="btn primary" onclick="saveTaskForm('${esc(x.id||'')}')">Simpan Tugas</button>`
+  );
+
+  syncTaskStageOptions(x.stageId||prefillStageId||'');
   toggleTaskDates();
 }
-function toggleTaskDates(){const show=qs('#fTimeType')?.value!=='none';qsa('.task-date').forEach(el=>el.style.display=show?'block':'none')}
+
+function toggleTaskDates(){
+  const show=qs('#fTimeType')?.value!=='none';
+  qsa('.task-date').forEach(el=>el.style.display=show?'block':'none');
+}
+
 async function saveTaskForm(id){
   try{
-    const payload={id,title:qs('#fTitle').value,program:qs('#fProgram').value,projectId:qs('#fProject').value,substansi:qs('#fActivity').value,tag:qs('#fTag').value,pic:qsa('input[name="fPic"]:checked').map(x=>x.value),picEmail:'',taskAssigner:qs('#fAssigner').value,taskAssignerOption:qs('#fAssigner').value,timeType:qs('#fTimeType').value,startDate:qs('#fStartDate').value,endDate:qs('#fEndDate').value,startTime:qs('#fStartTime').value,endTime:qs('#fEndTime').value,dayMode:qs('#fDayMode').value,priority:qs('#fPriority').value,status:qs('#fStatus').value,description:qs('#fDesc').value,resultText:''};
-    await api('saveTask',payload);closeModal();showToast('Tugas berhasil disimpan.');await loadPage()
-  }catch(e){showToast(e.message,true)}
+    const projectId=qs('#fProject').value||'';
+    const stageId=projectId?(qs('#fStage')?.value||''):'';
+
+    const payload={
+      id,
+      title:qs('#fTitle').value,
+      program:qs('#fProgram').value,
+      projectId,
+      stageId,
+      substansi:qs('#fActivity').value,
+      tag:qs('#fTag').value,
+      pic:qsa('input[name="fPic"]:checked').map(x=>x.value),
+      picEmail:'',
+      taskAssigner:qs('#fAssigner').value,
+      taskAssignerOption:qs('#fAssigner').value,
+      timeType:qs('#fTimeType').value,
+      startDate:qs('#fStartDate').value,
+      endDate:qs('#fEndDate').value,
+      startTime:qs('#fStartTime').value,
+      endTime:qs('#fEndTime').value,
+      dayMode:qs('#fDayMode').value,
+      priority:qs('#fPriority').value,
+      status:window.__taskFormStatus||'todo',
+      description:qs('#fDesc').value,
+      resultText:''
+    };
+
+    await api('saveTask',payload);
+    closeModal();
+    showToast('Tugas berhasil disimpan.');
+
+    if(state.page==='project'){
+      state.projectStageFocus=stageId;
+    }
+
+    await loadPage();
+  }catch(e){
+    showToast(e.message,true);
+  }
 }
-async function setTaskStatus(id,status,recap=false){try{await api('updateTaskStatus',{id,status});showToast('Status diperbarui.');await loadPage();if(recap)setTimeout(renderSelectedRecap,20)}catch(e){showToast(e.message,true)}}
-function completeTask(id,recap=false){openModal('Selesaikan Tugas',`<div class="field"><label>Hasil Penyelesaian *</label><textarea id="completeResult"></textarea></div>`,`<button class="btn" onclick="closeModal()">Batal</button><button class="btn primary" onclick="submitComplete('${esc(id)}',${recap})">Simpan</button>`)}
-async function submitComplete(id,recap){try{await api('completeTask',{id,resultText:qs('#completeResult').value});closeModal();showToast('Tugas diselesaikan.');await loadPage();if(recap)setTimeout(renderSelectedRecap,20)}catch(e){showToast(e.message,true)}}
-async function deleteTask(id){if(!confirm('Hapus tugas ini?'))return;try{await api('deleteTask',{id});showToast('Tugas dihapus.');await loadPage()}catch(e){showToast(e.message,true)}}
-async function showTaskDetail(id){try{const d=await api('taskDetail',{taskId:id});openModal('Detail Tugas',`<div class="form-grid"><div class="field full"><label>Judul</label><strong>${esc(d.title)}</strong></div><div class="field"><label>Program</label>${esc(d.program)}</div><div class="field"><label>Project</label>${d.projectId?projectLink(d.projectId,d.projectName):'—'}</div><div class="field"><label>Aktivitas</label>${esc(d.activity)}</div><div class="field"><label>Tag</label>${esc(d.tag)}</div><div class="field"><label>Status</label>${esc(d.statusLabel)}</div><div class="field full"><label>PIC</label>${esc((d.picList||[]).join(', '))}</div><div class="field full"><label>Waktu</label>${esc(d.timeLabel)}</div><div class="field full"><label>Deskripsi</label>${esc(d.description||'—')}</div><div class="field full"><label>Hasil</label>${esc(d.resultText||'—')}</div><div class="field full"><label>Lampiran Tugas</label>${attachmentList(d.taskAttachments,true)}<div class="row-actions" style="margin-top:7px"><button class="mini" onclick="openAttachmentForm('${esc(d.id)}','task')">+ Lampiran</button></div></div><div class="field full"><label>Lampiran Hasil</label>${attachmentList(d.resultAttachments,true)}<div class="row-actions" style="margin-top:7px"><button class="mini" onclick="openAttachmentForm('${esc(d.id)}','result')">+ Lampiran</button><button class="mini" onclick="createResultDoc('${esc(d.id)}')">+ Google Docs</button></div></div></div>`,`<button class="btn" onclick="closeModal()">Tutup</button>`)}catch(e){showToast(e.message,true)}}
+
+let __taskUpdateStatus='';
+
+function openTaskUpdate(id){
+  const task=findTaskInCurrentState(id);
+  if(!task){
+    showTaskDetail(id);
+    return;
+  }
+
+  __taskUpdateStatus=task.status;
+
+  openModal(
+    'Update Tugas',
+    `<div class="sub" style="margin-bottom:12px">${esc(task.title)}</div>
+     <div class="task-update-grid">
+       ${[
+         ['todo','Perlu Dikerjakan','Tugas belum mulai dikerjakan.'],
+         ['progress','Sedang Dikerjakan','Tugas sedang dalam proses.'],
+         ['done','Selesai','Wajib mencatat hasil penyelesaian.']
+       ].map(([value,label,note])=>`<button
+          class="task-update-option ${task.status===value?'active':''}"
+          data-update-status="${value}"
+          onclick="selectTaskUpdateStatus('${value}')">
+          <div class="task-update-name">${label}</div>
+          <div class="task-update-note">${note}</div>
+        </button>`).join('')}
+     </div>
+     <div class="helper" style="margin-top:10px">
+       Untuk mengubah PIC, tanggal, Project, Tahapan, prioritas, atau deskripsi, gunakan tombol pensil pada Detail.
+     </div>`,
+    `<button class="btn" onclick="closeModal()">Batal</button>
+     <button class="btn primary" onclick="submitTaskUpdate('${esc(id)}')">Simpan Update</button>`
+  );
+}
+
+function selectTaskUpdateStatus(status){
+  __taskUpdateStatus=status;
+  qsa('[data-update-status]').forEach(btn=>{
+    btn.classList.toggle('active',btn.dataset.updateStatus===status);
+  });
+}
+
+async function submitTaskUpdate(id){
+  const task=findTaskInCurrentState(id);
+  const previous=task?.status||'';
+
+  if(__taskUpdateStatus==='done'&&previous!=='done'){
+    closeModal();
+    completeTask(id,state.page==='taskrecap');
+    return;
+  }
+
+  try{
+    await api('updateTaskStatus',{id,status:__taskUpdateStatus});
+    closeModal();
+    showToast('Status diperbarui.');
+    await loadPage();
+  }catch(e){
+    showToast(e.message,true);
+  }
+}
+
+async function setTaskStatus(id,status){
+  try{
+    if(status==='done'){
+      completeTask(id,state.page==='taskrecap');
+      return;
+    }
+
+    await api('updateTaskStatus',{id,status});
+    showToast('Status diperbarui.');
+    await loadPage();
+  }catch(e){
+    showToast(e.message,true);
+  }
+}
+
+let __completeAttachMode='file';
+
+function completeTask(id,recap=false){
+  const task=findTaskInCurrentState(id);
+
+  __completeAttachMode='file';
+
+  openModal(
+    'Selesaikan Tugas',
+    `<div class="complete-task-name">${esc(task?.title||'')}</div>
+     <div class="field">
+       <label>Hasil Penyelesaian *</label>
+       <textarea id="completeResult" style="min-height:92px" placeholder="Tuliskan hasil/output pekerjaan yang telah diselesaikan..."></textarea>
+       <div class="complete-required">Hasil pekerjaan wajib dicatat sebelum status menjadi Selesai.</div>
+     </div>
+
+     <div style="margin-top:16px">
+       <div class="sub" style="font-weight:700;color:var(--ink)">Lampiran Hasil <span style="font-weight:400">(opsional)</span></div>
+       <div class="complete-attachments">
+         <div class="complete-tabs">
+           <button class="complete-tab active" data-complete-tab="file" onclick="renderCompleteAttachmentMode('file')">▣ File</button>
+           <button class="complete-tab" data-complete-tab="link" onclick="renderCompleteAttachmentMode('link')">↗ Link</button>
+           <button class="complete-tab" data-complete-tab="docs" onclick="renderCompleteAttachmentMode('docs')">▧ Buat Docs</button>
+         </div>
+         <div id="completeAttachmentArea"></div>
+       </div>
+     </div>`,
+    `<button class="btn" onclick="closeModal()">Batal</button>
+     <button class="btn primary" onclick="submitComplete('${esc(id)}',${recap})">Simpan & Selesaikan</button>`
+  );
+
+  renderCompleteAttachmentMode('file');
+}
+
+function renderCompleteAttachmentMode(mode){
+  __completeAttachMode=mode;
+
+  qsa('[data-complete-tab]').forEach(btn=>{
+    btn.classList.toggle('active',btn.dataset.completeTab===mode);
+  });
+
+  const host=qs('#completeAttachmentArea');
+  if(!host)return;
+
+  if(mode==='file'){
+    host.innerHTML=`<input id="completeFiles" type="file" multiple>
+      <div class="helper" style="margin-top:6px">Maksimal 5 file per penyelesaian, 8 MB per file.</div>`;
+  }else if(mode==='link'){
+    host.innerHTML=`<div class="field">
+      <label>Judul Link</label>
+      <input id="completeLinkTitle" placeholder="Contoh: Hasil Verifikasi">
+    </div>
+    <div class="field" style="margin-top:8px">
+      <label>URL</label>
+      <input id="completeLinkUrl" placeholder="https://...">
+    </div>`;
+  }else{
+    host.innerHTML=`<div class="sub">
+      Google Docs hasil akan dibuat otomatis dan ditautkan sebagai Lampiran Hasil.
+    </div>`;
+  }
+}
+
+async function submitComplete(id,recap){
+  const resultText=qs('#completeResult')?.value.trim()||'';
+
+  if(!resultText){
+    showToast('Hasil Penyelesaian wajib diisi.',true);
+    return;
+  }
+
+  try{
+    // Save optional result attachment first.
+    if(__completeAttachMode==='file'){
+      const files=[...(qs('#completeFiles')?.files||[])];
+
+      if(files.length>5){
+        throw new Error('Maksimal 5 file per penyelesaian.');
+      }
+
+      for(const file of files){
+        if(file.size>8*1024*1024){
+          throw new Error(`File ${file.name} melebihi batas 8 MB.`);
+        }
+
+        await api('uploadAttachment',{
+          taskId:id,
+          attachmentType:'result',
+          fileName:file.name,
+          mimeType:file.type||'application/octet-stream',
+          sizeBytes:file.size,
+          base64:await fileToBase64(file)
+        });
+      }
+    }
+
+    if(__completeAttachMode==='link'){
+      const url=qs('#completeLinkUrl')?.value.trim()||'';
+      const title=qs('#completeLinkTitle')?.value.trim()||'Hasil Penyelesaian';
+
+      if(url){
+        await api('createLinkAttachment',{
+          taskId:id,
+          attachmentType:'result',
+          title,
+          url
+        });
+      }
+    }
+
+    if(__completeAttachMode==='docs'){
+      await api('createResultDoc',{taskId:id});
+    }
+
+    await api('completeTask',{id,resultText});
+
+    closeModal();
+    showToast('Tugas diselesaikan.');
+    await loadPage();
+  }catch(e){
+    showToast(e.message,true);
+  }
+}
+
+async function deleteTask(id){
+  if(!confirm('Hapus tugas ini?'))return;
+
+  try{
+    await api('deleteTask',{id});
+    showToast('Tugas dihapus.');
+    await loadPage();
+  }catch(e){
+    showToast(e.message,true);
+  }
+}
+
+async function showTaskDetail(id){
+  try{
+    const d=await api('taskDetail',{taskId:id});
+    window.__lastTaskDetail=d;
+
+    openModal(
+      'Detail Tugas',
+      `<div class="task-detail-edit-row">
+        <button class="task-detail-edit" title="Edit Tugas" onclick="editTaskFromDetail('${esc(d.id)}')">✎</button>
+      </div>
+
+      <div class="form-grid">
+        <div class="field full">
+          <label>Judul Tugas</label>
+          <div class="task-detail-value">${esc(d.title)}</div>
+        </div>
+
+        <div class="field">
+          <label>Program</label>
+          <div class="task-detail-value">${esc(d.program||'—')}</div>
+        </div>
+
+        <div class="field">
+          <label>Project</label>
+          <div class="task-detail-value">${d.projectId?projectLink(d.projectId,d.projectName):'Tanpa Project'}</div>
+        </div>
+
+        <div class="field">
+          <label>Tahapan</label>
+          <div class="task-detail-value">${esc(d.stageName||'Tanpa Tahapan')}</div>
+        </div>
+
+        <div class="field">
+          <label>PIC</label>
+          <div class="task-detail-value">${esc((d.picList||[]).join(', ')||'—')}</div>
+        </div>
+
+        <div class="field">
+          <label>Jenis Aktivitas</label>
+          <div class="task-detail-value">${esc(d.activity||'—')}</div>
+        </div>
+
+        <div class="field">
+          <label>Status</label>
+          <div class="task-detail-value">${esc(d.statusLabel||'—')}</div>
+        </div>
+
+        <div class="field">
+          <label>Prioritas</label>
+          <div class="task-detail-value">${esc(d.priority||'—')}</div>
+        </div>
+
+        <div class="field">
+          <label>Waktu</label>
+          <div class="task-detail-value">${esc(d.timeLabel||'—')}</div>
+        </div>
+
+        <div class="field">
+          <label>Tag</label>
+          <div class="task-detail-value">${esc(d.tag||'—')}</div>
+        </div>
+
+        <div class="field">
+          <label>Pembuat Tugas</label>
+          <div class="task-detail-value">${esc(d.taskAssigner||'—')}</div>
+        </div>
+
+        <div class="field full">
+          <label>Deskripsi</label>
+          <div class="task-detail-value long">${esc(d.description||'—')}</div>
+        </div>
+
+        <div class="field full">
+          <label>Hasil Penyelesaian</label>
+          <div class="task-detail-value long">${esc(d.resultText||'Belum ada hasil penyelesaian.')}</div>
+        </div>
+
+        <div class="field full">
+          <label>Lampiran Tugas</label>
+          ${attachmentList(d.taskAttachments,true)}
+          <div class="row-actions" style="margin-top:7px">
+            <button class="mini" onclick="openAttachmentForm('${esc(d.id)}','task')">+ Lampiran</button>
+          </div>
+        </div>
+
+        <div class="field full">
+          <label>Lampiran Hasil</label>
+          ${attachmentList(d.resultAttachments,true)}
+          <div class="row-actions" style="margin-top:7px">
+            <button class="mini" onclick="openAttachmentForm('${esc(d.id)}','result')">+ Lampiran</button>
+            <button class="mini" onclick="createResultDoc('${esc(d.id)}')">+ Google Docs</button>
+          </div>
+        </div>
+      </div>`,
+      `<button class="btn" onclick="closeModal()">Tutup</button>
+       ${d.status!=='done'?`<button class="btn primary" onclick="closeModal();openTaskUpdate('${esc(d.id)}')">Update</button>`:''}`
+    );
+  }catch(e){
+    showToast(e.message,true);
+  }
+}
+
+function editTaskFromDetail(id){
+  closeModal();
+  openTaskForm(id);
+}
+
 function attachmentList(items,managed=false){return items&&items.length?items.map(a=>`<div style="display:flex;justify-content:space-between;gap:8px;margin:4px 0"><span>${a.driveUrl?`<a target="_blank" rel="noopener" href="${esc(a.driveUrl)}">${esc(a.fileName)}</a>`:esc(a.fileName)}</span>${managed?`<button class="mini danger" onclick="deleteAttachment('${esc(a.id)}')">Hapus</button>`:''}</div>`).join(''):'—'}
 
 function openAttachmentForm(taskId,type){openModal('Tambah Lampiran',`<div class="form-grid"><div class="field full"><label>Jenis Lampiran</label><select id="attMode"><option value="link">Link</option><option value="file">Upload File</option></select></div><div class="field full"><label>Judul / Nama File</label><input id="attName"></div><div class="field full"><label>URL (untuk Link)</label><input id="attUrl" placeholder="https://..."></div><div class="field full"><label>File (maks. 8 MB)</label><input id="attFile" type="file"></div></div>`,`<button class="btn" onclick="closeModal()">Batal</button><button class="btn primary" onclick="saveAttachment('${esc(taskId)}','${esc(type)}')">Simpan</button>`)}
