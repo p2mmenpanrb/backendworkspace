@@ -385,7 +385,7 @@ tr:last-child td{border-bottom:0}
 
 <script>
 /*
-  Netlify frontend v1.48 — persistent page navigation, Workspace Asdep PPP identity, participation symbol.
+  Netlify frontend v1.49 — restores Kelola Tugas renderer; persistent page navigation retained.
   Netlify frontend.
   Recommended production setup:
   - index.html is hosted by Netlify/GitHub
@@ -1245,6 +1245,15 @@ async function saveProjectActivity(projectId){
     showToast(e.message,true);
   }
 }
+function renderTaskMatrix(){
+  const tasks=state.model.tasks||[];
+  qs('#page').innerHTML=topbar('Kelola Tugas','Kelola seluruh tugas berdasarkan status.',`<button class="btn primary" onclick="openTaskForm()">+ Buat Tugas</button>`)+
+  `<div class="toolbar"><input id="taskSearch" placeholder="Cari tugas..." oninput="filterTaskMatrix()"><select id="taskPic" onchange="filterTaskMatrix()"><option value="">Semua PIC</option>${(state.bootstrap?.pics||[]).map(x=>`<option>${esc(x)}</option>`).join('')}</select><select id="taskProgram" onchange="filterTaskMatrix()"><option value="">Semua Program</option>${(state.bootstrap?.programs||[]).map(x=>`<option>${esc(x)}</option>`).join('')}</select><select id="taskProject" onchange="filterTaskMatrix()"><option value="">Semua Project</option>${(state.bootstrap?.projects||[]).map(x=>`<option value="${esc(x.id)}" ${state.projectId===x.id?'selected':''}>${esc(x.name)}</option>`).join('')}</select><button class="btn" onclick="resetTaskFilters()">Reset</button></div>`+
+  `<div class="task-columns" id="taskColumns"></div>`;
+  renderTaskColumns(tasks);
+  if(state.projectId) filterTaskMatrix();
+}
+
 function filteredTasks(){
   const tasks=state.model.tasks||[], q=(qs('#taskSearch')?.value||'').toLowerCase(), pic=qs('#taskPic')?.value||'', prog=qs('#taskProgram')?.value||'', project=qs('#taskProject')?.value||'';
   return tasks.filter(t=>(!q||(String(t.title)+' '+String(t.tag)+' '+String(t.projectName||'')).toLowerCase().includes(q))&&(!pic||(t.picList||[]).includes(pic))&&(!prog||t.program===prog)&&(!project||t.projectId===project));
