@@ -1643,7 +1643,7 @@ tr:last-child td{border-bottom:0}
 
 <script>
 /*
-  Netlify frontend v1.71 — Repositori Pengetahuan + v1.66 Trend refinement.
+  Netlify frontend v1.72 — Repositori Pengetahuan + v1.66 Trend refinement.
   Netlify frontend.
   Recommended production setup:
   - index.html is hosted by Netlify/GitHub
@@ -4469,7 +4469,10 @@ function findTaskInCurrentState(id){
   );
 }
 
+let __taskFormAttachMode='file';
+
 async function openTaskForm(id='',prefillProjectId='',prefillStageId=''){
+  __taskFormAttachMode='file';
   let t=id?findTaskInCurrentState(id):null;
 
   if(id&&!t){
@@ -4658,6 +4661,36 @@ async function openTaskForm(id='',prefillProjectId='',prefillStageId=''){
       <label>Deskripsi</label>
       <textarea id="fDesc">${esc(x.description||'')}</textarea>
     </div>
+
+    <div class="field full">
+      <div class="sub" style="font-weight:700;color:var(--ink)">
+        Lampiran Tugas <span style="font-weight:400">(opsional)</span>
+      </div>
+
+      <div class="complete-attachments" style="margin-top:7px">
+        <div class="complete-tabs">
+          <button type="button"
+            class="complete-tab active"
+            data-task-form-attach-tab="file"
+            onclick="renderTaskFormAttachmentMode('file')">
+            ▣ File
+          </button>
+
+          <button type="button"
+            class="complete-tab"
+            data-task-form-attach-tab="link"
+            onclick="renderTaskFormAttachmentMode('link')">
+            ↗ Link
+          </button>
+        </div>
+
+        <div id="taskFormAttachmentArea"></div>
+      </div>
+
+      <div class="helper" style="margin-top:6px">
+        Lampiran ini menjadi bahan pendukung tugas. Hasil akhir pekerjaan tetap dicatat melalui Lampiran Hasil saat tugas diselesaikan.
+      </div>
+    </div>
   </div>`;
 
   openModal(
@@ -4669,11 +4702,84 @@ async function openTaskForm(id='',prefillProjectId='',prefillStageId=''){
 
   syncTaskStageOptions(x.stageId||prefillStageId||'');
   toggleTaskDates();
+  renderTaskFormAttachmentMode('file');
+}
+
+function renderTaskFormAttachmentMode(mode){
+  __taskFormAttachMode=mode==='link'?'link':'file';
+
+  qsa('[data-task-form-attach-tab]').forEach(btn=>{
+    btn.classList.toggle(
+      'active',
+      btn.dataset.taskFormAttachTab===__taskFormAttachMode
+    );
+  });
+
+  const host=qs('#taskFormAttachmentArea');
+  if(!host)return;
+
+  if(__taskFormAttachMode==='file'){
+    host.innerHTML=`<input id="taskFormFiles" type="file" multiple>
+      <div class="helper" style="margin-top:6px">
+        Maksimal 5 file, 8 MB per file.
+      </div>`;
+  }else{
+    host.innerHTML=`<div class="field">
+      <label>Judul Link</label>
+      <input id="taskFormLinkTitle" placeholder="Contoh: TOR Kegiatan">
+    </div>
+
+    <div class="field" style="margin-top:8px">
+      <label>URL</label>
+      <input id="taskFormLinkUrl" placeholder="https://...">
+    </div>`;
+  }
 }
 
 function toggleTaskDates(){
   const show=qs('#fTimeType')?.value!=='none';
   qsa('.task-date').forEach(el=>el.style.display=show?'block':'none');
+}
+
+async function saveTaskFormAttachments(taskId){
+  if(!taskId)return;
+
+  if(__taskFormAttachMode==='file'){
+    const files=[...(qs('#taskFormFiles')?.files||[])];
+
+    if(files.length>5){
+      throw new Error('Maksimal 5 file lampiran tugas.');
+    }
+
+    for(const file of files){
+      if(file.size>8*1024*1024){
+        throw new Error(`File ${file.name} melebihi batas 8 MB.`);
+      }
+
+      await api('uploadAttachment',{
+        taskId,
+        attachmentType:'task',
+        fileName:file.name,
+        mimeType:file.type||'application/octet-stream',
+        sizeBytes:file.size,
+        base64:await fileToBase64(file)
+      });
+    }
+
+    return;
+  }
+
+  const url=qs('#taskFormLinkUrl')?.value.trim()||'';
+  const title=qs('#taskFormLinkTitle')?.value.trim()||'Lampiran Tugas';
+
+  if(url){
+    await api('createLinkAttachment',{
+      taskId,
+      attachmentType:'task',
+      title,
+      url
+    });
+  }
 }
 
 let __taskSaveInFlight=false;
@@ -4720,6 +4826,9 @@ async function saveTaskForm(id){
     };
 
     const saved=await api('saveTask',payload);
+    const savedTaskId=saved?.id||id;
+
+    await saveTaskFormAttachments(savedTaskId);
 
     closeModal();
     showToast(saved?.idempotent
