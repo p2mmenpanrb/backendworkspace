@@ -340,6 +340,7 @@ tr:last-child td{border-bottom:0}
 }
 .workload-mini-flag.pd{background:#dbeafe;color:#1d4ed8}
 .workload-mini-flag.tlk{background:#ccfbf1;color:#0f766e}
+.workload-mini-flag.ns{background:#fff1ed;color:#c2410c}
 .load.workload-leave{background:#f5f3ff!important;border-color:#ddd6fe!important;color:#6d28d9!important}
 .load.workload-pd{box-shadow:inset 0 -3px 0 #60a5fa}
 .load.workload-tlk{box-shadow:inset 0 -3px 0 #2dd4bf}
@@ -1692,7 +1693,7 @@ tr:last-child td{border-bottom:0}
 
 <script>
 /*
-  Netlify frontend v1.74 — Multi-program Tugas + PDF export + Pemberi Tugas Lain-lain.
+  Netlify frontend v1.75 — Narasumber branch + Multi-program Tugas + PDF export.
   Netlify frontend.
   Recommended production setup:
   - index.html is hosted by Netlify/GitHub
@@ -2171,7 +2172,7 @@ function renderAgendaRows(agenda){
     const time=agendaTimeLabel(x);
     return `<tr class="${x.isActive?'agenda-active':(x.isNext?'agenda-next':'')}">
       <td><span class="${time==='Sepanjang hari'?'agenda-all-day':''}">${esc(time)}</span></td>
-      <td><strong>${esc(x.title)}</strong><div class="sub">${esc(x.program||'')} · ${esc(x.substansi||x.activity||'')}</div></td>
+      <td><strong>${esc(x.title)}</strong><div class="sub">${esc(x.program||'')} · ${esc(x.activityDisplay||x.substansi||x.activity||'')}</div></td>
       <td>${esc((x.picList||[]).join(', ')||x.pic||'—')}</td>
       <td><button class="mini" onclick="showTaskDetail('${esc(x.id)}')">Detail</button></td>
       <td><span class="pill ${esc(x.statusKey||x.status||'todo')}">${esc(x.statusLabel||x.status||'')}</span></td>
@@ -2225,14 +2226,34 @@ function workloadDayMeta(day){
   const tasks=day?.tasks||[];
   const isLeave=String(day?.loadClass||'').includes('leave');
   const hasConflict=String(day?.loadClass||'')==='leave-conflict';
-  const hasPD=tasks.some(t=>String(t.substansi||t.activity||'').trim()==='Perjalanan Dinas');
-  const hasTLK=tasks.some(t=>String(t.substansi||t.activity||'').trim()==='Tugas Luar Kantor');
-  return {isLeave,hasConflict,hasPD,hasTLK};
+
+  const hasPD=tasks.some(t=>
+    String(t.substansi||t.activity||'').trim()==='Perjalanan Dinas'
+  );
+
+  const hasTLK=tasks.some(t=>
+    String(t.substansi||t.activity||'').trim()==='Tugas Luar Kantor'||
+    !!t.travelDay
+  );
+
+  const hasNarasumber=tasks.some(t=>
+    String(t.substansi||t.activity||'').trim()==='Narasumber'&&
+    !!t.coreDay
+  );
+
+  return {
+    isLeave,
+    hasConflict,
+    hasPD,
+    hasTLK,
+    hasNarasumber
+  };
 }
 function workloadStatusLabel(meta,count){
   const parts=[];
   if(meta.isLeave)parts.push('Cuti');
   if(meta.hasPD)parts.push('Perjalanan Dinas');
+  if(meta.hasNarasumber)parts.push('Narasumber');
   if(meta.hasTLK)parts.push('Tugas Luar Kantor');
   if(!parts.length)parts.push(count+' tugas');
   if(meta.hasConflict)parts.push(count+' tugas tetap terjadwal saat cuti');
@@ -2258,6 +2279,7 @@ function workloadCell(context,label,day){
 
   const flags=meta.isLeave?'':[
     meta.hasPD?'<span class="workload-mini-flag pd">PD</span>':'',
+    meta.hasNarasumber?'<span class="workload-mini-flag ns">N</span>':'',
     meta.hasTLK?'<span class="workload-mini-flag tlk">TLK</span>':''
   ].join('');
 
@@ -2285,10 +2307,11 @@ function openWorkloadPopup(key){
   const statusBadges=[
     meta.isLeave?'<span class="pill leave">Cuti</span>':'',
     meta.hasPD?'<span class="pill progress">Perjalanan Dinas</span>':'',
+    meta.hasNarasumber?'<span class="pill high">Narasumber</span>':'',
     meta.hasTLK?'<span class="pill done">Tugas Luar Kantor</span>':'',
     meta.hasConflict?'<span class="pill high">Konflik: masih ada tugas saat cuti</span>':''
   ].filter(Boolean).join('');
-  openModal(`${d.context}: ${d.label}`,`<div class="sub" style="margin-bottom:6px">${esc(d.dayName)}${d.dateKey?' · '+esc(fmtDate(d.dateKey)):''}</div>${statusBadges?`<div class="workload-popup-status">${statusBadges}</div>`:''}${tasks.length?tasks.map(t=>`<div class="linked-item"><div class="linked-title">${esc(t.title)}</div><div class="sub">${esc(agendaTimeLabel(t))} · ${esc(t.program||'')} · ${esc(t.substansi||'')} · ${esc((t.picList||[]).join(', ')||'—')} · ${esc(t.priority||'')}</div><div class="row-actions" style="margin-top:7px"><button class="mini" onclick="showTaskDetail('${esc(t.id)}')">Detail</button></div></div>`).join(''):'<div class="empty">Tidak ada pekerjaan pada hari ini.</div>'}`,`<button class="btn" onclick="closeModal()">Tutup</button>`);
+  openModal(`${d.context}: ${d.label}`,`<div class="sub" style="margin-bottom:6px">${esc(d.dayName)}${d.dateKey?' · '+esc(fmtDate(d.dateKey)):''}</div>${statusBadges?`<div class="workload-popup-status">${statusBadges}</div>`:''}${tasks.length?tasks.map(t=>`<div class="linked-item"><div class="linked-title">${esc(t.title)}</div><div class="sub">${esc(agendaTimeLabel(t))} · ${esc(t.program||'')} · ${esc(t.activityDisplay||t.substansi||'')} · ${esc((t.picList||[]).join(', ')||'—')} · ${esc(t.priority||'')}</div><div class="row-actions" style="margin-top:7px"><button class="mini" onclick="showTaskDetail('${esc(t.id)}')">Detail</button></div></div>`).join(''):'<div class="empty">Tidak ada pekerjaan pada hari ini.</div>'}`,`<button class="btn" onclick="closeModal()">Tutup</button>`);
 }
 
 function renderWorkload(){
@@ -2332,6 +2355,7 @@ function renderWorkload(){
           <div class="workload-legend">
             <span class="workload-legend-item"><span class="workload-legend-sample leave">C</span>Cuti</span>
             <span class="workload-legend-item"><span class="workload-legend-sample pd">PD</span>Perjalanan Dinas</span>
+            <span class="workload-legend-item"><span class="workload-mini-flag ns">N</span>Narasumber</span>
             <span class="workload-legend-item"><span class="workload-legend-sample tlk">TLK</span>Tugas Luar Kantor</span>
           </div>
         </div>
@@ -2341,7 +2365,7 @@ function renderWorkload(){
     </div>`+
     `<div class="workload-distribution-stack">
       <div class="card"><div class="card-head"><div><div class="card-title">Distribusi Beban per Program</div><div class="card-note">Satu tugas dapat dihitung pada lebih dari satu program apabila memang terkait lintas program.</div></div></div>${classTable(m.programWorkload)}</div>
-      <div class="card"><div class="card-head"><div><div class="card-title">Distribusi Beban per Aktivitas</div></div></div>${classTable(m.substansiWorkload)}</div>
+      <div class="card"><div class="card-head"><div><div class="card-title">Distribusi Beban Harian per Aktivitas</div><div class="card-note">Narasumber tetap 1 tugas. Jika pelaksanaannya di luar kantor, hari perjalanan juga muncul pada Tugas Luar Kantor tanpa menggandakan jumlah tugas.</div></div></div>${classTable(m.substansiWorkload)}</div>
     </div>`+
     renderLeaveList(m.teamAvailability||[]);
 }
@@ -2603,7 +2627,7 @@ function renderTrend(){
       <div class="card">
         <div class="card-head">
           <div>
-            <div class="card-title">Komposisi Pekerjaan per Aktivitas per Bulan</div>
+            <div class="card-title">Komposisi Tugas berdasarkan Aktivitas Utama per Bulan</div>
             <div class="card-note">Menunjukkan perubahan komposisi aktivitas tim pada setiap bulan berdasarkan tanggal pekerjaan.</div>
           </div>
         </div>
@@ -4599,6 +4623,9 @@ async function openTaskForm(id='',prefillProjectId='',prefillStageId=''){
         projectId:d.projectId,
         stageId:d.stageId,
         substansi:d.activity,
+        narasumberMode:d.narasumberMode||'',
+        travelStartDate:d.travelStartDate||'',
+        travelEndDate:d.travelEndDate||'',
         tag:d.tag,
         picList:d.picList||[],
         picEmail:d.picEmail||'',
@@ -4629,6 +4656,9 @@ async function openTaskForm(id='',prefillProjectId='',prefillStageId=''){
     projectId:prefillProjectId||state.projectId||'',
     stageId:prefillStageId||'',
     substansi:'',
+    narasumberMode:'',
+    travelStartDate:'',
+    travelEndDate:'',
     tag:'',
     picList:[],
     picEmail:'',
@@ -4688,10 +4718,32 @@ async function openTaskForm(id='',prefillProjectId='',prefillStageId=''){
 
     <div class="field">
       <label>Jenis Aktivitas *</label>
-      <select id="fActivity">
+      <select id="fActivity" onchange="toggleNarasumberBranch()">
         <option value="">Pilih</option>
         ${(state.bootstrap?.activities||[]).map(v=>`<option ${x.substansi===v?'selected':''}>${esc(v)}</option>`).join('')}
       </select>
+      <div class="helper">Aktivitas utama tetap satu. Narasumber memiliki pengaturan pelaksanaan tersendiri.</div>
+    </div>
+
+    <div class="field" id="fNarasumberModeField" style="${x.substansi==='Narasumber'?'':'display:none'}">
+      <label>Mode Pelaksanaan Narasumber *</label>
+      <select id="fNarasumberMode" onchange="toggleNarasumberBranch()">
+        <option value="">Pilih</option>
+        <option value="office" ${x.narasumberMode==='office'?'selected':''}>Dalam Kantor</option>
+        <option value="online" ${x.narasumberMode==='online'?'selected':''}>Online</option>
+        <option value="outside" ${x.narasumberMode==='outside'?'selected':''}>Luar Kantor</option>
+      </select>
+    </div>
+
+    <div class="field narasumber-travel" style="${x.substansi==='Narasumber'&&x.narasumberMode==='outside'?'':'display:none'}">
+      <label>Berangkat / Mulai TLK *</label>
+      <input type="date" id="fTravelStartDate" value="${esc(x.travelStartDate||'')}">
+    </div>
+
+    <div class="field narasumber-travel" style="${x.substansi==='Narasumber'&&x.narasumberMode==='outside'?'':'display:none'}">
+      <label>Kembali / Selesai TLK *</label>
+      <input type="date" id="fTravelEndDate" value="${esc(x.travelEndDate||'')}">
+      <div class="helper">Periode TLK memengaruhi workload harian, tetapi tugas tetap dihitung sebagai 1 tugas Narasumber.</div>
     </div>
 
     <div class="field">
@@ -4764,12 +4816,12 @@ async function openTaskForm(id='',prefillProjectId='',prefillStageId=''){
 
     <div class="field task-date">
       <label>Tanggal Mulai</label>
-      <input type="date" id="fStartDate" value="${esc(x.startDate||'')}">
+      <input type="date" id="fStartDate" value="${esc(x.startDate||'')}" onchange="syncNarasumberTravelDefaults()">
     </div>
 
     <div class="field task-date">
       <label>Tanggal Selesai</label>
-      <input type="date" id="fEndDate" value="${esc(x.endDate||'')}">
+      <input type="date" id="fEndDate" value="${esc(x.endDate||'')}" onchange="syncNarasumberTravelDefaults()">
     </div>
 
     <div class="field task-date">
@@ -4842,6 +4894,7 @@ async function openTaskForm(id='',prefillProjectId='',prefillStageId=''){
   syncTaskStageOptions(x.stageId||prefillStageId||'');
   toggleTaskDates();
   toggleTaskAssignerOther();
+  toggleNarasumberBranch(false);
   renderTaskFormAttachmentMode('file');
 }
 
@@ -4856,6 +4909,76 @@ function toggleTaskAssignerOther(){
   const input=qs('#fAssignerOther');
   if(input){
     input.required=isOther;
+  }
+}
+
+function syncNarasumberTravelDefaults(){
+  if(
+    qs('#fActivity')?.value!=='Narasumber' ||
+    qs('#fNarasumberMode')?.value!=='outside'
+  ){
+    return;
+  }
+
+  const start=qs('#fStartDate')?.value||'';
+  const end=qs('#fEndDate')?.value||start;
+
+  const travelStart=qs('#fTravelStartDate');
+  const travelEnd=qs('#fTravelEndDate');
+
+  if(travelStart&&!travelStart.value&&start){
+    travelStart.value=start;
+  }
+
+  if(travelEnd&&!travelEnd.value&&end){
+    travelEnd.value=end;
+  }
+}
+
+function toggleNarasumberBranch(syncDefaults=true){
+  const isNarasumber=
+    qs('#fActivity')?.value==='Narasumber';
+
+  const modeField=
+    qs('#fNarasumberModeField');
+
+  if(modeField){
+    modeField.style.display=
+      isNarasumber?'block':'none';
+  }
+
+  const mode=
+    isNarasumber
+      ?(qs('#fNarasumberMode')?.value||'')
+      :'';
+
+  const isOutside=
+    isNarasumber&&mode==='outside';
+
+  qsa('.narasumber-travel').forEach(el=>{
+    el.style.display=
+      isOutside?'block':'none';
+  });
+
+  const modeSelect=qs('#fNarasumberMode');
+
+  if(modeSelect){
+    modeSelect.required=isNarasumber;
+  }
+
+  const travelStart=qs('#fTravelStartDate');
+  const travelEnd=qs('#fTravelEndDate');
+
+  if(travelStart){
+    travelStart.required=isOutside;
+  }
+
+  if(travelEnd){
+    travelEnd.required=isOutside;
+  }
+
+  if(syncDefaults&&isOutside){
+    syncNarasumberTravelDefaults();
   }
 }
 
@@ -4893,6 +5016,10 @@ function renderTaskFormAttachmentMode(mode){
 function toggleTaskDates(){
   const show=qs('#fTimeType')?.value!=='none';
   qsa('.task-date').forEach(el=>el.style.display=show?'block':'none');
+
+  if(show){
+    syncNarasumberTravelDefaults();
+  }
 }
 
 async function saveTaskFormAttachments(taskId){
@@ -4959,6 +5086,34 @@ async function saveTaskForm(id){
 
     if(!programList.length){
       throw new Error('Pilih minimal satu Program.');
+    }
+
+    const primaryActivity=qs('#fActivity')?.value||'';
+    const narasumberMode=
+      primaryActivity==='Narasumber'
+        ?(qs('#fNarasumberMode')?.value||'')
+        :'';
+
+    const travelStartDate=
+      primaryActivity==='Narasumber'&&narasumberMode==='outside'
+        ?(qs('#fTravelStartDate')?.value||'')
+        :'';
+
+    const travelEndDate=
+      primaryActivity==='Narasumber'&&narasumberMode==='outside'
+        ?(qs('#fTravelEndDate')?.value||'')
+        :'';
+
+    if(primaryActivity==='Narasumber'&&!narasumberMode){
+      throw new Error('Mode Pelaksanaan Narasumber wajib dipilih.');
+    }
+
+    if(
+      primaryActivity==='Narasumber'&&
+      narasumberMode==='outside'&&
+      (!travelStartDate||!travelEndDate)
+    ){
+      throw new Error('Periode Tugas Luar Kantor wajib diisi.');
     }
 
     const taskAssignerOption=qs('#fAssigner')?.value||'';
@@ -5301,6 +5456,20 @@ async function showTaskDetail(id){
           <label>Jenis Aktivitas</label>
           <div class="task-detail-value">${esc(d.activity||'—')}</div>
         </div>
+
+        ${d.activity==='Narasumber'?`
+          <div class="field">
+            <label>Mode Pelaksanaan Narasumber</label>
+            <div class="task-detail-value">${esc(d.narasumberModeLabel||'—')}</div>
+          </div>
+
+          ${d.narasumberMode==='outside'?`
+            <div class="field">
+              <label>Periode Tugas Luar Kantor</label>
+              <div class="task-detail-value">${esc((d.travelStartDate?fmtDate(d.travelStartDate):'—')+' — '+(d.travelEndDate?fmtDate(d.travelEndDate):'—'))}</div>
+            </div>
+          `:''}
+        `:''}
 
         <div class="field">
           <label>Status</label>
