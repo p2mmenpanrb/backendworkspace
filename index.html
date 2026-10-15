@@ -1643,7 +1643,7 @@ tr:last-child td{border-bottom:0}
 
 <script>
 /*
-  Netlify frontend v1.72 — Repositori Pengetahuan + v1.66 Trend refinement.
+  Netlify frontend v1.73 — PDF export + Pemberi Tugas Lain-lain + Repositori Pengetahuan.
   Netlify frontend.
   Recommended production setup:
   - index.html is hosted by Netlify/GitHub
@@ -1783,6 +1783,7 @@ async function api(action,payload={}){
     'projectAssets',
     'projectDocuments',
     'projectSources',
+    'projectPdfData',
     'projectHistory'
   ]);
 
@@ -2774,6 +2775,7 @@ function renderProjectDetail(d){
       p.name,
       esc(p.description||''),
       `<div class="row-actions">
+        <button class="btn" onclick="openProjectPdfExport('${esc(p.id)}')">Download PDF</button>
         <button class="btn" onclick="openProjectForm(window.__projectDetail.project)">Edit Project</button>
         <button class="btn" onclick="openProjectStageForm('${esc(p.id)}')">+ Tahapan</button>
         <button class="btn primary" onclick="openTaskForm('', '${esc(p.id)}', '${esc(activeStageId)}')">+ Tugas</button>
@@ -4540,6 +4542,16 @@ async function openTaskForm(id='',prefillProjectId='',prefillStageId=''){
           : 'task_'+Date.now()+'_'+Math.random().toString(36).slice(2)
       );
 
+  const assignerMaster=state.bootstrap?.pics||[];
+  const assignerIsOther=
+    !!x.taskAssigner&&
+    x.taskAssigner!=='Lain-lain'&&
+    !assignerMaster.includes(x.taskAssigner);
+  const assignerSelected=
+    x.taskAssigner==='Lain-lain'||assignerIsOther
+      ?'Lain-lain'
+      :(x.taskAssigner||'');
+
   const body=`<div class="form-grid">
     <div class="field full">
       <label>Judul Tugas *</label>
@@ -4582,11 +4594,18 @@ async function openTaskForm(id='',prefillProjectId='',prefillStageId=''){
     </div>
 
     <div class="field">
-      <label>Pembuat Tugas</label>
-      <select id="fAssigner">
+      <label>Pemberi Tugas</label>
+      <select id="fAssigner" onchange="toggleTaskAssignerOther()">
         <option value="">Pilih</option>
-        ${(state.bootstrap?.pics||[]).map(v=>`<option ${x.taskAssigner===v?'selected':''}>${esc(v)}</option>`).join('')}
+        ${assignerMaster.map(v=>`<option value="${esc(v)}" ${assignerSelected===v?'selected':''}>${esc(v)}</option>`).join('')}
+        <option value="Lain-lain" ${assignerSelected==='Lain-lain'?'selected':''}>Lain-lain</option>
       </select>
+    </div>
+
+    <div class="field" id="fAssignerOtherField" style="${assignerSelected==='Lain-lain'?'':'display:none'}">
+      <label>Nama Pemberi Tugas *</label>
+      <input id="fAssignerOther" value="${assignerIsOther?esc(x.taskAssigner):''}" placeholder="Ketik nama pemberi tugas">
+      <div class="helper">Wajib diisi jika Pemberi Tugas memilih Lain-lain.</div>
     </div>
 
     <div class="field full">
@@ -4702,7 +4721,22 @@ async function openTaskForm(id='',prefillProjectId='',prefillStageId=''){
 
   syncTaskStageOptions(x.stageId||prefillStageId||'');
   toggleTaskDates();
+  toggleTaskAssignerOther();
   renderTaskFormAttachmentMode('file');
+}
+
+function toggleTaskAssignerOther(){
+  const isOther=qs('#fAssigner')?.value==='Lain-lain';
+  const field=qs('#fAssignerOtherField');
+
+  if(field){
+    field.style.display=isOther?'block':'none';
+  }
+
+  const input=qs('#fAssignerOther');
+  if(input){
+    input.required=isOther;
+  }
 }
 
 function renderTaskFormAttachmentMode(mode){
@@ -4800,6 +4834,18 @@ async function saveTaskForm(id){
     const projectId=qs('#fProject').value||'';
     const stageId=projectId?(qs('#fStage')?.value||''):'';
 
+    const taskAssignerOption=qs('#fAssigner')?.value||'';
+    const taskAssignerOther=qs('#fAssignerOther')?.value.trim()||'';
+
+    if(taskAssignerOption==='Lain-lain'&&!taskAssignerOther){
+      throw new Error('Nama Pemberi Tugas wajib diisi ketika memilih Lain-lain.');
+    }
+
+    const taskAssigner=
+      taskAssignerOption==='Lain-lain'
+        ? taskAssignerOther
+        : taskAssignerOption;
+
     const payload={
       id,
       requestId:id?'':(window.__taskRequestId||''),
@@ -4811,8 +4857,9 @@ async function saveTaskForm(id){
       tag:qs('#fTag').value,
       pic:qsa('input[name="fPic"]:checked').map(x=>x.value),
       picEmail:qs('#fPicEmail')?.value||'',
-      taskAssigner:qs('#fAssigner').value,
-      taskAssignerOption:qs('#fAssigner').value,
+      taskAssigner,
+      taskAssignerOption,
+      taskAssignerOther,
       timeType:qs('#fTimeType').value,
       startDate:qs('#fStartDate').value,
       endDate:qs('#fEndDate').value,
@@ -5148,7 +5195,7 @@ async function showTaskDetail(id){
         </div>
 
         <div class="field">
-          <label>Pembuat Tugas</label>
+          <label>Pemberi Tugas</label>
           <div class="task-detail-value">${esc(d.taskAssigner||'—')}</div>
         </div>
 
@@ -5181,12 +5228,1056 @@ async function showTaskDetail(id){
       </div>`,
       `<button class="btn danger" onclick="closeModal();deleteTask('${esc(d.id)}')">Hapus</button>
        <button class="btn" onclick="closeModal()">Tutup</button>
+       ${d.status==='done'?`<button class="btn primary" onclick="downloadTaskPdf('${esc(d.id)}')">Download PDF</button>`:''}
        ${d.status!=='done'?`<button class="btn primary" onclick="closeModal();openTaskUpdate('${esc(d.id)}')">Update</button>`:''}`
     );
   }catch(e){
     showToast(e.message,true);
   }
 }
+
+
+// ============================================================
+// v1.73 — A4 PDF EXPORT
+// Direct client-side PDF generation using built-in Helvetica fonts.
+// No external library/CDN is required.
+// ============================================================
+
+const PDF_A4={
+  width:595.28,
+  height:841.89,
+  mm:72/25.4
+};
+
+const PDF_COLORS={
+  ink:[0.067,0.067,0.067],
+  muted:[0.64,0.64,0.64],
+  line:[0.81,0.81,0.82],
+  accent:[0.847,0.298,0.196],
+  link:[0.145,0.388,0.922],
+  soft:[0.93,0.93,0.93]
+};
+
+function pdfMm(value){
+  return Number(value||0)*PDF_A4.mm;
+}
+
+function pdfNum(value){
+  return Number(value||0).toFixed(2);
+}
+
+function pdfSafeText(value){
+  return String(value??'')
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g,'')
+    .replace(/[–—]/g,'-')
+    .replace(/[“”]/g,'"')
+    .replace(/[‘’]/g,"'")
+    .replace(/•/g,'-')
+    .replace(/→/g,'->')
+    .replace(/…/g,'...')
+    .replace(/[^\x20-\x7E]/g,'?');
+}
+
+function pdfEscapeText(value){
+  return pdfSafeText(value)
+    .replace(/\\/g,'\\\\')
+    .replace(/\(/g,'\\(')
+    .replace(/\)/g,'\\)');
+}
+
+function pdfApproxTextWidth(value,size,bold=false){
+  const text=pdfSafeText(value);
+  let units=0;
+
+  for(const ch of text){
+    if(ch===' ')units+=0.28;
+    else if(/[ilI1.,'`:;]/.test(ch))units+=0.26;
+    else if(/[mwMW@%]/.test(ch))units+=0.88;
+    else if(/[A-Z0-9]/.test(ch))units+=0.62;
+    else units+=0.52;
+  }
+
+  return units*Number(size||12)*(bold?1.035:1);
+}
+
+function pdfWrapLines(value,size,maxWidthPt,bold=false){
+  const raw=String(value??'').replace(/\r/g,'');
+  const paragraphs=raw.split('\n');
+  const lines=[];
+
+  paragraphs.forEach((paragraph,pIndex)=>{
+    const words=paragraph.trim().split(/\s+/).filter(Boolean);
+
+    if(!words.length){
+      if(pIndex<paragraphs.length-1)lines.push('');
+      return;
+    }
+
+    let line='';
+
+    words.forEach(word=>{
+      const candidate=(line+' '+word).trim();
+
+      if(!line||pdfApproxTextWidth(candidate,size,bold)<=maxWidthPt){
+        line=candidate;
+      }else{
+        lines.push(line);
+        line=word;
+      }
+    });
+
+    if(line)lines.push(line);
+  });
+
+  return lines.length?lines:[''];
+}
+
+function pdfText(page,xMm,yMm,value,size,bold=false,color=PDF_COLORS.ink){
+  const font=bold?'F2':'F1';
+  page.push(
+    `${color[0]} ${color[1]} ${color[2]} rg\n`+
+    `BT /${font} ${pdfNum(size)} Tf 1 0 0 1 ${pdfNum(pdfMm(xMm))} ${pdfNum(pdfMm(yMm))} Tm (${pdfEscapeText(value)}) Tj ET\n`
+  );
+}
+
+function pdfTextRight(page,xRightMm,yMm,value,size,bold=false,color=PDF_COLORS.ink){
+  const widthMm=pdfApproxTextWidth(value,size,bold)/PDF_A4.mm;
+  pdfText(
+    page,
+    Math.max(0,Number(xRightMm)-widthMm),
+    yMm,
+    value,
+    size,
+    bold,
+    color
+  );
+}
+
+function pdfWrapped(page,value,xMm,yMm,widthMm,size,bold=false,leadingPt=null,color=PDF_COLORS.ink){
+  const leading=Number(leadingPt||size*1.25);
+  const lines=pdfWrapLines(
+    value,
+    size,
+    pdfMm(widthMm),
+    bold
+  );
+
+  let y=Number(yMm);
+
+  lines.forEach(line=>{
+    if(line){
+      pdfText(page,xMm,y,line,size,bold,color);
+    }
+
+    y-=leading/PDF_A4.mm;
+  });
+
+  return y;
+}
+
+function pdfLine(page,x1Mm,y1Mm,x2Mm,y2Mm,color=PDF_COLORS.line,widthPt=.7){
+  page.push(
+    `${color[0]} ${color[1]} ${color[2]} RG\n`+
+    `${pdfNum(widthPt)} w\n`+
+    `${pdfNum(pdfMm(x1Mm))} ${pdfNum(pdfMm(y1Mm))} m `+
+    `${pdfNum(pdfMm(x2Mm))} ${pdfNum(pdfMm(y2Mm))} l S\n`
+  );
+}
+
+function pdfRect(page,xMm,yMm,wMm,hMm,color){
+  page.push(
+    `${color[0]} ${color[1]} ${color[2]} rg\n`+
+    `${pdfNum(pdfMm(xMm))} ${pdfNum(pdfMm(yMm))} `+
+    `${pdfNum(pdfMm(wMm))} ${pdfNum(pdfMm(hMm))} re f\n`
+  );
+}
+
+function pdfBuildBlob(pages){
+  const objects={};
+  const pageRefs=[];
+
+  objects[1]='<< /Type /Catalog /Pages 2 0 R >>';
+  objects[3]='<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>';
+  objects[4]='<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>';
+
+  pages.forEach((commands,index)=>{
+    const pageId=5+(index*2);
+    const contentId=pageId+1;
+    const stream=commands.join('');
+
+    pageRefs.push(`${pageId} 0 R`);
+
+    objects[pageId]=
+      `<< /Type /Page /Parent 2 0 R `+
+      `/MediaBox [0 0 ${pdfNum(PDF_A4.width)} ${pdfNum(PDF_A4.height)}] `+
+      `/Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> `+
+      `/Contents ${contentId} 0 R >>`;
+
+    objects[contentId]=
+      `<< /Length ${stream.length} >>\nstream\n${stream}endstream`;
+  });
+
+  objects[2]=
+    `<< /Type /Pages /Count ${pages.length} /Kids [${pageRefs.join(' ')}] >>`;
+
+  const maxId=4+(pages.length*2);
+
+  let pdf='%PDF-1.4\n%WorkspaceAsdepPPP\n';
+  const offsets=new Array(maxId+1).fill(0);
+
+  for(let id=1;id<=maxId;id++){
+    offsets[id]=pdf.length;
+    pdf+=`${id} 0 obj\n${objects[id]||'<< >>'}\nendobj\n`;
+  }
+
+  const xrefOffset=pdf.length;
+
+  pdf+=`xref\n0 ${maxId+1}\n`;
+  pdf+='0000000000 65535 f \n';
+
+  for(let id=1;id<=maxId;id++){
+    pdf+=String(offsets[id]).padStart(10,'0')+' 00000 n \n';
+  }
+
+  pdf+=
+    `trailer\n<< /Size ${maxId+1} /Root 1 0 R >>\n`+
+    `startxref\n${xrefOffset}\n%%EOF`;
+
+  return new Blob([pdf],{type:'application/pdf'});
+}
+
+function pdfDownloadBlob(blob,fileName){
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download=fileName;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+
+  setTimeout(()=>{
+    URL.revokeObjectURL(url);
+  },1500);
+}
+
+function pdfFileName(value,fallback='Ringkasan'){
+  const name=pdfSafeText(value)
+    .replace(/[^A-Za-z0-9]+/g,'_')
+    .replace(/^_+|_+$/g,'')
+    .slice(0,90);
+
+  return name||fallback;
+}
+
+function pdfDateLong(value){
+  const raw=String(value||'').trim();
+  if(!raw)return'—';
+
+  const match=raw.match(/^(\d{4})-(\d{2})-(\d{2})/);
+
+  if(!match){
+    return fmtDate(raw);
+  }
+
+  const months=[
+    'Januari','Februari','Maret','April','Mei','Juni',
+    'Juli','Agustus','September','Oktober','November','Desember'
+  ];
+
+  return `${Number(match[3])} ${months[Number(match[2])-1]} ${match[1]}`;
+}
+
+function pdfTimestamp(){
+  const parts=new Intl.DateTimeFormat(
+    'id-ID',
+    {
+      timeZone:'Asia/Jakarta',
+      day:'2-digit',
+      month:'long',
+      year:'numeric',
+      hour:'2-digit',
+      minute:'2-digit',
+      hourCycle:'h23'
+    }
+  ).formatToParts(new Date());
+
+  const get=type=>parts.find(p=>p.type===type)?.value||'';
+
+  return `${get('day')} ${get('month')} ${get('year')}, ${get('hour')}.${get('minute')} WIB`;
+}
+
+function pdfPageBase(part,label,pageNo,timestamp){
+  const page=[];
+
+  pdfText(page,15,286,`Part ${part}`,10,false,PDF_COLORS.muted);
+  pdfText(page,35,286,label,10,false,PDF_COLORS.muted);
+  pdfText(page,188,286,String(pageNo).padStart(2,'0'),10,false,PDF_COLORS.muted);
+
+  pdfLine(page,15,18,195,18,PDF_COLORS.line,.7);
+  pdfText(
+    page,
+    15,
+    10,
+    `Didownload pada ${timestamp} melalui Workspace Asdep PPP`,
+    10,
+    false,
+    [0.52,0.52,0.52]
+  );
+
+  return page;
+}
+
+function pdfTaskTableRow(page,yTop,label,value,heightMm,attachments=null){
+  const xLabel=74;
+  const xValue=120;
+  const xEnd=195;
+
+  pdfLine(page,xLabel,yTop,xEnd,yTop);
+
+  pdfWrapped(
+    page,
+    label,
+    xLabel,
+    yTop-10,
+    39,
+    12,
+    false,
+    15,
+    PDF_COLORS.accent
+  );
+
+  if(Array.isArray(attachments)){
+    let y=yTop-10;
+
+    if(!attachments.length){
+      pdfText(page,xValue,y,'—',12,false);
+    }else{
+      attachments.forEach(item=>{
+        const suffix=
+          String(item.attachmentKind||'')==='link'
+            ?' (Link)'
+            :'';
+
+        y=pdfWrapped(
+          page,
+          (item.fileName||item.title||'Lampiran')+suffix,
+          xValue,
+          y,
+          72,
+          12,
+          false,
+          15
+        );
+
+        y-=3;
+      });
+    }
+  }else{
+    pdfWrapped(
+      page,
+      value||'—',
+      xValue,
+      yTop-10,
+      72,
+      12,
+      false,
+      15
+    );
+  }
+
+  pdfLine(page,xLabel,yTop-heightMm,xEnd,yTop-heightMm);
+
+  return yTop-heightMm;
+}
+
+function pdfTaskTarget(task){
+  const date=task.endDate||task.startDate||'';
+
+  if(!date){
+    return'Tanpa target waktu';
+  }
+
+  let out=pdfDateLong(date);
+
+  if(task.endTime){
+    out+=` · ${String(task.endTime).slice(0,5)} WIB`;
+  }
+
+  return out;
+}
+
+function buildTaskPdfPages(d,stamp=pdfTimestamp()){
+  const page=pdfPageBase(1,'Ringkasan Hasil Kerja',1,stamp);
+
+  // Title — 18 pt bold.
+  pdfWrapped(
+    page,
+    d.title||'Tugas',
+    15,
+    267,
+    54,
+    18,
+    true,
+    25.5
+  );
+
+  // Subtitle / description — 14 pt.
+  pdfWrapped(
+    page,
+    d.description||'—',
+    15,
+    226,
+    47,
+    14,
+    false,
+    18
+  );
+
+  // For a completion summary, result attachments are the primary output.
+  // If none exist, fall back to task attachments.
+  const attachments=
+    (d.resultAttachments||[]).length
+      ?(d.resultAttachments||[])
+      :(d.taskAttachments||[]);
+
+  const dedupedAttachments=attachments.filter((item,index,rows)=>{
+    const key=String(item.id||item.driveUrl||item.fileName||'');
+    return rows.findIndex(row=>String(row.id||row.driveUrl||row.fileName||'')===key)===index;
+  });
+
+  const resultLines=pdfWrapLines(
+    d.resultText||'—',
+    12,
+    pdfMm(72),
+    false
+  ).length;
+
+  const resultHeight=Math.max(
+    42,
+    16+(resultLines*5.3)
+  );
+
+  const attachmentHeight=Math.max(
+    38,
+    15+(dedupedAttachments.length*8)
+  );
+
+  let y=236;
+  y=pdfTaskTableRow(page,y,'PIC',(d.picList||[]).join(', ')||'—',25);
+  y=pdfTaskTableRow(page,y,'Target Penyelesaian',pdfTaskTarget(d),30);
+  y=pdfTaskTableRow(page,y,'Prioritas',d.priority||'—',25);
+  y=pdfTaskTableRow(page,y,'Hasil Penyelesaian',d.resultText||'—',resultHeight);
+  y=pdfTaskTableRow(page,y,'Lampiran','',attachmentHeight,dedupedAttachments);
+
+  return [page];
+}
+
+async function downloadTaskPdf(taskId){
+  try{
+    const d=await api('taskDetail',{taskId});
+
+    if(d.status!=='done'){
+      throw new Error('PDF Ringkasan Hasil Kerja hanya tersedia untuk tugas yang sudah selesai.');
+    }
+
+    const blob=pdfBuildBlob(
+      buildTaskPdfPages(d)
+    );
+
+    pdfDownloadBlob(
+      blob,
+      `Ringkasan_Hasil_Kerja_${pdfFileName(d.title,'Tugas')}.pdf`
+    );
+
+    showToast('PDF tugas berhasil dibuat.');
+  }catch(e){
+    showToast(e.message,true);
+  }
+}
+
+function openProjectPdfExport(projectId){
+  openModal(
+    'Download PDF Project',
+    `<div class="form-grid">
+      <div class="field full">
+        <label>Cakupan PDF</label>
+
+        <label style="display:flex;gap:9px;align-items:flex-start;border:1px solid var(--line);border-radius:8px;padding:10px;margin-top:5px;cursor:pointer">
+          <input type="radio" name="projectPdfMode" value="summary">
+          <span>
+            <strong style="font-size:10px">Ringkas</strong>
+            <span class="helper" style="display:block;margin-top:2px">Ringkasan Project + Tahapan & Progress.</span>
+          </span>
+        </label>
+
+        <label style="display:flex;gap:9px;align-items:flex-start;border:1px solid var(--line);border-radius:8px;padding:10px;margin-top:7px;cursor:pointer">
+          <input type="radio" name="projectPdfMode" value="full" checked>
+          <span>
+            <strong style="font-size:10px">Lengkap</strong>
+            <span class="helper" style="display:block;margin-top:2px">Ringkasan, Tahapan, Hasil Kerja, Dokumen & Sumber.</span>
+          </span>
+        </label>
+      </div>
+    </div>`,
+    `<button class="btn" onclick="closeModal()">Batal</button>
+     <button class="btn primary" onclick="downloadProjectPdf('${esc(projectId)}')">Download PDF</button>`
+  );
+}
+
+function pdfProjectPeriod(project){
+  const start=project.startDate?pdfDateLong(project.startDate):'—';
+  const end=project.targetDate?pdfDateLong(project.targetDate):'—';
+
+  if(start==='—'&&end==='—')return'—';
+  if(start==='—')return`Sampai ${end}`;
+  if(end==='—')return`Mulai ${start}`;
+
+  return `${start} - ${end}`;
+}
+
+function pdfProjectStageModels(data){
+  const stages=data.stages||[];
+  const tasks=data.tasks||[];
+
+  const models=stages.map(stage=>{
+    const stageTasks=tasks.filter(task=>String(task.stageId||'')===String(stage.id||''));
+    const done=stageTasks.filter(task=>task.status==='done').length;
+
+    let status='Belum Dimulai';
+
+    if(stageTasks.length&&done===stageTasks.length){
+      status='Selesai';
+    }else if(stageTasks.some(task=>task.status==='progress'||task.status==='done')){
+      status='Berjalan';
+    }else if(!stageTasks.length){
+      status='Belum Ada Tugas';
+    }
+
+    return {
+      id:stage.id,
+      name:stage.name||'Tahapan',
+      period:
+        stage.startDate||stage.targetDate
+          ? `${stage.startDate?pdfDateLong(stage.startDate):'—'} - ${stage.targetDate?pdfDateLong(stage.targetDate):'—'}`
+          : '—',
+      total:stageTasks.length,
+      done,
+      status
+    };
+  });
+
+  const unassigned=tasks.filter(task=>!task.stageId);
+
+  if(unassigned.length){
+    const done=unassigned.filter(task=>task.status==='done').length;
+
+    models.push({
+      id:'',
+      name:'Tanpa Tahapan',
+      period:'—',
+      total:unassigned.length,
+      done,
+      status:
+        done===unassigned.length
+          ? 'Selesai'
+          : unassigned.some(task=>task.status==='progress'||task.status==='done')
+            ? 'Berjalan'
+            : 'Belum Dimulai'
+    });
+  }
+
+  return models;
+}
+
+function pdfProjectSummaryPage(data,pageNo,stamp){
+  const p=data.project||{};
+  const tasks=data.tasks||[];
+  const done=tasks.filter(task=>task.status==='done').length;
+  const progress=tasks.length?Math.round((done/tasks.length)*100):0;
+
+  const page=pdfPageBase(
+    1,
+    'Ringkasan Project',
+    pageNo,
+    stamp
+  );
+
+  pdfWrapped(
+    page,
+    p.name||'Project',
+    15,
+    267,
+    54,
+    18,
+    true,
+    25.5
+  );
+
+  pdfWrapped(
+    page,
+    p.description||'—',
+    15,
+    226,
+    47,
+    14,
+    false,
+    18
+  );
+
+  let y=236;
+  y=pdfTaskTableRow(page,y,'PIC',(p.picList||[]).join(', ')||'—',25);
+  y=pdfTaskTableRow(page,y,'Periode',pdfProjectPeriod(p),25);
+  y=pdfTaskTableRow(page,y,'Program',p.primaryProgram||'—',25);
+  y=pdfTaskTableRow(page,y,'Status',p.status||'—',25);
+  y=pdfTaskTableRow(page,y,'Progress',`${done} dari ${tasks.length} tugas selesai - ${progress}%`,30);
+
+  // restrained progress bar.
+  pdfRect(page,120,y+16,67,3.2,PDF_COLORS.soft);
+  pdfRect(page,120,y+16,67*(progress/100),3.2,PDF_COLORS.accent);
+
+  return page;
+}
+
+function pdfProjectStagePages(data,startPageNo,stamp){
+  const models=pdfProjectStageModels(data);
+  const pages=[];
+  let pageNo=startPageNo;
+  let page=null;
+  let y=0;
+
+  function newPage(continued=false){
+    page=pdfPageBase(
+      2,
+      'Tahapan & Progress',
+      pageNo++,
+      stamp
+    );
+
+    pdfText(
+      page,
+      15,
+      267,
+      continued?'Perkembangan Project - Lanjutan':'Perkembangan Project',
+      18,
+      true
+    );
+
+    y=246;
+    pages.push(page);
+  }
+
+  newPage(false);
+
+  if(!models.length){
+    pdfText(page,15,235,'Belum ada Tahapan pada Project ini.',12,false);
+    return pages;
+  }
+
+  models.forEach((stage,index)=>{
+    const titleLines=pdfWrapLines(stage.name,15,pdfMm(150),true);
+    const blockHeight=48+Math.max(0,titleLines.length-1)*7;
+
+    if(y-blockHeight<30){
+      newPage(true);
+    }
+
+    pdfText(page,15,y,String(index+1).padStart(2,'0'),10,true,PDF_COLORS.muted);
+
+    let titleY=y;
+    titleLines.forEach(line=>{
+      pdfText(page,32,titleY,line,15,true);
+      titleY-=7;
+    });
+
+    let rowY=titleY-4;
+
+    const rows=[
+      ['Periode',stage.period],
+      ['Tugas',`${stage.total} tugas`],
+      ['Penyelesaian',`${stage.done} selesai - ${stage.total?Math.round((stage.done/stage.total)*100):0}%`],
+      ['Status',stage.status]
+    ];
+
+    rows.forEach(([label,value])=>{
+      pdfText(page,32,rowY,label,12,false,PDF_COLORS.accent);
+      pdfWrapped(page,value,82,rowY,108,12,false,15);
+      rowY-=7;
+    });
+
+    pdfLine(page,32,rowY+2,195,rowY+2);
+    y=rowY-11;
+  });
+
+  return pages;
+}
+
+function pdfProjectCompletedTaskAttachments(task){
+  const preferred=(task.resultAttachments||[]);
+
+  return preferred.length
+    ? preferred
+    : (task.taskAttachments||[]);
+}
+
+function pdfProjectWorkPages(data,startPageNo,stamp){
+  const completed=(data.tasks||[]).filter(task=>task.status==='done');
+  const pages=[];
+  let pageNo=startPageNo;
+  let page=null;
+  let y=0;
+
+  function newPage(continued=false){
+    page=pdfPageBase(
+      3,
+      'Hasil Kerja',
+      pageNo++,
+      stamp
+    );
+
+    pdfText(
+      page,
+      15,
+      267,
+      continued?'Hasil Pekerjaan Project - Lanjutan':'Hasil Pekerjaan Project',
+      18,
+      true
+    );
+
+    y=246;
+    pages.push(page);
+  }
+
+  newPage(false);
+
+  if(!completed.length){
+    pdfText(page,15,235,'Belum ada tugas yang selesai.',12,false);
+    return pages;
+  }
+
+  completed.forEach((task,index)=>{
+    const attachments=pdfProjectCompletedTaskAttachments(task);
+    const titleLines=pdfWrapLines(task.title||'Tugas',15,pdfMm(150),true);
+    const resultLines=pdfWrapLines(task.resultText||'—',12,pdfMm(108),false);
+
+    let attachmentLineCount=1;
+
+    if(attachments.length){
+      attachmentLineCount=attachments.reduce((sum,item)=>{
+        const nameLines=pdfWrapLines(item.fileName||'Lampiran',12,pdfMm(108),false).length;
+        const url=String(item.driveUrl||item.url||'').trim();
+        const urlLines=url?pdfWrapLines(url,10.5,pdfMm(108),false).length:0;
+
+        return sum+nameLines+urlLines+1;
+      },0);
+    }
+
+    const blockHeight=
+      27+
+      Math.max(0,titleLines.length-1)*7+
+      7+
+      7+
+      Math.max(1,resultLines.length)*5.4+
+      8+
+      attachmentLineCount*4.9;
+
+    if(y-blockHeight<30){
+      newPage(true);
+    }
+
+    pdfText(page,15,y,String(index+1).padStart(2,'0'),10,true,PDF_COLORS.muted);
+
+    let currentY=y;
+
+    titleLines.forEach(line=>{
+      pdfText(page,32,currentY,line,15,true);
+      currentY-=7;
+    });
+
+    currentY-=4;
+
+    pdfText(page,32,currentY,'PIC',12,false,PDF_COLORS.accent);
+    pdfWrapped(page,(task.picList||[]).join(', ')||'—',82,currentY,108,12,false,15);
+    currentY-=7;
+
+    pdfText(page,32,currentY,'Target',12,false,PDF_COLORS.accent);
+    pdfWrapped(page,pdfTaskTarget(task),82,currentY,108,12,false,15);
+    currentY-=7;
+
+    pdfText(page,32,currentY,'Hasil',12,false,PDF_COLORS.accent);
+    currentY=pdfWrapped(page,task.resultText||'—',82,currentY,108,12,false,15);
+    currentY-=3;
+
+    pdfText(page,32,currentY,'Lampiran',12,false,PDF_COLORS.accent);
+
+    let attachmentY=currentY;
+
+    if(!attachments.length){
+      pdfText(page,82,attachmentY,'—',12,false);
+      attachmentY-=7;
+    }else{
+      attachments.forEach(item=>{
+        attachmentY=pdfWrapped(
+          page,
+          item.fileName||'Lampiran',
+          82,
+          attachmentY,
+          108,
+          12,
+          false,
+          15
+        );
+
+        const url=String(item.driveUrl||item.url||'').trim();
+
+        if(url){
+          attachmentY=pdfWrapped(
+            page,
+            url,
+            82,
+            attachmentY,
+            108,
+            10.5,
+            false,
+            13,
+            PDF_COLORS.link
+          );
+        }
+
+        attachmentY-=2;
+      });
+    }
+
+    currentY=attachmentY-3;
+    pdfLine(page,32,currentY+2,195,currentY+2);
+    y=currentY-9;
+  });
+
+  return pages;
+}
+
+function pdfProjectAssetPages(data,startPageNo,stamp){
+  const documents=data.documents||[];
+  const sources=data.sources||[];
+  const pages=[];
+  let pageNo=startPageNo;
+  let page=null;
+  let y=0;
+  let section='documents';
+
+  function newPage(continued=false){
+    page=pdfPageBase(
+      4,
+      'Dokumen & Sumber',
+      pageNo++,
+      stamp
+    );
+
+    pdfText(
+      page,
+      15,
+      267,
+      continued?'Dokumen & Sumber Project - Lanjutan':'Dokumen & Sumber Project',
+      18,
+      true
+    );
+
+    y=247;
+    pages.push(page);
+  }
+
+  function ensureSpace(height,repeatSectionHeading=true){
+    if(y-height<30){
+      newPage(true);
+
+      if(repeatSectionHeading){
+        if(section==='documents'){
+          pdfText(page,15,y,'Dokumen Terhubung',12,true,PDF_COLORS.accent);
+        }else{
+          pdfText(page,15,y,'Sumber & Link',12,true,PDF_COLORS.accent);
+        }
+
+        y-=12;
+      }
+    }
+  }
+
+  newPage(false);
+
+  pdfText(page,15,y,'Dokumen Terhubung',12,true,PDF_COLORS.accent);
+  y-=12;
+
+  if(!documents.length){
+    pdfText(page,15,y,'Belum ada dokumen terhubung.',12,false);
+    y-=14;
+  }else{
+    documents.forEach(doc=>{
+      const title=doc.name||'Dokumen';
+      const titleLines=pdfWrapLines(title,13,pdfMm(145),true);
+      const url=String(doc.url||'').trim();
+      const urlLines=url?pdfWrapLines(url,11,pdfMm(180),false).length:0;
+      const height=12+titleLines.length*5.4+urlLines*4.8;
+
+      ensureSpace(height);
+
+      let itemY=y;
+
+      titleLines.forEach(line=>{
+        pdfText(page,15,itemY,line,13,true);
+        itemY-=6;
+      });
+
+      pdfTextRight(
+        page,
+        195,
+        y,
+        doc.tag||doc.program||'Dokumen',
+        10,
+        false,
+        PDF_COLORS.muted
+      );
+
+      if(url){
+        itemY=pdfWrapped(
+          page,
+          url,
+          15,
+          itemY,
+          180,
+          11,
+          false,
+          13,
+          PDF_COLORS.link
+        );
+      }
+
+      itemY-=4;
+      pdfLine(page,15,itemY+2,195,itemY+2);
+      y=itemY-5;
+    });
+  }
+
+  section='sources';
+  ensureSpace(25,false);
+
+  pdfText(page,15,y,'Sumber & Link',12,true,PDF_COLORS.accent);
+  y-=12;
+
+  if(!sources.length){
+    pdfText(page,15,y,'Belum ada sumber atau link tambahan.',12,false);
+  }else{
+    sources.forEach(source=>{
+      const title=source.name||'Sumber';
+      const url=String(source.url||'').trim();
+      const titleLines=pdfWrapLines(title,12,pdfMm(160),true);
+      const urlLines=url?pdfWrapLines(url,11,pdfMm(180),false).length:0;
+      const height=12+titleLines.length*5.2+urlLines*4.8;
+
+      ensureSpace(height);
+
+      let itemY=y;
+
+      titleLines.forEach(line=>{
+        pdfText(page,15,itemY,line,12,true);
+        itemY-=6;
+      });
+
+      if(url){
+        itemY=pdfWrapped(
+          page,
+          url,
+          15,
+          itemY,
+          180,
+          11,
+          false,
+          13,
+          PDF_COLORS.link
+        );
+      }
+
+      itemY-=4;
+      pdfLine(page,15,itemY+2,195,itemY+2);
+      y=itemY-5;
+    });
+  }
+
+  return pages;
+}
+
+function buildProjectPdfPages(data,mode){
+  const stamp=pdfTimestamp();
+  const pages=[];
+
+  pages.push(
+    pdfProjectSummaryPage(
+      data,
+      pages.length+1,
+      stamp
+    )
+  );
+
+  const stagePages=pdfProjectStagePages(
+    data,
+    pages.length+1,
+    stamp
+  );
+
+  pages.push(...stagePages);
+
+  if(mode==='full'){
+    const workPages=pdfProjectWorkPages(
+      data,
+      pages.length+1,
+      stamp
+    );
+
+    pages.push(...workPages);
+
+    const assetPages=pdfProjectAssetPages(
+      data,
+      pages.length+1,
+      stamp
+    );
+
+    pages.push(...assetPages);
+  }
+
+  return pages;
+}
+
+async function downloadProjectPdf(projectId){
+  try{
+    const mode=
+      qs('input[name="projectPdfMode"]:checked')?.value||
+      'full';
+
+    closeModal();
+    showToast('Menyiapkan PDF Project…');
+
+    const data=await api(
+      'projectPdfData',
+      {projectId}
+    );
+
+    const pages=buildProjectPdfPages(
+      data,
+      mode
+    );
+
+    const blob=pdfBuildBlob(pages);
+
+    pdfDownloadBlob(
+      blob,
+      `Ringkasan_Project_${pdfFileName(data.project?.name,'Project')}.pdf`
+    );
+
+    showToast('PDF Project berhasil dibuat.');
+  }catch(e){
+    showToast(e.message,true);
+  }
+}
+
 
 function editTaskFromDetail(id){
   closeModal();
