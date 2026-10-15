@@ -721,6 +721,55 @@ tr:last-child td{border-bottom:0}
 }
 
 
+/* v1.74 — compact multi-program selector for Task */
+.task-program-selector{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:4px 12px;
+  margin-top:4px;
+}
+.task-program-option{
+  display:grid;
+  grid-template-columns:16px minmax(0,1fr);
+  align-items:center;
+  gap:8px;
+  min-height:32px;
+  padding:4px 6px;
+  border-radius:6px;
+  font-size:11px;
+  line-height:1.35;
+  font-weight:500;
+  color:#3f3f46;
+  cursor:pointer;
+  user-select:none;
+}
+.task-program-option:hover{
+  background:#f7f7f8;
+}
+.task-program-option:has(input:checked){
+  background:#f4f4f5;
+  color:#18181b;
+}
+.task-program-option input[type="checkbox"]{
+  appearance:auto;
+  -webkit-appearance:checkbox;
+  width:15px;
+  height:15px;
+  margin:0;
+  accent-color:#18181b;
+}
+.task-program-option span{
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+@media(max-width:480px){
+  .task-program-selector{
+    grid-template-columns:1fr;
+  }
+}
+
+
 /* v1.54 — historical project timeline */
 .timeline-actions{
   display:flex;
@@ -1643,7 +1692,7 @@ tr:last-child td{border-bottom:0}
 
 <script>
 /*
-  Netlify frontend v1.73 — PDF export + Pemberi Tugas Lain-lain + Repositori Pengetahuan.
+  Netlify frontend v1.74 — Multi-program Tugas + PDF export + Pemberi Tugas Lain-lain.
   Netlify frontend.
   Recommended production setup:
   - index.html is hosted by Netlify/GitHub
@@ -2291,7 +2340,7 @@ function renderWorkload(){
       ${matrixTable(w)}
     </div>`+
     `<div class="workload-distribution-stack">
-      <div class="card"><div class="card-head"><div><div class="card-title">Distribusi Beban per Program</div></div></div>${classTable(m.programWorkload)}</div>
+      <div class="card"><div class="card-head"><div><div class="card-title">Distribusi Beban per Program</div><div class="card-note">Satu tugas dapat dihitung pada lebih dari satu program apabila memang terkait lintas program.</div></div></div>${classTable(m.programWorkload)}</div>
       <div class="card"><div class="card-head"><div><div class="card-title">Distribusi Beban per Aktivitas</div></div></div>${classTable(m.substansiWorkload)}</div>
     </div>`+
     renderLeaveList(m.teamAvailability||[]);
@@ -2325,6 +2374,33 @@ function trendDateFromKey(key){
   const p=String(key||'').split('-').map(Number);
   return p.length===3&&!p.some(Number.isNaN)?new Date(p[0],p[1]-1,p[2]):null;
 }
+function taskProgramList(task){
+  if(Array.isArray(task?.programList)){
+    return task.programList
+      .map(v=>String(v||'').trim())
+      .filter(Boolean);
+  }
+
+  return String(task?.program||'')
+    .split(',')
+    .map(v=>v.trim())
+    .filter(Boolean);
+}
+
+function taskHasProgram(task,program){
+  const wanted=String(program||'').trim();
+
+  if(!wanted)return true;
+
+  const programs=taskProgramList(task);
+
+  if(wanted==='Belum Diklasifikasikan'){
+    return !programs.length;
+  }
+
+  return programs.includes(wanted);
+}
+
 function trendMonthKey(date){
   return date.getFullYear()+'-'+String(date.getMonth()+1).padStart(2,'0');
 }
@@ -2340,7 +2416,7 @@ function trendTasks(){
 function trendFilteredTasks(){
   const f=state.trendFilters;
   return trendTasks().filter(t=>
-    (!f.program||t.program===f.program)&&
+    taskHasProgram(t,f.program)&&
     (!f.activity||t.substansi===f.activity)
   );
 }
@@ -2517,7 +2593,7 @@ function renderTrend(){
         <div class="card-head">
           <div>
             <div class="card-title">Komposisi Pekerjaan per Program per Bulan</div>
-            <div class="card-note">Menunjukkan perubahan fokus program pada setiap bulan berdasarkan tanggal pekerjaan.</div>
+            <div class="card-note">Menunjukkan perubahan keterkaitan program berdasarkan tanggal pekerjaan. Satu tugas dapat berkontribusi pada lebih dari satu program.</div>
           </div>
         </div>
         <div class="trend-monthly-composition" id="trendProgramMonthly"></div>
@@ -2627,18 +2703,53 @@ function renderTrendMonthlyComposition(elementId,legendId,tasks,keys,field,maste
   const years=new Set(keys.map(k=>k.slice(0,4))),includeYear=years.size>1;
   const order=[...master,'Lain-lain','Belum Diklasifikasikan'].filter((x,i,a)=>x&&a.indexOf(x)===i);
   const rows=keys.map(key=>{
-    const monthTasks=tasks.filter(t=>{const d=trendWorkDate(t);return d&&d.slice(0,7)===key});
+    const monthTasks=tasks.filter(t=>{
+      const d=trendWorkDate(t);
+      return d&&d.slice(0,7)===key;
+    });
+
     const counts={};
-    monthTasks.forEach(t=>{const v=t[field]||'Belum Diklasifikasikan';counts[v]=(counts[v]||0)+1});
-    return{key,total:monthTasks.length,counts};
+
+    monthTasks.forEach(t=>{
+      const values=field==='program'
+        ?(taskProgramList(t).length?taskProgramList(t):['Belum Diklasifikasikan'])
+        :[t[field]||'Belum Diklasifikasikan'];
+
+      [...new Set(values)].forEach(v=>{
+        counts[v]=(counts[v]||0)+1;
+      });
+    });
+
+    const associationTotal=Object.values(counts)
+      .reduce((sum,value)=>sum+Number(value||0),0);
+
+    return{
+      key,
+      total:monthTasks.length,
+      associationTotal,
+      counts
+    };
   });
   if(!rows.some(r=>r.total)){el.innerHTML='<div class="empty">Belum ada data komposisi pada periode ini.</div>';legend.innerHTML='';return}
 
   el.innerHTML=rows.map(r=>{
+    const denominator=
+      field==='program'
+        ?r.associationTotal
+        :r.total;
+
     const segments=order.map(name=>{
-      const count=r.counts[name]||0;if(!count||!r.total)return'';
-      const pct=count/r.total*100;
-      return `<span class="trend-stack-segment" style="width:${pct.toFixed(2)}%;background:${colors[name]||'#a1a1aa'}" title="${esc(name)}: ${count} tugas (${Math.round(pct)}%)"></span>`;
+      const count=r.counts[name]||0;
+      if(!count||!denominator)return'';
+
+      const pct=count/denominator*100;
+
+      const suffix=
+        field==='program'
+          ?' keterkaitan'
+          :' tugas';
+
+      return `<span class="trend-stack-segment" style="width:${pct.toFixed(2)}%;background:${colors[name]||'#a1a1aa'}" title="${esc(name)}: ${count}${suffix} (${Math.round(pct)}%)"></span>`;
     }).join('');
     return `<div class="trend-month-row"><div class="trend-month-row-label">${trendMonthLabel(r.key,includeYear)}</div><div class="trend-stack">${segments}</div><div class="trend-month-row-total">${r.total||'—'}</div></div>`;
   }).join('');
@@ -3682,7 +3793,7 @@ function filteredTasks(){
         String(t.program||'')+' '+String(t.priority||'')
       ).toLowerCase().includes(q)) &&
       (!pic||(t.picList||[]).includes(pic)) &&
-      (!prog||t.program===prog) &&
+      taskHasProgram(t,prog) &&
       (!project||t.projectId===project) &&
       (!stage||t.stageId===stage)
     )
@@ -4484,6 +4595,7 @@ async function openTaskForm(id='',prefillProjectId='',prefillStageId=''){
         id:d.id,
         title:d.title,
         program:d.program,
+        programList:d.programList||taskProgramList(d),
         projectId:d.projectId,
         stageId:d.stageId,
         substansi:d.activity,
@@ -4513,6 +4625,7 @@ async function openTaskForm(id='',prefillProjectId='',prefillStageId=''){
     id:'',
     title:'',
     program:'',
+    programList:[],
     projectId:prefillProjectId||state.projectId||'',
     stageId:prefillStageId||'',
     substansi:'',
@@ -4560,10 +4673,17 @@ async function openTaskForm(id='',prefillProjectId='',prefillStageId=''){
 
     <div class="field">
       <label>Program *</label>
-      <select id="fProgram">
-        <option value="">Pilih</option>
-        ${(state.bootstrap?.programs||[]).map(v=>`<option ${x.program===v?'selected':''}>${esc(v)}</option>`).join('')}
-      </select>
+      <div class="task-program-selector">
+        ${(state.bootstrap?.programs||[]).map(v=>{
+          const selected=taskProgramList(x).includes(v);
+
+          return `<label class="task-program-option">
+            <input type="checkbox" name="fProgram" value="${esc(v)}" ${selected?'checked':''}>
+            <span>${esc(v)}</span>
+          </label>`;
+        }).join('')}
+      </div>
+      <div class="helper">Pilih satu atau lebih program yang terkait dengan tugas.</div>
     </div>
 
     <div class="field">
@@ -4834,6 +4954,13 @@ async function saveTaskForm(id){
     const projectId=qs('#fProject').value||'';
     const stageId=projectId?(qs('#fStage')?.value||''):'';
 
+    const programList=qsa('input[name="fProgram"]:checked')
+      .map(input=>input.value);
+
+    if(!programList.length){
+      throw new Error('Pilih minimal satu Program.');
+    }
+
     const taskAssignerOption=qs('#fAssigner')?.value||'';
     const taskAssignerOther=qs('#fAssignerOther')?.value.trim()||'';
 
@@ -4850,7 +4977,8 @@ async function saveTaskForm(id){
       id,
       requestId:id?'':(window.__taskRequestId||''),
       title:qs('#fTitle').value,
-      program:qs('#fProgram').value,
+      program:programList.join(', '),
+      programList,
       projectId,
       stageId,
       substansi:qs('#fActivity').value,
