@@ -770,6 +770,69 @@ tr:last-child td{border-bottom:0}
   }
 }
 
+/* v1.79 — simplified Narasumber travel presets */
+.narasumber-branch{
+  grid-column:1/-1;
+  border:1px solid #fed7aa;
+  background:#fffaf7;
+  border-radius:9px;
+  padding:12px;
+}
+.narasumber-branch-title{
+  font-size:10px;
+  font-weight:800;
+  color:#9a3412;
+}
+.narasumber-branch-note{
+  margin-top:3px;
+  color:#78716c;
+  font-size:9px;
+  line-height:1.45;
+}
+.narasumber-travel-options{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:6px;
+  margin-top:8px;
+}
+.narasumber-travel-option{
+  display:grid;
+  grid-template-columns:15px minmax(0,1fr);
+  align-items:start;
+  gap:7px;
+  border:1px solid #e7e5e4;
+  background:#fff;
+  border-radius:7px;
+  padding:8px;
+  font-size:9.5px;
+  line-height:1.35;
+  cursor:pointer;
+}
+.narasumber-travel-option input{
+  appearance:auto;
+  -webkit-appearance:radio;
+  width:14px;
+  height:14px;
+  margin:1px 0 0;
+  accent-color:#18181b;
+}
+.narasumber-travel-option:has(input:checked){
+  border-color:#fdba74;
+  background:#fff7ed;
+}
+.narasumber-manual-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px;
+  margin-top:9px;
+}
+@media(max-width:480px){
+  .narasumber-travel-options,
+  .narasumber-manual-grid{
+    grid-template-columns:1fr;
+  }
+}
+
 
 /* v1.54 — historical project timeline */
 .timeline-actions{
@@ -1693,7 +1756,7 @@ tr:last-child td{border-bottom:0}
 
 <script>
 /*
-  Netlify frontend v1.78 — Task form flow refinement + Narasumber branch + Multi-program Tugas.
+  Netlify frontend v1.79 — Simplified Narasumber travel presets + Multi-program Tugas + PDF export.
   Netlify frontend.
   Recommended production setup:
   - index.html is hosted by Netlify/GitHub
@@ -4624,6 +4687,7 @@ async function openTaskForm(id='',prefillProjectId='',prefillStageId=''){
         stageId:d.stageId,
         substansi:d.activity,
         narasumberMode:d.narasumberMode||'',
+        travelPreset:d.travelPreset||'',
         travelStartDate:d.travelStartDate||'',
         travelEndDate:d.travelEndDate||'',
         tag:d.tag,
@@ -4657,6 +4721,7 @@ async function openTaskForm(id='',prefillProjectId='',prefillStageId=''){
     stageId:prefillStageId||'',
     substansi:'',
     narasumberMode:'',
+    travelPreset:'',
     travelStartDate:'',
     travelEndDate:'',
     tag:'',
@@ -4684,6 +4749,15 @@ async function openTaskForm(id='',prefillProjectId='',prefillStageId=''){
           ? crypto.randomUUID()
           : 'task_'+Date.now()+'_'+Math.random().toString(36).slice(2)
       );
+
+  const travelPresetSelected=
+    x.travelPreset||
+    (
+      x.substansi==='Narasumber'&&
+      x.narasumberMode==='outside'
+        ?'manual'
+        :''
+    );
 
   const assignerMaster=state.bootstrap?.pics||[];
   const assignerIsOther=
@@ -4735,12 +4809,12 @@ async function openTaskForm(id='',prefillProjectId='',prefillStageId=''){
 
     <div class="field task-date">
       <label>Tanggal Mulai</label>
-      <input type="date" id="fStartDate" value="${esc(x.startDate||'')}" onchange="syncNarasumberTravelDefaults()">
+      <input type="date" id="fStartDate" value="${esc(x.startDate||'')}" onchange="syncNarasumberManualDefaults()">
     </div>
 
     <div class="field task-date">
       <label>Tanggal Selesai</label>
-      <input type="date" id="fEndDate" value="${esc(x.endDate||'')}" onchange="syncNarasumberTravelDefaults()">
+      <input type="date" id="fEndDate" value="${esc(x.endDate||'')}" onchange="syncNarasumberManualDefaults()">
     </div>
 
     <div class="field task-date">
@@ -4762,25 +4836,68 @@ async function openTaskForm(id='',prefillProjectId='',prefillStageId=''){
       <div class="helper">Aktivitas utama tetap satu. Narasumber memiliki pengaturan pelaksanaan tersendiri.</div>
     </div>
 
-    <div class="field" id="fNarasumberModeField" style="${x.substansi==='Narasumber'?'':'display:none'}">
-      <label>Mode Pelaksanaan Narasumber *</label>
-      <select id="fNarasumberMode" onchange="toggleNarasumberBranch()">
-        <option value="">Pilih</option>
-        <option value="office" ${x.narasumberMode==='office'?'selected':''}>Dalam Kantor</option>
-        <option value="online" ${x.narasumberMode==='online'?'selected':''}>Online</option>
-        <option value="outside" ${x.narasumberMode==='outside'?'selected':''}>Luar Kantor</option>
-      </select>
-    </div>
+    <div id="fNarasumberBranch" class="narasumber-branch" style="${x.substansi==='Narasumber'?'':'display:none'}">
+      <div class="narasumber-branch-title">Pelaksanaan Narasumber</div>
+      <div class="narasumber-branch-note">
+        Tanggal kegiatan mengikuti Tanggal Mulai/Selesai di atas. Cukup tentukan mode pelaksanaan dan pola perjalanan.
+      </div>
 
-    <div class="field narasumber-travel" style="${x.substansi==='Narasumber'&&x.narasumberMode==='outside'?'':'display:none'}">
-      <label>Berangkat / Mulai TLK *</label>
-      <input type="date" id="fTravelStartDate" value="${esc(x.travelStartDate||'')}">
-    </div>
+      <div class="field" style="margin-top:10px">
+        <label>Mode Pelaksanaan Narasumber *</label>
+        <select id="fNarasumberMode" onchange="toggleNarasumberBranch()">
+          <option value="">Pilih</option>
+          <option value="office" ${x.narasumberMode==='office'?'selected':''}>Dalam Kantor</option>
+          <option value="online" ${x.narasumberMode==='online'?'selected':''}>Online</option>
+          <option value="outside" ${x.narasumberMode==='outside'?'selected':''}>Luar Kantor</option>
+        </select>
+      </div>
 
-    <div class="field narasumber-travel" style="${x.substansi==='Narasumber'&&x.narasumberMode==='outside'?'':'display:none'}">
-      <label>Kembali / Selesai TLK *</label>
-      <input type="date" id="fTravelEndDate" value="${esc(x.travelEndDate||'')}">
-      <div class="helper">Periode TLK memengaruhi workload harian, tetapi tugas tetap dihitung sebagai 1 tugas Narasumber.</div>
+      <div id="fTravelPresetWrap" style="${x.substansi==='Narasumber'&&x.narasumberMode==='outside'?'':'display:none'}">
+        <label style="margin-top:10px">Perjalanan / Tugas Luar Kantor *</label>
+
+        <div class="narasumber-travel-options">
+          <label class="narasumber-travel-option">
+            <input type="radio" name="fTravelPreset" value="same" ${travelPresetSelected==='same'?'checked':''} onchange="toggleNarasumberBranch()">
+            <span>Hari kegiatan saja</span>
+          </label>
+
+          <label class="narasumber-travel-option">
+            <input type="radio" name="fTravelPreset" value="before" ${travelPresetSelected==='before'?'checked':''} onchange="toggleNarasumberBranch()">
+            <span>H-1 sampai hari kegiatan</span>
+          </label>
+
+          <label class="narasumber-travel-option">
+            <input type="radio" name="fTravelPreset" value="after" ${travelPresetSelected==='after'?'checked':''} onchange="toggleNarasumberBranch()">
+            <span>Hari kegiatan sampai H+1</span>
+          </label>
+
+          <label class="narasumber-travel-option">
+            <input type="radio" name="fTravelPreset" value="both" ${travelPresetSelected==='both'?'checked':''} onchange="toggleNarasumberBranch()">
+            <span>H-1 sampai H+1</span>
+          </label>
+
+          <label class="narasumber-travel-option">
+            <input type="radio" name="fTravelPreset" value="manual" ${travelPresetSelected==='manual'?'checked':''} onchange="toggleNarasumberBranch()">
+            <span>Atur manual</span>
+          </label>
+        </div>
+
+        <div id="fNarasumberManualDates" class="narasumber-manual-grid" style="${travelPresetSelected==='manual'?'':'display:none'}">
+          <div class="field">
+            <label>Berangkat / Mulai TLK *</label>
+            <input type="date" id="fTravelStartDate" value="${esc(x.travelStartDate||'')}">
+          </div>
+
+          <div class="field">
+            <label>Kembali / Selesai TLK *</label>
+            <input type="date" id="fTravelEndDate" value="${esc(x.travelEndDate||'')}">
+          </div>
+        </div>
+
+        <div class="helper" style="margin-top:7px">
+          Tanggal TLK dihitung otomatis dari tanggal kegiatan. Gunakan Atur manual hanya jika pola perjalanan berbeda.
+        </div>
+      </div>
     </div>
 
     <div class="field">
@@ -4912,10 +5029,11 @@ function toggleTaskAssignerOther(){
   }
 }
 
-function syncNarasumberTravelDefaults(){
+function syncNarasumberManualDefaults(){
   if(
     qs('#fActivity')?.value!=='Narasumber' ||
-    qs('#fNarasumberMode')?.value!=='outside'
+    qs('#fNarasumberMode')?.value!=='outside' ||
+    qs('input[name="fTravelPreset"]:checked')?.value!=='manual'
   ){
     return;
   }
@@ -4939,11 +5057,10 @@ function toggleNarasumberBranch(syncDefaults=true){
   const isNarasumber=
     qs('#fActivity')?.value==='Narasumber';
 
-  const modeField=
-    qs('#fNarasumberModeField');
+  const branch=qs('#fNarasumberBranch');
 
-  if(modeField){
-    modeField.style.display=
+  if(branch){
+    branch.style.display=
       isNarasumber?'block':'none';
   }
 
@@ -4955,10 +5072,49 @@ function toggleNarasumberBranch(syncDefaults=true){
   const isOutside=
     isNarasumber&&mode==='outside';
 
-  qsa('.narasumber-travel').forEach(el=>{
-    el.style.display=
+  const presetWrap=qs('#fTravelPresetWrap');
+
+  if(presetWrap){
+    presetWrap.style.display=
       isOutside?'block':'none';
-  });
+  }
+
+  // Outside Narasumber always needs a dated activity.
+  if(
+    isOutside&&
+    qs('#fTimeType')?.value==='none'
+  ){
+    qs('#fTimeType').value='date';
+    qsa('.task-date').forEach(el=>{
+      el.style.display='block';
+    });
+  }
+
+  let preset=
+    qs('input[name="fTravelPreset"]:checked')?.value||
+    '';
+
+  // Keep the form low-friction:
+  // first time users choose "Luar Kantor", use H-1 & H+1 as the default.
+  if(isOutside&&!preset){
+    const preferred=
+      qs('input[name="fTravelPreset"][value="both"]');
+
+    if(preferred){
+      preferred.checked=true;
+      preset='both';
+    }
+  }
+
+  const manualDates=
+    qs('#fNarasumberManualDates');
+
+  if(manualDates){
+    manualDates.style.display=
+      isOutside&&preset==='manual'
+        ?'grid'
+        :'none';
+  }
 
   const modeSelect=qs('#fNarasumberMode');
 
@@ -4966,19 +5122,26 @@ function toggleNarasumberBranch(syncDefaults=true){
     modeSelect.required=isNarasumber;
   }
 
+  qsa('input[name="fTravelPreset"]').forEach(input=>{
+    input.required=
+      isOutside&&!preset;
+  });
+
   const travelStart=qs('#fTravelStartDate');
   const travelEnd=qs('#fTravelEndDate');
+  const isManual=
+    isOutside&&preset==='manual';
 
   if(travelStart){
-    travelStart.required=isOutside;
+    travelStart.required=isManual;
   }
 
   if(travelEnd){
-    travelEnd.required=isOutside;
+    travelEnd.required=isManual;
   }
 
-  if(syncDefaults&&isOutside){
-    syncNarasumberTravelDefaults();
+  if(syncDefaults&&isManual){
+    syncNarasumberManualDefaults();
   }
 }
 
@@ -5018,7 +5181,7 @@ function toggleTaskDates(){
   qsa('.task-date').forEach(el=>el.style.display=show?'block':'none');
 
   if(show){
-    syncNarasumberTravelDefaults();
+    syncNarasumberManualDefaults();
   }
 }
 
@@ -5094,13 +5257,22 @@ async function saveTaskForm(id){
         ?(qs('#fNarasumberMode')?.value||'')
         :'';
 
-    const travelStartDate=
+    const travelPreset=
       primaryActivity==='Narasumber'&&narasumberMode==='outside'
+        ?(qs('input[name="fTravelPreset"]:checked')?.value||'')
+        :'';
+
+    const travelStartDate=
+      primaryActivity==='Narasumber'&&
+      narasumberMode==='outside'&&
+      travelPreset==='manual'
         ?(qs('#fTravelStartDate')?.value||'')
         :'';
 
     const travelEndDate=
-      primaryActivity==='Narasumber'&&narasumberMode==='outside'
+      primaryActivity==='Narasumber'&&
+      narasumberMode==='outside'&&
+      travelPreset==='manual'
         ?(qs('#fTravelEndDate')?.value||'')
         :'';
 
@@ -5111,9 +5283,18 @@ async function saveTaskForm(id){
     if(
       primaryActivity==='Narasumber'&&
       narasumberMode==='outside'&&
+      !travelPreset
+    ){
+      throw new Error('Pola perjalanan Narasumber wajib dipilih.');
+    }
+
+    if(
+      primaryActivity==='Narasumber'&&
+      narasumberMode==='outside'&&
+      travelPreset==='manual'&&
       (!travelStartDate||!travelEndDate)
     ){
-      throw new Error('Periode Tugas Luar Kantor wajib diisi.');
+      throw new Error('Periode Tugas Luar Kantor manual wajib diisi.');
     }
 
     const taskAssignerOption=qs('#fAssigner')?.value||'';
@@ -5138,6 +5319,7 @@ async function saveTaskForm(id){
       stageId,
       substansi:primaryActivity,
       narasumberMode,
+      travelPreset,
       travelStartDate,
       travelEndDate,
       tag:qs('#fTag').value,
@@ -5467,6 +5649,11 @@ async function showTaskDetail(id){
           </div>
 
           ${d.narasumberMode==='outside'?`
+            <div class="field">
+              <label>Pola Perjalanan</label>
+              <div class="task-detail-value">${esc(d.travelPresetLabel||'—')}</div>
+            </div>
+
             <div class="field">
               <label>Periode Tugas Luar Kantor</label>
               <div class="task-detail-value">${esc((d.travelStartDate?fmtDate(d.travelStartDate):'—')+' — '+(d.travelEndDate?fmtDate(d.travelEndDate):'—'))}</div>
