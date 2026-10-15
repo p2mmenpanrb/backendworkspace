@@ -1693,7 +1693,7 @@ tr:last-child td{border-bottom:0}
 
 <script>
 /*
-  Netlify frontend v1.75 — Narasumber branch + Multi-program Tugas + PDF export.
+  Netlify frontend v1.78 — Task form flow refinement + Narasumber branch + Multi-program Tugas.
   Netlify frontend.
   Recommended production setup:
   - index.html is hosted by Netlify/GitHub
@@ -4701,7 +4701,7 @@ async function openTaskForm(id='',prefillProjectId='',prefillStageId=''){
       <input id="fTitle" value="${esc(x.title)}">
     </div>
 
-    <div class="field">
+    <div class="field full">
       <label>Program *</label>
       <div class="task-program-selector">
         ${(state.bootstrap?.programs||[]).map(v=>{
@@ -4717,6 +4717,43 @@ async function openTaskForm(id='',prefillProjectId='',prefillStageId=''){
     </div>
 
     <div class="field">
+      <label>Jenis Waktu</label>
+      <select id="fTimeType" onchange="toggleTaskDates()">
+        <option value="none" ${x.timeType==='none'?'selected':''}>Tanpa Tanggal</option>
+        <option value="date" ${x.timeType==='date'?'selected':''}>Tanggal</option>
+        <option value="period" ${x.timeType==='period'?'selected':''}>Periode</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>Hari Pelaksanaan</label>
+      <select id="fDayMode">
+        <option value="workdays" ${x.dayMode!=='all_days'?'selected':''}>Hari Kerja</option>
+        <option value="all_days" ${x.dayMode==='all_days'?'selected':''}>Semua Hari</option>
+      </select>
+    </div>
+
+    <div class="field task-date">
+      <label>Tanggal Mulai</label>
+      <input type="date" id="fStartDate" value="${esc(x.startDate||'')}" onchange="syncNarasumberTravelDefaults()">
+    </div>
+
+    <div class="field task-date">
+      <label>Tanggal Selesai</label>
+      <input type="date" id="fEndDate" value="${esc(x.endDate||'')}" onchange="syncNarasumberTravelDefaults()">
+    </div>
+
+    <div class="field task-date">
+      <label>Jam Mulai</label>
+      <input type="time" id="fStartTime" value="${esc(x.startTime||'')}">
+    </div>
+
+    <div class="field task-date">
+      <label>Jam Selesai</label>
+      <input type="time" id="fEndTime" value="${esc(x.endTime||'')}">
+    </div>
+
+    <div class="field full">
       <label>Jenis Aktivitas *</label>
       <select id="fActivity" onchange="toggleNarasumberBranch()">
         <option value="">Pilih</option>
@@ -4795,43 +4832,6 @@ async function openTaskForm(id='',prefillProjectId='',prefillStageId=''){
       <label>Email PIC</label>
       <input id="fPicEmail" value="${esc(x.picEmail||'')}" placeholder="email1@instansi.go.id, email2@instansi.go.id">
       <div class="helper">Opsional. Pisahkan beberapa alamat email dengan koma. Email ini otomatis dimasukkan sebagai tamu saat + Calendar digunakan.</div>
-    </div>
-
-    <div class="field">
-      <label>Jenis Waktu</label>
-      <select id="fTimeType" onchange="toggleTaskDates()">
-        <option value="none" ${x.timeType==='none'?'selected':''}>Tanpa Tanggal</option>
-        <option value="date" ${x.timeType==='date'?'selected':''}>Tanggal</option>
-        <option value="period" ${x.timeType==='period'?'selected':''}>Periode</option>
-      </select>
-    </div>
-
-    <div class="field">
-      <label>Hari Pelaksanaan</label>
-      <select id="fDayMode">
-        <option value="workdays" ${x.dayMode!=='all_days'?'selected':''}>Hari Kerja</option>
-        <option value="all_days" ${x.dayMode==='all_days'?'selected':''}>Semua Hari</option>
-      </select>
-    </div>
-
-    <div class="field task-date">
-      <label>Tanggal Mulai</label>
-      <input type="date" id="fStartDate" value="${esc(x.startDate||'')}" onchange="syncNarasumberTravelDefaults()">
-    </div>
-
-    <div class="field task-date">
-      <label>Tanggal Selesai</label>
-      <input type="date" id="fEndDate" value="${esc(x.endDate||'')}" onchange="syncNarasumberTravelDefaults()">
-    </div>
-
-    <div class="field task-date">
-      <label>Jam Mulai</label>
-      <input type="time" id="fStartTime" value="${esc(x.startTime||'')}">
-    </div>
-
-    <div class="field task-date">
-      <label>Jam Selesai</label>
-      <input type="time" id="fEndTime" value="${esc(x.endTime||'')}">
     </div>
 
     <div class="field">
@@ -5136,7 +5136,10 @@ async function saveTaskForm(id){
       programList,
       projectId,
       stageId,
-      substansi:qs('#fActivity').value,
+      substansi:primaryActivity,
+      narasumberMode,
+      travelStartDate,
+      travelEndDate,
       tag:qs('#fTag').value,
       pic:qsa('input[name="fPic"]:checked').map(x=>x.value),
       picEmail:qs('#fPicEmail')?.value||'',
