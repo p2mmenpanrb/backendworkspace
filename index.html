@@ -1005,18 +1005,99 @@ tr:last-child td{border-bottom:0}
 }
 .task-detail-value.long{min-height:68px}
 
-.my-task-list{border:1px solid var(--line);border-radius:9px;background:#fff;overflow:hidden}
+.my-task-kpis{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;
+  margin:0 0 14px
+}
+.my-task-kpi{
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:#fff;
+  padding:13px 14px
+}
+.my-task-kpi-label{
+  font-size:10.5px;
+  color:var(--muted);
+  text-transform:uppercase;
+  letter-spacing:.035em;
+  font-weight:800
+}
+.my-task-kpi-value{
+  margin-top:6px;
+  font-size:24px;
+  line-height:1;
+  font-weight:800
+}
+.my-task-kpi-note{
+  margin-top:5px;
+  font-size:10.5px;
+  color:var(--muted);
+  line-height:1.4
+}
+.my-task-kpi.needs-update{
+  border-color:#fecaca;
+  background:#fffafa
+}
+.my-task-kpi.needs-update .my-task-kpi-value{color:#b91c1c}
+
+.my-task-list{
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:#fff;
+  overflow:hidden
+}
 .my-task-row{
-  display:grid;grid-template-columns:145px minmax(0,1fr) 58px 134px;
-  align-items:center;gap:10px;padding:8px 11px;border-bottom:1px solid #f1f1f2
+  display:grid;
+  grid-template-columns:155px minmax(0,1fr) auto;
+  align-items:center;
+  gap:18px;
+  padding:13px 14px;
+  border-bottom:1px solid #f1f1f2
 }
 .my-task-row:last-child{border-bottom:0}
-.my-task-when{font-size:8.5px;color:var(--muted);line-height:1.4}
-.my-task-title{font-size:10px;font-weight:750}
-.my-task-meta{font-size:8.5px;color:var(--muted);margin-top:3px}
+.my-task-when{
+  font-size:11.5px;
+  color:#52525b;
+  line-height:1.45
+}
+.my-task-title{
+  font-size:14px;
+  line-height:1.35;
+  font-weight:750
+}
+.my-task-meta{
+  font-size:11.5px;
+  color:var(--muted);
+  margin-top:4px;
+  line-height:1.4
+}
+.my-task-row .task-context{
+  margin-top:6px;
+  font-size:11px
+}
+.my-task-actions{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:7px;
+  flex-wrap:wrap
+}
+.my-task-actions .mini{
+  min-height:34px;
+  padding:7px 10px;
+  font-size:11px
+}
 .my-task-status{
-  width:100%;height:28px;border:1px solid var(--line);border-radius:6px;
-  padding:0 6px;background:#fff;font-size:8.2px
+  min-width:150px;
+  width:auto;
+  height:34px;
+  border:1px solid var(--line);
+  border-radius:7px;
+  padding:0 9px;
+  background:#fff;
+  font-size:11.5px
 }
 .my-task-status.progress{background:#fffdf3;border-color:#ead58a}
 .my-task-status.done{background:#f7faf7;border-color:#cfdccc}
@@ -1051,69 +1132,167 @@ tr:last-child td{border-bottom:0}
   .project-stage-counts{grid-column:2;justify-content:flex-start}
   .project-task-row{grid-template-columns:1fr}
   .task-update-grid{grid-template-columns:1fr}
+  .my-task-kpis{grid-template-columns:1fr}
   .my-task-row{grid-template-columns:1fr}
+  .my-task-actions{justify-content:flex-start}
   .system-history-row{grid-template-columns:1fr}
 }
 
 
 /* v1.64 — Kelola Tugas grouped sections + independent pagination */
-.task-scorecards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;margin:0 0 14px}
-.task-scorecard{border:1px solid var(--line);border-radius:9px;background:#fff;padding:11px 12px}
-.task-score-label{font-size:9px;color:var(--muted)}
-.task-score-value{font-size:19px;font-weight:780;margin-top:3px}
-.task-score-note{font-size:8px;color:#a1a1aa;margin-top:2px}
+.task-scorecards{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:10px;
+  margin:0 0 14px
+}
+.task-scorecard{
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:#fff;
+  padding:13px 14px
+}
+.task-score-label{font-size:10.5px;color:var(--muted);font-weight:700}
+.task-score-value{font-size:24px;font-weight:800;margin-top:5px;line-height:1}
+.task-score-note{font-size:10.5px;color:#a1a1aa;margin-top:5px;line-height:1.35}
 .task-scorecard.needs-update{border-color:#fecaca;background:#fffafa}
 .task-scorecard.needs-update .task-score-value{color:#b91c1c}
 .task-sections{display:grid;gap:14px}
-.task-section{border:1px solid var(--line);border-radius:10px;background:#fff;overflow:hidden}
-.task-section-head{
-  display:flex;align-items:center;justify-content:space-between;gap:12px;
-  padding:11px 12px;border-bottom:1px solid var(--line);background:#fafafa
+.task-section{
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:#fff;
+  overflow:hidden
 }
-.task-section-title{font-size:11px;font-weight:780}
-.task-section-note{font-size:8.5px;color:#71717a;margin-top:2px}
+.task-section-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:14px 14px;
+  border-bottom:1px solid var(--line);
+  background:#fafafa
+}
+.task-section-title{font-size:14px;font-weight:780}
+.task-section-note{font-size:11px;color:#71717a;margin-top:3px;line-height:1.4}
 .task-section-count{
-  display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:24px;
-  padding:0 7px;border:1px solid var(--line);border-radius:999px;background:#fff;
-  font-size:8.5px;font-weight:700;color:#52525b
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:30px;
+  height:30px;
+  padding:0 9px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:#fff;
+  font-size:11px;
+  font-weight:700;
+  color:#52525b
 }
 .task-section.update .task-section-head{background:#fffafa}
 .task-section.update .task-section-count{border-color:#fecaca;color:#b91c1c;background:#fff}
 .task-row-list{background:#fff;overflow:hidden}
 .task-row-head,.task-list-row{
   display:grid;
-  grid-template-columns:42px minmax(340px,1fr) 145px minmax(150px,.72fr) minmax(300px,auto);
-  gap:12px;align-items:center
+  grid-template-columns:46px minmax(400px,1fr) 160px minmax(125px,.62fr) minmax(330px,auto);
+  gap:14px;
+  align-items:center
 }
 .task-row-head{
-  min-height:35px;padding:0 12px;border-bottom:1px solid var(--line);
-  background:#fff;font-size:8px;font-weight:750;color:#71717a;
-  text-transform:uppercase;letter-spacing:.035em
+  min-height:40px;
+  padding:0 14px;
+  border-bottom:1px solid var(--line);
+  background:#fff;
+  font-size:11px;
+  font-weight:750;
+  color:#71717a;
+  text-transform:uppercase;
+  letter-spacing:.03em
 }
-.task-list-row{min-height:62px;padding:9px 12px;border-bottom:1px solid #f1f1f2;font-size:9px}
+.task-list-row{
+  min-height:76px;
+  padding:12px 14px;
+  border-bottom:1px solid #f1f1f2;
+  font-size:12px
+}
 .task-list-row:last-child{border-bottom:0}
-.task-list-no{color:#71717a;font-size:8.5px}
-.task-list-title{font-size:10.5px;font-weight:750;line-height:1.4}
-.task-list-meta{display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin-top:5px}
-.task-list-context{font-size:8px;color:#71717a;line-height:1.4;margin-top:4px}
+.task-list-no{color:#71717a;font-size:11px}
+.task-list-title{
+  font-size:14px;
+  font-weight:750;
+  line-height:1.35
+}
+.task-list-meta{
+  display:flex;
+  gap:6px;
+  align-items:center;
+  flex-wrap:wrap;
+  margin-top:6px
+}
+.task-list-meta .pill{
+  font-size:10.5px;
+  padding:4px 8px
+}
+.task-list-context{
+  font-size:11px;
+  color:#71717a;
+  line-height:1.4;
+  margin-top:6px
+}
 .task-list-context button{
-  border:0;background:transparent;padding:0;font:inherit;color:#52525b;
-  cursor:pointer;text-decoration:underline;text-underline-offset:2px
+  border:0;
+  background:transparent;
+  padding:0;
+  font:inherit;
+  color:#52525b;
+  cursor:pointer;
+  text-decoration:underline;
+  text-underline-offset:2px
 }
-.task-list-target{font-size:9px;line-height:1.45}
+.task-list-target{
+  font-size:12px;
+  line-height:1.45;
+  font-weight:600
+}
+.task-list-target .sub{
+  font-size:11px!important;
+  font-weight:400
+}
 .task-list-target.overdue{color:#b91c1c;font-weight:700}
-.task-list-pic{font-size:8.8px;line-height:1.45}
-.task-list-actions{display:flex;gap:5px;align-items:center;justify-content:flex-end;flex-wrap:wrap}
-.task-list-actions .mini{white-space:nowrap}
-.task-section-pagination{
-  display:flex;align-items:center;justify-content:space-between;gap:10px;
-  padding:9px 12px 10px;border-top:1px solid #f1f1f2;background:#fff
+.task-list-pic{font-size:12px;line-height:1.45}
+.task-list-actions{
+  display:flex;
+  gap:6px;
+  align-items:center;
+  justify-content:flex-end;
+  flex-wrap:wrap
 }
-.pagination-info{font-size:8.5px;color:#71717a}
+.task-list-actions .mini{
+  min-height:34px;
+  padding:7px 9px;
+  font-size:11px;
+  white-space:nowrap
+}
+.task-section-pagination{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:11px 14px;
+  border-top:1px solid #f1f1f2;
+  background:#fff
+}
+.pagination-info{font-size:10.5px;color:#71717a}
 .pagination-controls{display:flex;gap:5px;align-items:center}
 .page-btn{
-  min-width:28px;height:28px;border:1px solid var(--line);border-radius:6px;
-  background:#fff;font-size:8.5px;font-weight:650;cursor:pointer
+  min-width:32px;
+  height:32px;
+  border:1px solid var(--line);
+  border-radius:6px;
+  background:#fff;
+  font-size:10.5px;
+  font-weight:650;
+  cursor:pointer
 }
 .page-btn.active{background:#18181b;color:#fff;border-color:#18181b}
 .page-btn:disabled{opacity:.4;cursor:default}
@@ -1121,7 +1300,16 @@ tr:last-child td{border-bottom:0}
 .task-email{color:#1d4ed8;border-color:#dbeafe;background:#f8fbff}
 @media(max-width:1180px){
   .task-row-list{overflow-x:auto}
-  .task-row-head,.task-list-row{min-width:980px}
+  .task-row-head,.task-list-row{min-width:1040px}
+}
+@media(max-width:1050px){
+  .my-task-row{
+    grid-template-columns:130px minmax(0,1fr)
+  }
+  .my-task-actions{
+    grid-column:2;
+    justify-content:flex-start
+  }
 }
 @media(max-width:900px){.task-scorecards{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:720px){.task-scorecards{grid-template-columns:1fr}}
@@ -1786,7 +1974,7 @@ tr:last-child td{border-bottom:0}
 
 <script>
 /*
-  Netlify frontend v1.81 — Project Notes + Task progress history + simplified Narasumber flow.
+  Netlify frontend v1.82 — Refined Kelola Tugas & Tugas Saya typography + personal task KPIs.
   Netlify frontend.
   Recommended production setup:
   - index.html is hosted by Netlify/GitHub
@@ -4289,17 +4477,46 @@ function renderSelectedRecap(){
   const stage=qs('#recapStage')?.value||'';
   const status=qs('#recapStatus')?.value||'';
 
-  const tasks=(window.__recapTasks||[])
+  // KPI context follows PIC + Project + Tahapan.
+  // Status only filters the list below so the summary remains meaningful.
+  const baseTasks=(window.__recapTasks||[])
     .filter(t=>
       (t.picList||[]).includes(pic) &&
       (!project||t.projectId===project) &&
-      (!stage||t.stageId===stage) &&
-      (!status||t.status===status)
-    )
+      (!stage||t.stageId===stage)
+    );
+
+  const tasks=baseTasks
+    .filter(t=>!status||t.status===status)
     .sort((a,b)=>String(b.startDate||b.createdAt||'').localeCompare(String(a.startDate||a.createdAt||'')));
 
+  const total=baseTasks.length;
+  const done=baseTasks.filter(t=>t.status==='done').length;
+  const needsUpdate=baseTasks.filter(t=>t.status!=='done'&&!!t.overdue).length;
+  const donePct=total?Math.round(done/total*100):0;
+
   qs('#recapContent').innerHTML=
-    `<div class="my-task-list">
+    `<div class="my-task-kpis">
+      <div class="my-task-kpi">
+        <div class="my-task-kpi-label">Total Tugas</div>
+        <div class="my-task-kpi-value">${total}</div>
+        <div class="my-task-kpi-note">Seluruh tugas ${esc(pic)} pada konteks filter aktif.</div>
+      </div>
+
+      <div class="my-task-kpi">
+        <div class="my-task-kpi-label">Tugas Selesai</div>
+        <div class="my-task-kpi-value">${done}</div>
+        <div class="my-task-kpi-note">${donePct}% dari total tugas.</div>
+      </div>
+
+      <div class="my-task-kpi needs-update">
+        <div class="my-task-kpi-label">Perlu Update</div>
+        <div class="my-task-kpi-value">${needsUpdate}</div>
+        <div class="my-task-kpi-note">Belum selesai dan telah melewati target.</div>
+      </div>
+    </div>
+
+    <div class="my-task-list">
       ${tasks.length?tasks.map(t=>{
         const context=t.projectId
           ? `<div class="task-context">
@@ -4310,18 +4527,23 @@ function renderSelectedRecap(){
 
         return `<div class="my-task-row">
           <div class="my-task-when">${esc(t.timeLabel||'Tanpa tanggal')}</div>
+
           <div>
             <div class="my-task-title">${esc(t.title)}</div>
             <div class="my-task-meta">${esc(t.program)} · ${esc(t.substansi)} · ${esc(t.priority)}</div>
             ${context}
           </div>
-          <button class="mini" onclick="showTaskDetail('${esc(t.id)}')">Detail</button>
-          <button class="mini primary" onclick="openTaskUpdate('${esc(t.id)}')">Update Status</button>
-          <select class="my-task-status ${esc(t.status)}" onchange="changeRecapStatus('${esc(t.id)}',this)">
-            <option value="todo" ${t.status==='todo'?'selected':''}>Perlu Dikerjakan</option>
-            <option value="progress" ${t.status==='progress'?'selected':''}>Sedang Dikerjakan</option>
-            <option value="done" ${t.status==='done'?'selected':''}>Selesai</option>
-          </select>
+
+          <div class="my-task-actions">
+            <select class="my-task-status ${esc(t.status)}" onchange="changeRecapStatus('${esc(t.id)}',this)">
+              <option value="todo" ${t.status==='todo'?'selected':''}>Perlu Dikerjakan</option>
+              <option value="progress" ${t.status==='progress'?'selected':''}>Sedang Dikerjakan</option>
+              <option value="done" ${t.status==='done'?'selected':''}>Selesai</option>
+            </select>
+
+            <button class="mini" onclick="showTaskDetail('${esc(t.id)}')">Detail</button>
+            <button class="mini primary" onclick="openTaskUpdate('${esc(t.id)}')">Update Status</button>
+          </div>
         </div>`;
       }).join(''):'<div class="empty">Tidak ada tugas.</div>'}
     </div>`;
