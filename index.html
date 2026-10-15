@@ -1033,6 +1033,19 @@ tr:last-child td{border-bottom:0}
 .complete-tab.active{background:#18181b;color:#fff;border-color:#18181b}
 .complete-required{font-size:8px;color:#b42318;margin-top:4px}
 
+.task-update-content{margin-top:12px;padding-top:12px;border-top:1px solid #f1f1f2}
+.task-update-attachments{margin-top:12px;padding:11px;border:1px dashed #d4d4d8;border-radius:8px;background:#fcfcfc}
+.task-update-link-row{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr) auto;gap:6px;align-items:end;margin-top:7px}
+.task-update-link-row .field{min-width:0}
+.task-update-history{display:grid;gap:7px}
+.task-update-history-item{border:1px solid var(--line);border-radius:8px;padding:9px 10px;background:#fff}
+.task-update-history-head{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.task-update-history-status{font-size:9px;font-weight:800}
+.task-update-history-date{font-size:8.5px;color:var(--muted)}
+.task-update-history-note{margin-top:5px;font-size:10px;line-height:1.5;white-space:pre-wrap}
+.task-update-history-files{margin-top:6px;padding-top:6px;border-top:1px solid #f4f4f5;font-size:9px}
+@media(max-width:720px){.task-update-link-row{grid-template-columns:1fr}}
+
 @media(max-width:760px){
   .project-stage-head{grid-template-columns:38px minmax(0,1fr)}
   .project-stage-counts{grid-column:2;justify-content:flex-start}
@@ -1142,6 +1155,23 @@ tr:last-child td{border-bottom:0}
 .project-lazy-body{border-top:1px solid #f2f2f3}
 .project-lazy-head-actions{display:flex;gap:5px;align-items:center}
 .project-info-card{margin-top:14px}
+.project-notes-card{margin-bottom:14px}
+.project-notes-toolbar{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.project-notes-box{
+  width:100%;
+  min-height:92px;
+  resize:vertical;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:#fff;
+  padding:11px 12px;
+  font:inherit;
+  font-size:11px;
+  line-height:1.55;
+  color:var(--ink);
+}
+.project-notes-box:focus{outline:2px solid #dbeafe;outline-offset:1px;border-color:#93c5fd}
+
 
 
 /* v1.65 — Project UI refinement + automatic proportional Gantt */
@@ -1756,7 +1786,7 @@ tr:last-child td{border-bottom:0}
 
 <script>
 /*
-  Netlify frontend v1.79 — Simplified Narasumber travel presets + Multi-program Tugas + PDF export.
+  Netlify frontend v1.81 — Project Notes + Task progress history + simplified Narasumber flow.
   Netlify frontend.
   Recommended production setup:
   - index.html is hosted by Netlify/GitHub
@@ -2992,6 +3022,20 @@ function renderProjectDetail(d){
       <span>·</span>
       <span>Target <strong>${esc(fmtDate(p.targetDate))}</strong></span>
     </div>`+
+    `<div class="card project-notes-card">
+      <div class="card-head">
+        <div class="project-notes-toolbar">
+          <div>
+            <div class="card-title">Catatan Project</div>
+            <div class="card-note">Ruang singkat untuk konteks, keputusan, risiko, tindak lanjut, atau informasi lain yang perlu diingat tim.</div>
+          </div>
+          <button class="mini primary" onclick="saveProjectNotes('${esc(p.id)}',this)">Simpan Catatan</button>
+        </div>
+      </div>
+      <div class="card-body">
+        <textarea id="projectNotesBox" class="project-notes-box" placeholder="Tambahkan catatan mengenai Project...">${esc(p.notes||'')}</textarea>
+      </div>
+    </div>`+
     `<div class="card">
       <div class="card-head">
         <div>
@@ -3513,7 +3557,7 @@ function renderProjectTaskRow(t){
     </div>
     <div class="row-actions">
       ${t.startDate?`<button class="mini task-calendar" onclick="openTaskCalendar('${esc(t.id)}')">+ Calendar</button>`:''}
-      <button class="mini primary" onclick="openTaskUpdate('${esc(t.id)}')">Update</button>
+      <button class="mini primary" onclick="openTaskUpdate('${esc(t.id)}')">Update Status</button>
       <button class="mini" onclick="showTaskDetail('${esc(t.id)}')">Detail</button>
       <button class="mini danger" onclick="deleteTask('${esc(t.id)}')">Hapus</button>
     </div>
@@ -3736,6 +3780,43 @@ async function deleteProjectStage(id){
     await loadPage({projectId:state.projectId});
   }catch(e){
     showToast(e.message,true);
+  }
+}
+
+async function saveProjectNotes(projectId,button=null){
+  const box=qs('#projectNotesBox');
+  if(!box)return;
+
+  if(button){
+    button.disabled=true;
+    button.textContent='Menyimpan…';
+  }
+
+  try{
+    const result=await api(
+      'saveProjectNotes',
+      {
+        projectId,
+        notes:box.value
+      }
+    );
+
+    if(window.__projectDetail?.project){
+      window.__projectDetail.project.notes=result.notes||'';
+    }
+
+    if(state.model?.projectDetail?.project){
+      state.model.projectDetail.project.notes=result.notes||'';
+    }
+
+    showToast('Catatan Project disimpan.');
+  }catch(e){
+    showToast(e.message,true);
+  }finally{
+    if(button){
+      button.disabled=false;
+      button.textContent='Simpan Catatan';
+    }
   }
 }
 
@@ -4019,7 +4100,7 @@ function renderTaskListRow(t,no,sectionKey){
     <div class="task-list-actions">
       ${canCalendar?`<button class="mini task-calendar" onclick="openTaskCalendar('${esc(t.id)}')">+ Calendar</button>`:''}
       ${hasEmail?`<button class="mini task-email" onclick="openTaskEmail('${esc(t.id)}')">Email</button>`:''}
-      <button class="mini primary" onclick="openTaskUpdate('${esc(t.id)}')">Update</button>
+      <button class="mini primary" onclick="openTaskUpdate('${esc(t.id)}')">Update Status</button>
       <button class="mini" onclick="showTaskDetail('${esc(t.id)}')">Detail</button>
       <button class="mini danger" onclick="deleteTask('${esc(t.id)}')">Hapus</button>
     </div>
@@ -4235,6 +4316,7 @@ function renderSelectedRecap(){
             ${context}
           </div>
           <button class="mini" onclick="showTaskDetail('${esc(t.id)}')">Detail</button>
+          <button class="mini primary" onclick="openTaskUpdate('${esc(t.id)}')">Update Status</button>
           <select class="my-task-status ${esc(t.status)}" onchange="changeRecapStatus('${esc(t.id)}',this)">
             <option value="todo" ${t.status==='todo'?'selected':''}>Perlu Dikerjakan</option>
             <option value="progress" ${t.status==='progress'?'selected':''}>Sedang Dikerjakan</option>
@@ -5367,221 +5449,94 @@ async function saveTaskForm(id){
 }
 
 let __taskUpdateStatus='';
+let __taskUpdateDetail=null;
+let __taskUpdateLinkSeq=0;
 
-function openTaskUpdate(id){
-  const task=findTaskInCurrentState(id);
-  if(!task){
-    showTaskDetail(id);
-    return;
-  }
+function fmtTaskUpdateDate(value){
+  if(!value)return'—';
+  const d=new Date(value);
+  if(isNaN(d))return value;
+  return d.toLocaleString('id-ID',{day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+}
 
-  __taskUpdateStatus=task.status;
+function renderTaskUpdateHistory(updates,{excludeDone=false,managed=false}={}){
+  const rows=(updates||[]).filter(item=>!excludeDone||item.status!=='done');
+  if(!rows.length)return '<div class="empty" style="padding:10px">Belum ada riwayat perkembangan.</div>';
+  return `<div class="task-update-history">${rows.map(item=>`<div class="task-update-history-item"><div class="task-update-history-head"><span class="task-update-history-status">${esc(item.statusLabel||item.status||'Update')}</span><span class="task-update-history-date">${esc(fmtTaskUpdateDate(item.createdAt))}</span></div>${item.note?`<div class="task-update-history-note">${esc(item.note)}</div>`:''}${(item.attachments||[]).length?`<div class="task-update-history-files">${attachmentList(item.attachments,managed)}</div>`:''}</div>`).join('')}</div>`;
+}
 
-  openModal(
-    'Update Tugas',
-    `<div class="sub" style="margin-bottom:12px">${esc(task.title)}</div>
-     <div class="task-update-grid">
-       ${[
-         ['todo','Perlu Dikerjakan','Tugas belum mulai dikerjakan.'],
-         ['progress','Sedang Dikerjakan','Tugas sedang dalam proses.'],
-         ['done','Selesai','Wajib mencatat hasil penyelesaian.']
-       ].map(([value,label,note])=>`<button
-          class="task-update-option ${task.status===value?'active':''}"
-          data-update-status="${value}"
-          onclick="selectTaskUpdateStatus('${value}')">
-          <div class="task-update-name">${label}</div>
-          <div class="task-update-note">${note}</div>
-        </button>`).join('')}
-     </div>
-     <div class="helper" style="margin-top:10px">
-       Untuk mengubah PIC, tanggal, Project, Tahapan, prioritas, atau deskripsi, gunakan tombol pensil pada Detail.
-     </div>`,
-    `<button class="btn" onclick="closeModal()">Batal</button>
-     <button class="btn primary" onclick="submitTaskUpdate('${esc(id)}')">Simpan Update</button>`
-  );
+function taskUpdateAttachmentEditor(){
+  return `<div class="task-update-attachments">
+    <div class="sub" style="font-weight:700;color:var(--ink)">Lampiran Update <span style="font-weight:400">(opsional)</span></div>
+    <div class="field" style="margin-top:9px"><label>File</label><input id="taskUpdateFiles" type="file" multiple><div class="helper">Maksimal 5 file, 8 MB per file.</div></div>
+    <div style="margin-top:11px"><div style="display:flex;justify-content:space-between;gap:8px;align-items:center"><label style="margin:0">Link</label><button type="button" class="mini" onclick="addTaskUpdateLinkRow()">+ Tambah Link</button></div><div id="taskUpdateLinks"></div></div>
+    <label style="display:flex;gap:8px;align-items:flex-start;margin-top:11px;font-size:10px;font-weight:600"><input type="checkbox" id="taskUpdateCreateDocs" style="width:auto;margin-top:1px"><span>Buat Google Docs dari catatan ini<span class="helper" style="display:block;margin-top:2px">Dokumen dibuat setelah update disimpan dan akan muncul sebagai lampiran update.</span></span></label>
+  </div>`;
+}
+
+function addTaskUpdateLinkRow(title='',url=''){
+  const host=qs('#taskUpdateLinks'); if(!host)return;
+  const rowId='task-update-link-'+(++__taskUpdateLinkSeq);
+  host.insertAdjacentHTML('beforeend',`<div class="task-update-link-row" id="${rowId}"><div class="field"><label>Judul Link</label><input class="task-update-link-title" value="${esc(title)}" placeholder="Contoh: Dashboard sementara"></div><div class="field"><label>URL</label><input class="task-update-link-url" value="${esc(url)}" placeholder="https://..."></div><button type="button" class="mini danger" onclick="qs('#${rowId}')?.remove()">Hapus</button></div>`);
+}
+
+function collectTaskUpdateLinks(){
+  return qsa('.task-update-link-row').map(row=>({title:row.querySelector('.task-update-link-title')?.value.trim()||'Link',url:row.querySelector('.task-update-link-url')?.value.trim()||''})).filter(item=>item.url);
+}
+
+async function openTaskUpdate(id,initialStatus='',recap=false){
+  try{
+    const d=await api('taskDetail',{taskId:id});
+    __taskUpdateDetail=d; __taskUpdateStatus=initialStatus||d.status||'todo';
+    openModal('Update Status',`<div class="sub" style="margin-bottom:12px">${esc(d.title)}</div><div class="task-update-grid">${[['todo','Perlu Dikerjakan','Tugas belum mulai atau dikembalikan ke antrean.'],['progress','Sedang Dikerjakan','Tambahkan catatan perkembangan bila diperlukan.'],['done','Selesai','Hasil penyelesaian wajib dicatat dan dapat diperbarui kembali.']].map(([value,label,note])=>`<button class="task-update-option ${__taskUpdateStatus===value?'active':''}" data-update-status="${value}" onclick="selectTaskUpdateStatus('${value}')"><div class="task-update-name">${label}</div><div class="task-update-note">${note}</div></button>`).join('')}</div><div id="taskUpdateContent" class="task-update-content"></div><div class="helper" style="margin-top:10px">Untuk mengubah PIC, tanggal, Project, Tahapan, prioritas, atau deskripsi, gunakan tombol pensil pada Detail.</div>`,`<button class="btn" onclick="closeModal()">Batal</button><button class="btn primary" onclick="submitTaskUpdate('${esc(id)}')">Simpan Update</button>`);
+    selectTaskUpdateStatus(__taskUpdateStatus);
+  }catch(e){showToast(e.message,true)}
 }
 
 function selectTaskUpdateStatus(status){
   __taskUpdateStatus=status;
-  qsa('[data-update-status]').forEach(btn=>{
-    btn.classList.toggle('active',btn.dataset.updateStatus===status);
-  });
+  qsa('[data-update-status]').forEach(btn=>btn.classList.toggle('active',btn.dataset.updateStatus===status));
+  renderTaskUpdateContent(status);
+}
+
+function renderTaskUpdateContent(status){
+  const host=qs('#taskUpdateContent'); const d=__taskUpdateDetail; if(!host||!d)return;
+  const isDone=status==='done';
+  const priorHtml=renderTaskUpdateHistory(d.updates||[],{excludeDone:isDone});
+  host.innerHTML=`<div class="field"><label>${isDone?'Hasil Penyelesaian *':'Catatan Perkembangan (opsional)'}</label><textarea id="taskUpdateNote" style="min-height:105px" placeholder="${isDone?'Tuliskan hasil/output pekerjaan yang telah diselesaikan...':'Contoh: koordinasi awal selesai, masih menunggu data dari 3 instansi...'}">${isDone?esc(d.resultText||''):''}</textarea>${isDone?`<div class="complete-required">Hasil pekerjaan wajib dicatat sebelum status menjadi Selesai.</div>`:''}</div>${taskUpdateAttachmentEditor()}<div style="margin-top:14px"><div class="sub" style="font-weight:700;color:var(--ink);margin-bottom:7px">${isDone?'Perkembangan Sebelumnya':'Riwayat Perkembangan'}</div>${priorHtml}</div>`;
+  __taskUpdateLinkSeq=0; addTaskUpdateLinkRow();
+}
+
+async function saveTaskUpdateAttachments(taskId,updateId,attachmentType){
+  const files=[...(qs('#taskUpdateFiles')?.files||[])];
+  if(files.length>5)throw new Error('Maksimal 5 file per update.');
+  for(const file of files){if(file.size>8*1024*1024)throw new Error(`File ${file.name} melebihi batas 8 MB.`); await api('uploadAttachment',{taskId,updateId,attachmentType,fileName:file.name,mimeType:file.type||'application/octet-stream',sizeBytes:file.size,base64:await fileToBase64(file)});}
+  const links=collectTaskUpdateLinks();
+  for(const link of links){await api('createLinkAttachment',{taskId,updateId,attachmentType,title:link.title,url:link.url});}
+  let createdDoc=null;
+  if(qs('#taskUpdateCreateDocs')?.checked){createdDoc=await api('createTaskUpdateDoc',{taskId,updateId,attachmentType,status:__taskUpdateStatus,note:qs('#taskUpdateNote')?.value.trim()||''});}
+  return {links,createdDoc};
 }
 
 async function submitTaskUpdate(id){
-  const task=findTaskInCurrentState(id);
-  const previous=task?.status||'';
-
-  if(__taskUpdateStatus==='done'&&previous!=='done'){
-    closeModal();
-    completeTask(id,state.page==='taskrecap');
-    return;
-  }
-
+  const status=__taskUpdateStatus; const note=qs('#taskUpdateNote')?.value.trim()||''; const d=__taskUpdateDetail;
+  if(status==='done'&&!note){showToast('Hasil Penyelesaian wajib diisi.',true);return;}
   try{
-    await api('updateTaskStatus',{id,status:__taskUpdateStatus});
-    closeModal();
-    showToast('Status diperbarui.');
-    await loadPage();
-  }catch(e){
-    showToast(e.message,true);
-  }
+    const saved=status==='done'?await api('completeTask',{id,resultText:note}):await api('saveTaskUpdate',{taskId:id,status,note});
+    const attachmentType=status==='done'?'result':'progress';
+    const attachmentResult=await saveTaskUpdateAttachments(id,saved.updateId,attachmentType);
+    if(d?.projectId)invalidateProjectLazyCache(d.projectId,['documents','sources','history']);
+    closeModal(); showToast(status==='done'?'Tugas berhasil diselesaikan.':'Update tugas berhasil disimpan.'); await loadPage();
+    const docUrl=attachmentResult?.createdDoc?.attachment?.driveUrl||'';
+    if(docUrl){openModal('Update Tersimpan',`<div class="task-detail-value long">Google Docs berhasil dibuat dan sudah ditautkan ke update tugas.</div>`,`<button class="btn" onclick="closeModal()">Tutup</button><button class="btn" onclick="closeModal();showTaskDetail('${esc(id)}')">Detail Tugas</button><a class="btn primary" target="_blank" rel="noopener" href="${esc(docUrl)}">Buka Google Docs ↗</a>`);}
+  }catch(e){showToast(e.message,true)}
 }
 
 async function setTaskStatus(id,status){
-  try{
-    if(status==='done'){
-      completeTask(id,state.page==='taskrecap');
-      return;
-    }
-
-    await api('updateTaskStatus',{id,status});
-    showToast('Status diperbarui.');
-    await loadPage();
-  }catch(e){
-    showToast(e.message,true);
-  }
+  try{if(status==='done'){completeTask(id,state.page==='taskrecap');return;} await api('updateTaskStatus',{id,status}); showToast('Status diperbarui.'); await loadPage();}catch(e){showToast(e.message,true)}
 }
 
-let __completeAttachMode='file';
-
-function completeTask(id,recap=false){
-  const task=findTaskInCurrentState(id);
-
-  __completeAttachMode='file';
-
-  openModal(
-    'Selesaikan Tugas',
-    `<div class="complete-task-name">${esc(task?.title||'')}</div>
-     <div class="field">
-       <label>Hasil Penyelesaian *</label>
-       <textarea id="completeResult" style="min-height:92px" placeholder="Tuliskan hasil/output pekerjaan yang telah diselesaikan..."></textarea>
-       <div class="complete-required">Hasil pekerjaan wajib dicatat sebelum status menjadi Selesai.</div>
-     </div>
-
-     ${task?.projectId?`<div class="helper" style="margin-top:10px">
-       Tugas ini terhubung ke Project. File/Docs hasil akan otomatis masuk ke <strong>Dokumen Terhubung</strong>; link hasil juga masuk ke <strong>Sumber & Link Tambahan</strong> dan Inventaris Dokumen.
-     </div>`:''}
-
-     <div style="margin-top:16px">
-       <div class="sub" style="font-weight:700;color:var(--ink)">Lampiran Hasil <span style="font-weight:400">(opsional)</span></div>
-       <div class="complete-attachments">
-         <div class="complete-tabs">
-           <button class="complete-tab active" data-complete-tab="file" onclick="renderCompleteAttachmentMode('file')">▣ File</button>
-           <button class="complete-tab" data-complete-tab="link" onclick="renderCompleteAttachmentMode('link')">↗ Link</button>
-           <button class="complete-tab" data-complete-tab="docs" onclick="renderCompleteAttachmentMode('docs')">▧ Buat Docs</button>
-         </div>
-         <div id="completeAttachmentArea"></div>
-       </div>
-     </div>`,
-    `<button class="btn" onclick="closeModal()">Batal</button>
-     <button class="btn primary" onclick="submitComplete('${esc(id)}',${recap})">Simpan & Selesaikan</button>`
-  );
-
-  renderCompleteAttachmentMode('file');
-}
-
-function renderCompleteAttachmentMode(mode){
-  __completeAttachMode=mode;
-
-  qsa('[data-complete-tab]').forEach(btn=>{
-    btn.classList.toggle('active',btn.dataset.completeTab===mode);
-  });
-
-  const host=qs('#completeAttachmentArea');
-  if(!host)return;
-
-  if(mode==='file'){
-    host.innerHTML=`<input id="completeFiles" type="file" multiple>
-      <div class="helper" style="margin-top:6px">Maksimal 5 file per penyelesaian, 8 MB per file.</div>`;
-  }else if(mode==='link'){
-    host.innerHTML=`<div class="field">
-      <label>Judul Link</label>
-      <input id="completeLinkTitle" placeholder="Contoh: Hasil Verifikasi">
-    </div>
-    <div class="field" style="margin-top:8px">
-      <label>URL</label>
-      <input id="completeLinkUrl" placeholder="https://...">
-    </div>`;
-  }else{
-    host.innerHTML=`<div class="sub">
-      Google Docs hasil akan dibuat otomatis dan ditautkan sebagai Lampiran Hasil.
-    </div>`;
-  }
-}
-
-async function submitComplete(id,recap){
-  const taskBeforeComplete=findTaskInCurrentState(id);
-  const completedProjectId=taskBeforeComplete?.projectId||'';
-  const resultText=qs('#completeResult')?.value.trim()||'';
-
-  if(!resultText){
-    showToast('Hasil Penyelesaian wajib diisi.',true);
-    return;
-  }
-
-  try{
-    // Save optional result attachment first.
-    if(__completeAttachMode==='file'){
-      const files=[...(qs('#completeFiles')?.files||[])];
-
-      if(files.length>5){
-        throw new Error('Maksimal 5 file per penyelesaian.');
-      }
-
-      for(const file of files){
-        if(file.size>8*1024*1024){
-          throw new Error(`File ${file.name} melebihi batas 8 MB.`);
-        }
-
-        await api('uploadAttachment',{
-          taskId:id,
-          attachmentType:'result',
-          fileName:file.name,
-          mimeType:file.type||'application/octet-stream',
-          sizeBytes:file.size,
-          base64:await fileToBase64(file)
-        });
-      }
-    }
-
-    if(__completeAttachMode==='link'){
-      const url=qs('#completeLinkUrl')?.value.trim()||'';
-      const title=qs('#completeLinkTitle')?.value.trim()||'Hasil Penyelesaian';
-
-      if(url){
-        await api('createLinkAttachment',{
-          taskId:id,
-          attachmentType:'result',
-          title,
-          url
-        });
-      }
-    }
-
-    if(__completeAttachMode==='docs'){
-      await api('createResultDoc',{taskId:id,resultText});
-    }
-
-    await api('completeTask',{id,resultText});
-
-    if(completedProjectId){
-      invalidateProjectLazyCache(completedProjectId,['documents','sources','history']);
-    }
-
-    closeModal();
-    showToast('Tugas diselesaikan.');
-    await loadPage();
-
-    if(
-      state.page==='project' &&
-      state.projectId
-    ){
-    }
-  }catch(e){
-    showToast(e.message,true);
-  }
-}
+function completeTask(id,recap=false){openTaskUpdate(id,'done',recap);}
 
 async function deleteTask(id){
   if(!confirm('Hapus tugas ini?'))return;
@@ -5697,6 +5652,11 @@ async function showTaskDetail(id){
         </div>
 
         <div class="field full">
+          <label>Riwayat Perkembangan</label>
+          ${renderTaskUpdateHistory(d.updates||[],{managed:true})}
+        </div>
+
+        <div class="field full">
           <label>Lampiran Tugas</label>
           ${attachmentList(d.taskAttachments,true)}
           <div class="row-actions" style="margin-top:7px">
@@ -5708,15 +5668,15 @@ async function showTaskDetail(id){
           <label>Lampiran Hasil</label>
           ${attachmentList(d.resultAttachments,true)}
           <div class="row-actions" style="margin-top:7px">
-            <button class="mini" onclick="openAttachmentForm('${esc(d.id)}','result')">+ Lampiran</button>
-            <button class="mini" onclick="createResultDoc('${esc(d.id)}')">+ Google Docs</button>
+            <button class="mini" onclick="openAttachmentForm('${esc(d.id)}','result')">+ Lampiran Hasil</button>
+            <button class="mini" onclick="createResultDoc('${esc(d.id)}')">+ Google Docs Hasil</button>
           </div>
         </div>
       </div>`,
       `<button class="btn danger" onclick="closeModal();deleteTask('${esc(d.id)}')">Hapus</button>
        <button class="btn" onclick="closeModal()">Tutup</button>
-       ${d.status==='done'?`<button class="btn primary" onclick="downloadTaskPdf('${esc(d.id)}')">Download PDF</button>`:''}
-       ${d.status!=='done'?`<button class="btn primary" onclick="closeModal();openTaskUpdate('${esc(d.id)}')">Update</button>`:''}`
+       ${d.status==='done'?`<button class="btn" onclick="downloadTaskPdf('${esc(d.id)}')">Download PDF</button>`:''}
+       <button class="btn primary" onclick="closeModal();openTaskUpdate('${esc(d.id)}')">Update Status</button>`
     );
   }catch(e){
     showToast(e.message,true);
@@ -6123,10 +6083,8 @@ function buildTaskPdfPages(d,stamp=pdfTimestamp()){
 
   // For a completion summary, result attachments are the primary output.
   // If none exist, fall back to task attachments.
-  const attachments=
-    (d.resultAttachments||[]).length
-      ?(d.resultAttachments||[])
-      :(d.taskAttachments||[]);
+  const completionAttachments=[...(d.progressAttachments||[]),...(d.resultAttachments||[])];
+  const attachments=completionAttachments.length?completionAttachments:(d.taskAttachments||[]);
 
   const dedupedAttachments=attachments.filter((item,index,rows)=>{
     const key=String(item.id||item.driveUrl||item.fileName||'');
@@ -6400,11 +6358,8 @@ function pdfProjectStagePages(data,startPageNo,stamp){
 }
 
 function pdfProjectCompletedTaskAttachments(task){
-  const preferred=(task.resultAttachments||[]);
-
-  return preferred.length
-    ? preferred
-    : (task.taskAttachments||[]);
+  const preferred=[...(task.progressAttachments||[]),...(task.resultAttachments||[])];
+  return preferred.length?preferred:(task.taskAttachments||[]);
 }
 
 function pdfProjectWorkPages(data,startPageNo,stamp){
